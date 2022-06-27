@@ -1,0 +1,16 @@
+config.yaml
+config.test.yaml
+micro
+vendor/
+logs/*
+!logs/README.md
+tmp
+.devcontainer/
+api/pb/*
+api/swagger/*
+docker-compose-dev.yml
+.idea
+.vscode
+
+maskan
+main

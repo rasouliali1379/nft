@@ -1,0 +1,124 @@
+version: "3.7"
+
+services:
+  # -----------------------------
+  # base fiber service
+  # -----------------------------
+  maskan:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/go/src/application
+    networks:
+      - customnetwork
+    depends_on:
+      - jaeger
+    ports: 
+      - 1212:8080
+      - 1213:8081
+
+  # -----------------------------
+  # jaeger servcie 
+  # -----------------------------
+  jaeger:
+    image: jaegertracing/all-in-one:1.20
+    ports:
+      - "1214:6831/udp"
+      - "1215:16686"
+    networks:
+      - customnetwork
+  # -----------------------------
+  # etcd servcie 0
+  # -----------------------------
+  etcd0:
+    image: 'bitnami/etcd:latest'
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd0:2379
+    ports:
+      - 4379:2379
+      - 4380:2380
+    networks:
+      - customnetwork
+      
+  # -----------------------------
+  # redis database
+  # -----------------------------
+  redis:
+    hostname: redis
+    image: redis
+    networks:
+      - customnetwork
+
+  # -----------------------------
+  # redis UI
+  # -----------------------------
+  redis-commander:
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "9251:8081"
+    networks:
+      - customnetwork
+  
+  # -----------------------------
+  # nats message broker
+  # -----------------------------
+  nats:
+    image: nats
+    networks:
+      - customnetwork
+   
+  # -----------------------------
+  # postgres database
+  # -----------------------------
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes: 
+      - psql-micro:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: admin
+      POSTGRES_DB: maskan
+    ports:
+      - "5432:5432"
+    networks: 
+      - customnetwork
+
+  # -----------------------------
+  # admin ui 
+  # -----------------------------
+  adminer:
+    image: adminer
+    ports:
+      - 1200:8080
+    networks:
+      - customnetwork
+  # -----------------------------
+  # logstash
+  # -----------------------------
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.16.2
+    restart: unless-stopped
+    networks: 
+      - customnetwork
+
+# -----------------------------
+# networks
+# -----------------------------
+networks:
+  customnetwork:
+    external: true
+# -----------------------------
+# volumes
+# -----------------------------
+volumes: 
+  psql-micro:
+    driver: local
+  pgadmin:
+    driver: local
