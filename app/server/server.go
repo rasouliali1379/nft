@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"log"
 	"maskan/config"
-	auth "maskan/src/auth/contract"
+	"maskan/contract"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"go.uber.org/fx"
 )
 
@@ -17,14 +18,17 @@ type Server struct {
 
 type ControllerContainer struct {
 	fx.In
-	AuthController auth.IAuthController
+	AuthController contract.IAuthController
 }
 
 func New(cc ControllerContainer) IServer {
 
 	app := fiber.New()
+	app.Use(recover.New(recover.Config{
+		EnableStackTrace: true,
+	}))
 	router := app.Group(config.C().App.BaseURL)
-	
+
 	authRouter := router.Group("/auth")
 	authRouter.Post("/signup", cc.AuthController.SignUp)
 	authRouter.Post("/login", cc.AuthController.Login)

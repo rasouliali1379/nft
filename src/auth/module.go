@@ -2,7 +2,7 @@ package auth
 
 import (
 	"go.uber.org/fx"
-	contract "maskan/src/auth/contract"
+	contract "maskan/contract"
 )
 
 var Module = fx.Options(

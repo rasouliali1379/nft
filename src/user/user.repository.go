@@ -2,78 +2,109 @@ package user
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"maskan/client/jtrace"
-	"maskan/client/persist"
+	contract "maskan/contract"
+	merror "maskan/error"
+	"maskan/pkg/crypt"
 	model "maskan/src/auth/model"
-	contract "maskan/src/user/contract"
+	usermodel "maskan/src/user/model"
 
+	"github.com/google/uuid"
 	"go.uber.org/fx"
 )
 
 type UserRepository struct {
-	db persist.IPersist
+	db contract.IPersist
 }
 
 type UserRepositoryParams struct {
 	fx.In
-	DB persist.IPersist
+	DB contract.IPersist
 }
 
 func NewUserRepository(params UserRepositoryParams) contract.IUserRepository {
-	return &UserRepository{}
+	return &UserRepository{
+		db: params.DB,
+	}
 }
 
-func (a UserRepository) NationalIdExists(c context.Context, nationalId string) error {
-	span, _ := jtrace.T().SpanFromContext(c, "repository[NationalIdExists]")
+func (u UserRepository) NationalIdExists(c context.Context, nationalId string) error {
+	span, ctx := jtrace.T().SpanFromContext(c, "repository[NationalIdExists]")
 	defer span.Finish()
 
-	// var user User
-	// if err := a.db.WithContext(ctx).Where("national_id = ?", nationalId).Find(&user).Error; err != nil {
-	// 	if errors.Is(err, gorm.ErrRecordNotFound) {
-	// 		return nil
-	// 	}
+	if err := u.db.UserExists(ctx, "national_id", nationalId); err != nil {
+		if errors.Is(err, merror.ErrRecordNotFound) {
+			return nil
+		}
 
-	// 	return fmt.Errorf("error happened while searching for a national id: %w", err)
-	// }
+		return fmt.Errorf("error happened while searching for a national id: %w", err)
+	}
 
-	return ErrNationalIdExists
+	return merror.ErrNationalIdExists
 }
 
-func (a UserRepository) PhoneNumberExists(c context.Context, phoneNumber string) error {
-	// span, ctx := jtrace.T().SpanFromContext(c, "repository[PhoneNumberExists]")
-	// defer span.Finish()
-
-	// var user User
-	// if err := a.db.WithContext(ctx).Where("phone_number = ?", phoneNumber).Find(&user).Error; err != nil {
-	// 	if errors.Is(err, gorm.ErrRecordNotFound) {
-	// 		return nil
-	// 	}
-
-	// 	return fmt.Errorf("error happened while searching for a phone number: %w", err)
-	// }
-
-	return ErrPhoneNumberExists
-}
-
-func (a UserRepository) EmailExists(c context.Context, email string) error {
-	// span, ctx := jtrace.T().SpanFromContext(c, "repository[EmailExists]")
-	// defer span.Finish()
-
-	// var user User
-	// if err := a.db.WithContext(ctx).Where("email = ?", email).Find(&user).Error; err != nil {
-	// 	if errors.Is(err, gorm.ErrRecordNotFound) {
-	// 		return nil
-	// 	}
-
-	// 	return fmt.Errorf("error happened while searching for an email: %w", err)
-	// }
-
-	return ErrEmailExists
-}
-
-func (a UserRepository) AddUser(c context.Context, dto model.SignUpRequest) (model.SignUpResponse, error) {
-	span, _ := jtrace.T().SpanFromContext(c, "repository[SignUp]")
+func (u UserRepository) PhoneNumberExists(c context.Context, phoneNumber string) error {
+	span, ctx := jtrace.T().SpanFromContext(c, "repository[PhoneNumberExists]")
 	defer span.Finish()
 
-	return model.SignUpResponse{}, nil
+	if err := u.db.UserExists(ctx, "phone_number", phoneNumber); err != nil {
+		if errors.Is(err, merror.ErrRecordNotFound) {
+			return nil
+		}
+
+		return fmt.Errorf("error happened while searching for a phone number: %w", err)
+	}
+
+	return merror.ErrPhoneNumberExists
+}
+
+func (u UserRepository) EmailExists(c context.Context, email string) error {
+	span, ctx := jtrace.T().SpanFromContext(c, "repository[EmailExists]")
+	defer span.Finish()
+
+	if err := u.db.UserExists(ctx, "email", email); err != nil {
+		if errors.Is(err, merror.ErrRecordNotFound) {
+			return nil
+		}
+
+		return fmt.Errorf("error happened while searching for an email: %w", err)
+	}
+
+	return merror.ErrEmailExists
+}
+
+func (u UserRepository) AddUser(c context.Context, dto model.SignUpRequest) (string, error) {
+	span, ctx := jtrace.T().SpanFromContext(c, "repository[AddUser]")
+	defer span.Finish()
+
+	user := mapSignUpRequestModelToEntity(dto)
+
+	password, err := crypt.Hash(dto.Password)
+	if err != nil {
+		return "", err
+	}
+
+	user.ID = uuid.New()
+	user.Password = password
+
+	userId, err := u.db.CreateUser(ctx, user)
+	if err != nil {
+		return "", err
+	}
+
+	return userId, nil
+}
+
+func (u UserRepository) GetUser(c context.Context, email string) (usermodel.User, error) {
+	span, c := jtrace.T().SpanFromContext(c, "repository[GetUser]")
+	defer span.Finish()
+
+	user, err := u.db.GetUser(c, "email" , email)
+	if err != nil {
+		return usermodel.User{}, err
+	}
+
+	return mapUserEntityToModel(user), nil
 }

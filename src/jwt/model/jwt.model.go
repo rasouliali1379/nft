@@ -1,6 +1,6 @@
-package auth
+package jwt
 
-type SignUpResponse struct {
+type Jwt struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }

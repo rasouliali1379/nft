@@ -1,9 +1,17 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
-	gorm.Model
+	ID        uuid.UUID `gorm:"type:uuid;primary_key;"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
+
 	NationalId     string `gorm:"unique"`
 	FirstName      string
 	LastName       string

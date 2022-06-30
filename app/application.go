@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log"
 	"maskan/app/server"
+	"maskan/client/elk"
 	"maskan/client/jtrace"
 	"maskan/client/persist"
 	"maskan/pkg/logger"
 	auth "maskan/src/auth"
+	"maskan/src/jwt"
 	"maskan/src/user"
 	"os"
 	"time"
@@ -30,9 +32,11 @@ func Start() {
 		fxNew := fx.New(
 			//		fx.Provide(broker.NewNats),
 			//		fx.Provide(redis.NewRedis),
+			fx.Provide(elk.NewLogStash),
 			fx.Provide(persist.New),
 			auth.Module,
 			user.Module,
+			jwt.Module,
 			fx.Provide(server.New),
 			fx.Invoke(config.InitConfigs),
 			fx.Invoke(logger.InitGlobalLogger),

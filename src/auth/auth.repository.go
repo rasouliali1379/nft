@@ -1,19 +1,18 @@
 package auth
 
 import (
-	"maskan/client/persist"
-	contract "maskan/src/auth/contract"
+	contract "maskan/contract"
 
 	"go.uber.org/fx"
 )
 
 type AuthRepository struct {
-	db persist.IPersist
+	db contract.IPersist
 }
 
 type AuthRepositoryParams struct {
 	fx.In
-	DB persist.IPersist
+	DB contract.IPersist
 }
 
 func NewAuthRepository(params AuthRepositoryParams) contract.IAuthRepository {

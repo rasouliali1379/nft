@@ -1,10 +1,14 @@
-FROM p-repo.780.ir/alpine:latest
+FROM golang:1.18 AS builder
 
-WORKDIR /server
+WORKDIR $GOPATH/src/mypackage/myapp/
+COPY . .
 
-COPY application .
+RUN go get -d -v
 
-EXPOSE 8080
-EXPOSE 8082
+RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/maskan
 
-CMD /server/application migrate init ; /server/application migrate up ; /server/application
+FROM scratch
+
+COPY --from=builder /go/bin/maskan /go/bin/maskan
+
+ENTRYPOINT ["/go/bin/hello"]

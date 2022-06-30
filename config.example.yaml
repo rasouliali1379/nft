@@ -56,7 +56,7 @@ Nats:
     - "nats://nats:4222"
 
 jwt:
-  secret: "xxxxxxxxxxxxx"
+  hmacSecret: "xxxxxxxxxxxxx"
 
 logstash:
   endpoint: "logstash:5000"

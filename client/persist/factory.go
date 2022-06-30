@@ -4,35 +4,30 @@ import (
 	"context"
 	"log"
 	"maskan/client/persist/postgres"
+	"maskan/contract"
 
 	"go.uber.org/fx"
 )
 
-type IPersist interface {
-	Init() error
-	Close() error
-}
+func New(lc fx.Lifecycle) contract.IPersist {
 
-func New(lc fx.Lifecycle) IPersist {
-
-	var db IPersist
+	var db postgres.Postgres
 	lc.Append(fx.Hook{
-		OnStart: func(_ context.Context) error {
-			db = postgres.Postgres{}
+		OnStart: func(c context.Context) error {
 
-			if err := db.Init(); err != nil {
+			if err := db.Init(c); err != nil {
 				return err
 			}
 			log.Println("postgres database loaded successfully")
 			return nil
 		},
-		OnStop: func(_ context.Context) error {
-			if err := db.Close(); err != nil {
+		OnStop: func(c context.Context) error {
+			if err := db.Close(c); err != nil {
 				return err
 			}
 			log.Println("postgres database connection closed")
 			return nil
 		},
 	})
-	return db
+	return &db
 }
