@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"log"
 	authdto "maskan/src/auth/dto"
 	"net/http"
 
@@ -33,14 +34,14 @@ var _ = Describe("Auth", func() {
 
 	Describe("SignUp", func() {
 		It("should register the user successfully", func() {
-			resp, _ := client.R().
+			resp, err := client.R().
 				SetBody(signUpDto).
 				Post(fmt.Sprintf("%s/signup", baseUrl))
 
-			// if err != nil {
-			// 	log.Println(err)
-			// }
-			// log.Println(resp)
+			if err != nil {
+				log.Println(err)
+			}
+			log.Println(resp)
 
 			By("The status code should be 201")
 			Expect(resp.StatusCode()).To(Equal(http.StatusCreated))
@@ -49,14 +50,14 @@ var _ = Describe("Auth", func() {
 
 	Describe("Login", func() {
 		It("should register the user successfully", func() {
-			resp, _ := client.R().
+			resp, err := client.R().
 				SetBody(loginDto).
 				Post(fmt.Sprintf("%s/login", baseUrl))
 
-			// if err != nil {
-			// 	log.Println(err)
-			// }
-			// log.Println(resp)
+			if err != nil {
+				log.Println(err)
+			}
+			log.Println(resp)
 
 			By("The status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
