@@ -1,0 +1,64 @@
+##########################################################################
+#                                                                        #
+#                          App Identity Part                         #
+#               For Further information, please check README             #
+#                                                                        #
+##########################################################################
+
+app:
+  name: "maskan"
+  baseURL: "/v1"
+  http:
+    host: "localhost"
+    port: "8080"
+    cors: ""
+##########################################################################
+#                                                                        #
+#                         Server Config Part                             #
+#       Please set the server parameters based on your own settings      #
+#                                                                        #
+##########################################################################
+
+jaeger:
+  hostPort: "jaeger:6831"
+  logSpans: true
+
+redis:
+  username: ""
+  password: ""
+  db: 0
+  host: "redis:6379"
+  logger: ""
+
+etcd:
+  username: "ruserasdasdasd"
+  password: "T0pS3cr3t"
+  watchlist:
+  endpoints:
+    - http://etcd0:2379
+
+postgres:
+  username: "admin"
+  password: "password"
+  host: "localhost:5432"
+  port: "5432"
+  schema: "maskan"
+
+Nats:
+  username: ""
+  password: ""
+  encoder: "json"
+  auth: false
+  allowReconnect: true
+  maxReconnect: 50
+  reconnectWait: 5
+  timeout: 3
+  endpoints:
+    - "nats://nats:4222"
+
+jwt:
+  hmacSecret: "e5d340b9abd4dd64a19ded8bbde1102257a038ed82485ed8d39615bbfb2d8bcb"
+
+logstash:
+  endpoint: "logstash:5000"
+  timeout: 5 # second
