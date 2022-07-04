@@ -59,7 +59,7 @@ var _ = Describe("Auth", func() {
 			// log.Println(resp)
 
 			By("The status code should be 200")
-			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
+			Expect(resp.StatusCode()).To(Equal(http.StatusCreated))
 		})
 	})
 })
