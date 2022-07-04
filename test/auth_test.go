@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"log"
+	"maskan/config"
 	authdto "maskan/src/auth/dto"
 	"net/http"
 
@@ -13,7 +14,7 @@ import (
 
 var _ = Describe("Auth", func() {
 	client := resty.New()
-	baseUrl := "http://localhost:8080/v1/auth"
+	baseUrl := fmt.Sprintf("http://%s:%s/v1/auth", config.C().App.Http.Host, config.C().App.Http.Port)
 	signUpDto := authdto.SignUpRequest{
 		FirstName:      "Ali",
 		LastName:       "Rasouli",
