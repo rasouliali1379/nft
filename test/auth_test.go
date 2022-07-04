@@ -12,7 +12,7 @@ import (
 
 var _ = Describe("Auth", func() {
 	client := resty.New()
-	baseUrl := "http://localhost:1212/v1/auth"
+	baseUrl := "http://localhost:8080/v1/auth"
 	signUpDto := authdto.SignUpRequest{
 		FirstName:      "Ali",
 		LastName:       "Rasouli",
@@ -59,7 +59,7 @@ var _ = Describe("Auth", func() {
 			// log.Println(resp)
 
 			By("The status code should be 200")
-			Expect(resp.StatusCode()).To(Equal(http.StatusCreated))
+			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
 		})
 	})
 })
