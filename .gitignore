@@ -11,6 +11,7 @@ api/swagger/*
 docker-compose-dev.yml
 .idea
 .vscode
+docs/*
 
 maskan
 main

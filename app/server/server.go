@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/swagger"
 	"go.uber.org/fx"
 )
 
@@ -28,6 +29,8 @@ func New(cc ControllerContainer) IServer {
 	app.Use(recover.New(recover.Config{
 		EnableStackTrace: true,
 	}))
+	app.Get("/swagger/*", swagger.HandlerDefault) // default
+	
 	router := app.Group(config.C().App.BaseURL)
 
 	authRouter := router.Group("/auth")

@@ -10,7 +10,8 @@ import (
 	merror "maskan/error"
 	"maskan/pkg/filper"
 	"maskan/pkg/validator"
-	model "maskan/src/auth/dto"
+	dto "maskan/src/auth/dto"
+	jwt "maskan/src/jwt/model"
 	user "maskan/src/user"
 )
 
@@ -32,6 +33,14 @@ func NewAuthController(params AuthControllerParams) contract.IAuthController {
 	}
 }
 
+// SignUp godoc
+// @Summary  sign up new user
+// @Tags     auth
+// @Accept   json
+// @Produce  json
+// @Param    message  body      dto.SignUpRequest  true  "sign up request body"
+// @Success  201      {object}  jwt.Jwt
+// @Router   /v1/auth/signup [post]
 func (a AuthController) SignUp(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[SignUp]")
 	defer span.Finish()
@@ -40,7 +49,7 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "you need to provide body in your request")
 	}
 
-	var dto model.SignUpRequest
+	var dto dto.SignUpRequest
 	if err := c.BodyParser(&dto); err != nil {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
@@ -50,7 +59,8 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 
 	}
-
+	
+	var response jwt.Jwt
 	response, err := a.authService.SignUp(ctx, user.MapSignUpDtoToUserModel(dto, ""))
 	if err != nil {
 
@@ -80,7 +90,7 @@ func (a AuthController) Login(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "you need to provide body in your request")
 	}
 
-	var dto model.LoginRequest
+	var dto dto.LoginRequest
 	if err := c.BodyParser(&dto); err != nil {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
@@ -111,7 +121,7 @@ func (a AuthController) Refresh(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "you need to provide body in your request")
 	}
 
-	var dto model.RefreshRequest
+	var dto dto.RefreshRequest
 	if err := c.BodyParser(&dto); err != nil {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
