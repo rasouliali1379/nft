@@ -9,12 +9,12 @@ import (
 type User struct {
 	ID        uuid.UUID
 	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time 
+	UpdatedAt *time.Time
+	DeletedAt *time.Time
 
-	NationalId     string
 	FirstName      string
 	LastName       string
+	NationalId     string
 	Email          string
 	PhoneNumber    string
 	Password       string

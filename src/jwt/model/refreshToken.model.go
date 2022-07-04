@@ -8,5 +8,5 @@ type RefreshToken struct {
 	Invoked   bool
 	UserId    string
 	CreatedAt time.Time
-	UpdatedAt time.Time
+	UpdatedAt *time.Time
 }

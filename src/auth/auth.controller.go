@@ -2,16 +2,16 @@ package auth
 
 import (
 	"errors"
+	"github.com/gofiber/fiber/v2"
+	"go.uber.org/fx"
 	"log"
 	"maskan/client/jtrace"
 	"maskan/contract"
 	merror "maskan/error"
 	"maskan/pkg/filper"
 	"maskan/pkg/validator"
-	model "maskan/src/auth/model"
-
-	"github.com/gofiber/fiber/v2"
-	"go.uber.org/fx"
+	model "maskan/src/auth/dto"
+	user "maskan/src/user"
 )
 
 type AuthController struct {
@@ -51,7 +51,7 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 
 	}
 
-	response, err := a.authService.SignUp(ctx, dto)
+	response, err := a.authService.SignUp(ctx, user.MapSignUpDtoToUserModel(dto, ""))
 	if err != nil {
 
 		if errors.Is(err, merror.ErrEmailExists) {
@@ -69,7 +69,7 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 		return filper.GetInternalError(c, "")
 	}
 
-	return c.JSON(response)
+	return c.Status(fiber.StatusCreated).JSON(response)
 }
 
 func (a AuthController) Login(c *fiber.Ctx) error {
@@ -91,7 +91,7 @@ func (a AuthController) Login(c *fiber.Ctx) error {
 
 	}
 
-	response, err := a.authService.Login(ctx, dto)
+	response, err := a.authService.Login(ctx, dto.Email, dto.Password)
 	if err != nil {
 		if errors.Is(err, merror.ErrInvalidCredentials) {
 			return filper.GetInvalidCredentialsError(c, "invalid credentials")

@@ -25,3 +25,14 @@ func GetInvalidCredentialsError(c *fiber.Ctx, message string) error {
 		"message": message,
 	})
 }
+
+func GetSuccessResponse(c *fiber.Ctx, message string) error {
+	
+	if len(message) < 1 {
+		message = "somthing unexpected happened"
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": message,
+	})
+}

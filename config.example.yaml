@@ -41,6 +41,7 @@ postgres:
   username: "admin"
   password: "password"
   host: "postgres:5432"
+  port: "5432"
   schema: "maskan"
 
 Nats:
@@ -56,7 +57,7 @@ Nats:
     - "nats://nats:4222"
 
 jwt:
-  hmacSecret: "xxxxxxxxxxxxx"
+  hmacSecret: "e5d340b9abd4dd64a19ded8bbde1102257a038ed82485ed8d39615bbfb2d8bcb"
 
 logstash:
   endpoint: "logstash:5000"

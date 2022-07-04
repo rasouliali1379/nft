@@ -1,14 +1,23 @@
-FROM golang:1.18 AS builder
+FROM golang:1.18 AS build
 
-WORKDIR $GOPATH/src/mypackage/myapp/
+WORKDIR /build
+
+
+RUN mkdir -p /tmp
+
 COPY . .
 
-RUN go get -d -v
-
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/maskan
+ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+RUN go build  -o maskan .
 
 FROM scratch
 
-COPY --from=builder /go/bin/maskan /go/bin/maskan
+COPY --from=build ["/build/config.yaml", "/"]
+COPY --from=build ["/build/maskan", "/"]
 
-ENTRYPOINT ["/go/bin/hello"]
+# Declare volumes to mount
+VOLUME /tmp
+
+EXPOSE 8080
+
+ENTRYPOINT ["/maskan"]

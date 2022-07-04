@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"log"
 	"maskan/app/server"
-	"maskan/client/elk"
-	"maskan/client/jtrace"
+	// "maskan/client/elk"
+	// "maskan/client/jtrace"
 	"maskan/client/persist"
-	"maskan/pkg/logger"
-	auth "maskan/src/auth"
+	// "maskan/pkg/logger"
+	"maskan/src/auth"
 	"maskan/src/jwt"
+	"maskan/src/otp"
 	"maskan/src/user"
 	"os"
 	"time"
@@ -32,15 +33,16 @@ func Start() {
 		fxNew := fx.New(
 			//		fx.Provide(broker.NewNats),
 			//		fx.Provide(redis.NewRedis),
-			fx.Provide(elk.NewLogStash),
+			// fx.Provide(elk.NewLogStash),
 			fx.Provide(persist.New),
 			auth.Module,
 			user.Module,
 			jwt.Module,
+			otp.Module,
 			fx.Provide(server.New),
 			fx.Invoke(config.InitConfigs),
-			fx.Invoke(logger.InitGlobalLogger),
-			fx.Invoke(jtrace.InitGlobalTracer),
+			// fx.Invoke(logger.InitGlobalLogger),
+			// fx.Invoke(jtrace.InitGlobalTracer),
 			fx.Invoke(serve),
 		)
 		startCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

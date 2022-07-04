@@ -9,14 +9,14 @@ import (
 type User struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key;"`
 	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time `sql:"index"`
+	UpdatedAt *time.Time
+	DeletedAt *time.Time 
 
-	NationalId     string `gorm:"unique"`
+	NationalId     string
 	FirstName      string
 	LastName       string
-	Email          string
-	PhoneNumber    string
+	Email          string 
+	PhoneNumber    string 
 	Password       string
 	LandLineNumber string
 	Province       string

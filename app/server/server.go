@@ -19,6 +19,7 @@ type Server struct {
 type ControllerContainer struct {
 	fx.In
 	AuthController contract.IAuthController
+	UserController contract.IUserController
 }
 
 func New(cc ControllerContainer) IServer {
@@ -32,6 +33,14 @@ func New(cc ControllerContainer) IServer {
 	authRouter := router.Group("/auth")
 	authRouter.Post("/signup", cc.AuthController.SignUp)
 	authRouter.Post("/login", cc.AuthController.Login)
+	authRouter.Post("/refresh", cc.AuthController.Refresh)
+
+	userRouter := router.Group("/user")
+	userRouter.Get("/", cc.UserController.GetAllUsers)
+	userRouter.Get("/:id", cc.UserController.GetUser)
+	userRouter.Post("/", cc.UserController.AddUser)
+	userRouter.Patch("/:id", cc.UserController.UpdateUser)
+	userRouter.Delete("/:id", cc.UserController.DeleteUser)
 
 	return &Server{
 		app: app,
@@ -43,6 +52,7 @@ func (s Server) ListenAndServe() error {
 		if err := s.app.Listen(fmt.Sprintf(":%s", config.C().App.Http.Port)); err != nil {
 			log.Println(err)
 		}
+		log.Println("http server started")
 	}()
 	return nil
 }

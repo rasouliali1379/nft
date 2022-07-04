@@ -7,56 +7,43 @@ import (
 	"maskan/contract"
 	merrors "maskan/error"
 	"maskan/pkg/crypt"
-	"maskan/src/auth/model"
 	jwt "maskan/src/jwt/model"
+	user "maskan/src/user/model"
 
 	"go.uber.org/fx"
 )
 
 type AuthService struct {
 	jwtService     contract.IJwtService
+	userService    contract.IUserService
 	authRepository contract.IAuthRepository
-	userRepository contract.IUserRepository
 }
 
 type AuthServiceParams struct {
 	fx.In
 	JwtService     contract.IJwtService
+	UserService    contract.IUserService
 	AuthRepository contract.IAuthRepository
-	UserRepository contract.IUserRepository
 }
 
 func NewAuthService(params AuthServiceParams) AuthService {
 	return AuthService{
 		jwtService:     params.JwtService,
 		authRepository: params.AuthRepository,
-		userRepository: params.UserRepository,
+		userService:    params.UserService,
 	}
 }
 
-func (a AuthService) SignUp(c context.Context, dto auth.SignUpRequest) (jwt.Jwt, error) {
+func (a AuthService) SignUp(c context.Context, userModel user.User) (jwt.Jwt, error) {
 	span, c := jtrace.T().SpanFromContext(c, "service[SignUp]")
 	defer span.Finish()
 
-	if err := a.userRepository.EmailExists(c, dto.Email); err != nil {
-		log.Println(err)
-		return jwt.Jwt{}, err
-	}
-
-	if err := a.userRepository.NationalIdExists(c, dto.NationalId); err != nil {
-		return jwt.Jwt{}, err
-	}
-
-	if err := a.userRepository.PhoneNumberExists(c, dto.PhoneNumber); err != nil {
-		return jwt.Jwt{}, err
-	}
-
-	userId, err := a.userRepository.AddUser(c, dto)
+	createdUser, err := a.userService.AddUser(c, userModel)
 	if err != nil {
 		return jwt.Jwt{}, err
 	}
 
-	token, err := a.jwtService.Generate(c, userId)
+	token, err := a.jwtService.Generate(c, createdUser.ID.String())
 	if err != nil {
 		return jwt.Jwt{}, err
 	}
@@ -64,20 +51,18 @@ func (a AuthService) SignUp(c context.Context, dto auth.SignUpRequest) (jwt.Jwt,
 	return token, nil
 }
 
-func (a AuthService) Login(c context.Context, dto auth.LoginRequest) (jwt.Jwt, error) {
+func (a AuthService) Login(c context.Context, email string, password string) (jwt.Jwt, error) {
 	span, c := jtrace.T().SpanFromContext(c, "service[Login]")
 	defer span.Finish()
 
-	userModel, err := a.userRepository.GetUser(c, dto.Email)
+	userModel, err := a.userService.GetUser(c, user.UserQuery{Email: email})
+	log.Println(userModel)
 	if err != nil {
+		log.Print(err)
 		return jwt.Jwt{}, err
 	}
 
-	newpass, _ := crypt.Hash(dto.Password)
-
-	log.Println(newpass, userModel.Password)
-
-	if !crypt.CompareHash(dto.Password, userModel.Password) {
+	if !crypt.CompareHash(password, userModel.Password) {
 		return jwt.Jwt{}, merrors.ErrInvalidCredentials
 	}
 

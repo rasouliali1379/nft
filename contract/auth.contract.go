@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/gofiber/fiber/v2"
-	auth "maskan/src/auth/model"
 	jwt "maskan/src/jwt/model"
+	user "maskan/src/user/model"
 )
 
 type IAuthController interface {
@@ -15,8 +15,8 @@ type IAuthController interface {
 }
 
 type IAuthService interface {
-	SignUp(context.Context, auth.SignUpRequest) (jwt.Jwt, error)
-	Login(context.Context, auth.LoginRequest) (jwt.Jwt, error)
+	SignUp(c context.Context, model user.User) (jwt.Jwt, error)
+	Login(c context.Context, email string, password string) (jwt.Jwt, error)
 }
 
 type IAuthRepository interface{}
