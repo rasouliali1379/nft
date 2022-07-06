@@ -8,7 +8,9 @@ import (
 	contract "maskan/contract"
 	merror "maskan/error"
 	"maskan/pkg/crypt"
+	userentity "maskan/src/user/entity"
 	usermodel "maskan/src/user/model"
+	"time"
 
 	"github.com/google/uuid"
 	"go.uber.org/fx"
@@ -29,49 +31,37 @@ func NewUserRepository(params UserRepositoryParams) contract.IUserRepository {
 	}
 }
 
-func (u UserRepository) NationalIdExists(c context.Context, nationalId string) error {
-	span, ctx := jtrace.T().SpanFromContext(c, "repository[NationalIdExists]")
+func (u UserRepository) UserExists(c context.Context, query usermodel.UserQuery) error {
+	span, c := jtrace.T().SpanFromContext(c, "repository[UserExists]")
 	defer span.Finish()
 
-	if err := u.db.UserExists(ctx, "national_id", nationalId); err != nil {
-		if errors.Is(err, merror.ErrRecordNotFound) {
-			return nil
+	if len(query.Email) > 0 {
+		if err := u.db.Exists(c, &userentity.User{}, map[string]any{"email": query.Email}); err != nil {
+			if errors.Is(err, merror.ErrRecordNotFound) {
+				return nil
+			}
+			return fmt.Errorf("error happened while searching for an email: %w", err)
 		}
-
-		return fmt.Errorf("error happened while searching for a national id: %w", err)
+		return nil
+	} else if len(query.NationalId) > 0 {
+		if err := u.db.Exists(c, &userentity.User{}, map[string]any{"national_id": query.NationalId}); err != nil {
+			if errors.Is(err, merror.ErrRecordNotFound) {
+				return nil
+			}
+			return fmt.Errorf("error happened while searching for a national id: %w", err)
+		}
+		return nil
+	} else if len(query.PhoneNumber) > 0 {
+		if err := u.db.Exists(c, &userentity.User{}, map[string]any{"phone_number": query.PhoneNumber}); err != nil {
+			if errors.Is(err, merror.ErrRecordNotFound) {
+				return nil
+			}
+			return fmt.Errorf("error happened while searching for a phone number: %w", err)
+		}
+		return nil
 	}
 
-	return merror.ErrNationalIdExists
-}
-
-func (u UserRepository) PhoneNumberExists(c context.Context, phoneNumber string) error {
-	span, ctx := jtrace.T().SpanFromContext(c, "repository[PhoneNumberExists]")
-	defer span.Finish()
-
-	if err := u.db.UserExists(ctx, "phone_number", phoneNumber); err != nil {
-		if errors.Is(err, merror.ErrRecordNotFound) {
-			return nil
-		}
-
-		return fmt.Errorf("error happened while searching for a phone number: %w", err)
-	}
-
-	return merror.ErrPhoneNumberExists
-}
-
-func (u UserRepository) EmailExists(c context.Context, email string) error {
-	span, ctx := jtrace.T().SpanFromContext(c, "repository[EmailExists]")
-	defer span.Finish()
-
-	if err := u.db.UserExists(ctx, "email", email); err != nil {
-		if errors.Is(err, merror.ErrRecordNotFound) {
-			return nil
-		}
-
-		return fmt.Errorf("error happened while searching for an email: %w", err)
-	}
-
-	return merror.ErrEmailExists
+	return merror.ErrNoQueries
 }
 
 func (u UserRepository) AddUser(c context.Context, model usermodel.User) (usermodel.User, error) {
@@ -88,57 +78,60 @@ func (u UserRepository) AddUser(c context.Context, model usermodel.User) (usermo
 	mappedEntity.ID = uuid.New()
 	mappedEntity.Password = password
 
-	userEntity, err := u.db.CreateUser(ctx, mappedEntity)
+	userEntity, err := u.db.Create(ctx, &mappedEntity)
 	if err != nil {
 		return usermodel.User{}, err
 	}
 
-	return mapUserEntityToModel(userEntity), nil
+	return mapUserEntityToModel(userEntity.(*userentity.User)), nil
 }
 
 func (u UserRepository) UpdateUser(c context.Context, userModel usermodel.User) (usermodel.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "repository[UpdateUser]")
 	defer span.Finish()
 
-	updatedUser, err := u.db.UpdateUser(c, mapUserModelToEntity(userModel))
+	data := createMapFromUserModel(userModel)
+
+	updatedUser, err := u.db.Update(c, &userentity.User{ID: userModel.ID}, data)
 	if err != nil {
 		return usermodel.User{}, fmt.Errorf("error happened while updating jwt: %w", err)
 	}
 
-	return mapUserEntityToModel(updatedUser), nil
+	return mapUserEntityToModel(updatedUser.(*userentity.User)), nil
 }
 
-func (u UserRepository) DeleteUser(c context.Context, userId string) error {
+func (u UserRepository) DeleteUser(c context.Context, userId uuid.UUID) error {
 	span, c := jtrace.T().SpanFromContext(c, "repository[DeleteUser]")
 	defer span.Finish()
 
-	if err := u.db.DeleteUser(c, userId); err != nil {
+	if _, err := u.db.Update(c, &userentity.User{ID: userId}, map[string]any{"deleted_at": time.Now()}); err != nil {
 		return fmt.Errorf("error happened while deleting a user: %w", err)
 	}
 	return nil
 }
 
 func (u UserRepository) GetUser(c context.Context, query usermodel.UserQuery) (usermodel.User, error) {
-	span, c := jtrace.T().SpanFromContext(c, "repository[GetUserByEmail]")
+	span, c := jtrace.T().SpanFromContext(c, "repository[GetUser]")
 	defer span.Finish()
-	if len(query.ID) > 0 {
-		user, err := u.db.GetUser(c, "id", query.ID)
+
+	if query.ID != uuid.Nil {
+		user, err := u.db.Get(c, &userentity.User{}, map[string]any{"id": query.ID})
 		if err != nil {
 			return usermodel.User{}, err
 		}
-		return mapUserEntityToModel(user), nil
+		return mapUserEntityToModel(user.(*userentity.User)), nil
 	} else if len(query.Email) > 0 {
-		user, err := u.db.GetUser(c, "email", query.Email)
+		user, err := u.db.Get(c, &userentity.User{}, map[string]any{"email": query.Email})
 		if err != nil {
 			return usermodel.User{}, err
 		}
-		return mapUserEntityToModel(user), nil
+		return mapUserEntityToModel(user.(*userentity.User)), nil
 	} else if len(query.NationalId) > 0 {
-		user, err := u.db.GetUser(c, "national_id", query.NationalId)
+		user, err := u.db.Get(c, &userentity.User{}, map[string]any{"national_id": query.NationalId})
 		if err != nil {
 			return usermodel.User{}, err
 		}
-		return mapUserEntityToModel(user), nil
+		return mapUserEntityToModel(user.(*userentity.User)), nil
 	}
 
 	return usermodel.User{}, merror.ErrNoQueries
@@ -148,11 +141,11 @@ func (u UserRepository) GetAllUsers(c context.Context) ([]usermodel.User, error)
 	span, c := jtrace.T().SpanFromContext(c, "repository[GetAllUsers]")
 	defer span.Finish()
 
-	userList, err := u.db.GetAllUsers(c, map[string]any{})
+	userList, err := u.db.Get(c, &[]userentity.User{}, map[string]any{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return createUserModelList(userList), nil
+	return createUserModelList(userList.(*[]userentity.User)), nil
 }

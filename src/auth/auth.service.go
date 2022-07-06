@@ -56,11 +56,11 @@ func (a AuthService) Login(c context.Context, email string, password string) (jw
 	defer span.Finish()
 
 	userModel, err := a.userService.GetUser(c, user.UserQuery{Email: email})
-	log.Println(userModel)
 	if err != nil {
-		log.Print(err)
 		return jwt.Jwt{}, err
 	}
+
+	log.Println(userModel)
 
 	if !crypt.CompareHash(password, userModel.Password) {
 		return jwt.Jwt{}, merrors.ErrInvalidCredentials

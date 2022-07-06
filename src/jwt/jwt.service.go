@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"context"
-	"log"
 	"maskan/client/jtrace"
 	"maskan/contract"
 	jerror "maskan/error"
@@ -33,18 +32,15 @@ func (j JwtService) Generate(c context.Context, userId string) (jwt.Jwt, error) 
 
 	accessToken, err := j.jwtRepository.GenerateToken(c, userId, time.Now().Add(time.Duration(time.Minute*30)))
 	if err != nil {
-		log.Println(err)
 		return jwt.Jwt{}, err
 	}
 
 	refreshToken, err := j.jwtRepository.GenerateToken(c, userId, time.Now().Add(time.Duration(time.Hour*720)))
 	if err != nil {
-		log.Println(err)
 		return jwt.Jwt{}, err
 	}
 
 	if err := j.jwtRepository.SaveToken(c, refreshToken, userId); err != nil {
-		log.Println(err)
 		return jwt.Jwt{}, err
 	}
 
@@ -86,7 +82,6 @@ func (j JwtService) Refresh(c context.Context, refreshToken string) (jwt.Jwt, er
 
 	refToken, err := j.jwtRepository.GenerateToken(c, token.UserId, time.Now().Add(time.Duration(time.Hour*720)))
 	if err != nil {
-		log.Println(err)
 		return jwt.Jwt{}, err
 	}
 

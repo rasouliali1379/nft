@@ -12,8 +12,10 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.10.1
+	github.com/swaggo/swag v1.8.1
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible
+	github.com/xlzd/gotp v0.0.0-20220110052318-fab697c03c2c
 	go.elastic.co/ecszap v1.0.0
 	go.uber.org/fx v1.16.0
 	go.uber.org/zap v1.17.0
@@ -34,6 +36,7 @@ require (
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/goombaio/namegenerator v0.0.0-20181006234301-989e774b106e // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.12.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
@@ -48,7 +51,6 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
-	github.com/swaggo/swag v1.8.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.37.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect

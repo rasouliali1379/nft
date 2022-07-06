@@ -1,7 +1,6 @@
 package user
 
 import (
-	"log"
 	"maskan/client/jtrace"
 	"maskan/contract"
 	"maskan/pkg/filper"
@@ -10,6 +9,7 @@ import (
 	user "maskan/src/user/model"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"go.uber.org/fx"
 )
 
@@ -49,7 +49,10 @@ func (u UserController) GetUser(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[GetUser]")
 	defer span.Finish()
 
-	userId := c.Params("id")
+	userId, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return filper.GetBadRequestError(c, "invalid user id")
+	}
 
 	userModel, err := u.userService.GetUser(ctx, user.UserQuery{
 		ID: userId,
@@ -80,19 +83,22 @@ func (u UserController) AddUser(c *fiber.Ctx) error {
 
 	}
 
-	userModel, err := u.userService.AddUser(ctx, MapSignUpDtoToUserModel(dto, ""))
+	userModel, err := u.userService.AddUser(ctx, MapSignUpDtoToUserModel(dto, uuid.UUID{}))
 	if err != nil {
 		return filper.GetInternalError(c, "")
 	}
 
-	return c.JSON(mapUserModelToResponse(userModel))
+	return c.Status(fiber.StatusCreated).JSON(mapUserModelToResponse(userModel))
 }
 
 func (u UserController) UpdateUser(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[UpdateUser]")
 	defer span.Finish()
 
-	userId := c.Params("id")
+	userId, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return filper.GetBadRequestError(c, "invalid user id")
+	}
 
 	if c.Body() == nil {
 		return filper.GetBadRequestError(c, "you need to provide body in your request")
@@ -105,7 +111,6 @@ func (u UserController) UpdateUser(c *fiber.Ctx) error {
 
 	userModel, err := u.userService.UpdateUser(ctx, MapSignUpDtoToUserModel(dto, userId))
 	if err != nil {
-		log.Println(err)
 		return filper.GetInternalError(c, "")
 	}
 
@@ -115,9 +120,12 @@ func (u UserController) DeleteUser(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[DeleteUser]")
 	defer span.Finish()
 
-	userId := c.Params("id")
+	userId, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return filper.GetBadRequestError(c, "invalid user id")
+	}
 
-	err := u.userService.DeleteUser(ctx, userId)
+	err = u.userService.DeleteUser(ctx, userId)
 	if err != nil {
 		return filper.GetInternalError(c, "")
 	}

@@ -8,11 +8,9 @@ import (
 	model "maskan/src/user/model"
 )
 
-func MapSignUpDtoToUserModel(dto auth.SignUpRequest, userId string) model.User {
-	id, _ := uuid.Parse(userId)
-
+func MapSignUpDtoToUserModel(dto auth.SignUpRequest, userId uuid.UUID) model.User {
 	return model.User{
-		ID:             id,
+		ID:             userId,
 		FirstName:      dto.FirstName,
 		LastName:       dto.LastName,
 		NationalId:     dto.NationalId,
@@ -40,22 +38,22 @@ func mapSignUpRequestModelToEntity(dto auth.SignUpRequest) entity.User {
 	}
 }
 
-func mapUserModelToEntity(userModel model.User) entity.User {
-	return entity.User{
-		ID:             userModel.ID,
-		NationalId:     userModel.NationalId,
-		FirstName:      userModel.FirstName,
-		LastName:       userModel.LastName,
-		Email:          userModel.Email,
-		PhoneNumber:    userModel.PhoneNumber,
-		LandLineNumber: userModel.LandLineNumber,
-		Province:       userModel.Province,
-		City:           userModel.City,
-		Address:        userModel.Address,
+func createMapFromUserModel(userModel model.User) map[string]any {
+	return map[string]any{
+		"id":               userModel.ID,
+		"national_id":      userModel.NationalId,
+		"first_name":       userModel.FirstName,
+		"last_name":        userModel.LastName,
+		"email":            userModel.Email,
+		"phone_number":     userModel.PhoneNumber,
+		"land_line_number": userModel.LandLineNumber,
+		"province":         userModel.Province,
+		"city":             userModel.City,
+		"address":          userModel.Address,
 	}
 }
 
-func mapUserEntityToModel(e entity.User) model.User {
+func mapUserEntityToModel(e *entity.User) model.User {
 	return model.User{
 		ID:        e.ID,
 		CreatedAt: e.CreatedAt,
@@ -117,9 +115,9 @@ func createUserList(users []model.User) dto.UserListDto {
 	}
 }
 
-func createUserModelList(users []entity.User) []model.User {
+func createUserModelList(users *[]entity.User) []model.User {
 	var userList []model.User
-	for _, userModel := range users {
+	for _, userModel := range *users {
 		userList = append(userList, model.User{
 			ID:             userModel.ID,
 			NationalId:     userModel.NationalId,
@@ -136,4 +134,19 @@ func createUserModelList(users []entity.User) []model.User {
 	}
 
 	return userList
+}
+
+func mapUserModelToEntity(userModel model.User) entity.User {
+	return entity.User{
+		ID:             userModel.ID,
+		NationalId:     userModel.NationalId,
+		FirstName:      userModel.FirstName,
+		LastName:       userModel.LastName,
+		Email:          userModel.Email,
+		PhoneNumber:    userModel.PhoneNumber,
+		LandLineNumber: userModel.LandLineNumber,
+		Province:       userModel.Province,
+		City:           userModel.City,
+		Address:        userModel.Address,
+	}
 }

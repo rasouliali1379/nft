@@ -2,7 +2,6 @@ package test
 
 import (
 	"fmt"
-	"log"
 	"maskan/config"
 	authdto "maskan/src/auth/dto"
 	"net/http"
@@ -14,7 +13,7 @@ import (
 
 var _ = Describe("Auth", func() {
 	client := resty.New()
-	baseUrl := fmt.Sprintf("http://%s:%s/v1/auth", config.C().App.Http.Host, config.C().App.Http.Port)
+	baseUrl := fmt.Sprintf("http://%s:%s/v1/auth/", config.C().App.Http.Host, config.C().App.Http.Port)
 	signUpDto := authdto.SignUpRequest{
 		FirstName:      "Ali",
 		LastName:       "Rasouli",
@@ -34,33 +33,31 @@ var _ = Describe("Auth", func() {
 	}
 
 	Describe("SignUp", func() {
-		It("should register the user successfully", func() {
+		It("should sign up new user successfully", func() {
 			resp, err := client.R().
 				SetBody(signUpDto).
-				Post(fmt.Sprintf("%s/signup", baseUrl))
+				Post(baseUrl + "signup")
 
 			if err != nil {
-				log.Println(err)
+				Expect(err).NotTo(HaveOccurred())
 			}
-			log.Println(resp)
 
-			By("The status code should be 201")
+			By("status code should be 201")
 			Expect(resp.StatusCode()).To(Equal(http.StatusCreated))
 		})
 	})
 
 	Describe("Login", func() {
-		It("should register the user successfully", func() {
+		It("should login the user successfully", func() {
 			resp, err := client.R().
 				SetBody(loginDto).
-				Post(fmt.Sprintf("%s/login", baseUrl))
+				Post(baseUrl + "login")
 
 			if err != nil {
-				log.Println(err)
+				Expect(err).NotTo(HaveOccurred())
 			}
-			log.Println(resp)
 
-			By("The status code should be 200")
+			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
 		})
 	})

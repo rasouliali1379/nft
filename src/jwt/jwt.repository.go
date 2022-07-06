@@ -88,7 +88,7 @@ func (j JwtRepository) SaveToken(c context.Context, token string, userId string)
 	span, c := jtrace.T().SpanFromContext(c, "repository[SaveToken]")
 	defer span.Finish()
 
-	err := j.db.SaveToken(c, jwt.Jwt{
+	_, err := j.db.Create(c, &jwt.Jwt{
 		Token:  token,
 		UserId: userId,
 	})
@@ -104,19 +104,22 @@ func (j JwtRepository) RetrieveToken(c context.Context, token string) (model.Ref
 	span, c := jtrace.T().SpanFromContext(c, "repository[RetrieveToken]")
 	defer span.Finish()
 
-	refresh, err := j.db.RetrieveToken(c, token)
+	refresh, err := j.db.Get(c, &jwt.Jwt{}, map[string]any{
+		"token": token,
+	})
 	if err != nil {
 		return model.RefreshToken{}, fmt.Errorf("error happened while retrieving token from database: %w", err)
 	}
 
-	return mapJwtEntityToRefreshTokenModel(refresh), nil
+	return mapJwtEntityToRefreshTokenModel(refresh.(jwt.Jwt)), nil
 }
 
 func (j JwtRepository) UpdateToken(c context.Context, id uint, token string) error {
 	span, c := jtrace.T().SpanFromContext(c, "repository[UpdateToken]")
 	defer span.Finish()
 
-	if err := j.db.UpdateToken(c, id, token); err != nil {
+	_, err := j.db.Update(c, &jwt.Jwt{ID: id}, map[string]any{"token": token})
+	if err != nil {
 		return fmt.Errorf("error happened while updating jwt: %w", err)
 	}
 

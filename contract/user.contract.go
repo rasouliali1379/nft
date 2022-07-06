@@ -2,8 +2,10 @@ package contract
 
 import (
 	"context"
-	"github.com/gofiber/fiber/v2"
 	model "maskan/src/user/model"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type IUserController interface {
@@ -19,16 +21,14 @@ type IUserService interface {
 	GetUser(c context.Context, query model.UserQuery) (model.User, error)
 	AddUser(c context.Context, userModel model.User) (model.User, error)
 	UpdateUser(c context.Context, userModel model.User) (model.User, error)
-	DeleteUser(c context.Context, userId string) error
+	DeleteUser(c context.Context, userId uuid.UUID) error
 }
 
 type IUserRepository interface {
-	NationalIdExists(c context.Context, nationalId string) error
-	PhoneNumberExists(c context.Context, phoneNumber string) error
-	EmailExists(c context.Context, email string) error
+	UserExists(c context.Context, query model.UserQuery) error
 	AddUser(c context.Context, user model.User) (model.User, error)
 	UpdateUser(c context.Context, userModel model.User) (model.User, error)
-	DeleteUser(c context.Context, userId string) error
+	DeleteUser(c context.Context, userId uuid.UUID) error
 	GetUser(c context.Context, query model.UserQuery) (model.User, error)
 	GetAllUsers(c context.Context) ([]model.User, error)
 }

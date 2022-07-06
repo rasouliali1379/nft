@@ -7,6 +7,7 @@ import (
 
 	model "maskan/src/user/model"
 
+	"github.com/google/uuid"
 	"go.uber.org/fx"
 )
 
@@ -50,15 +51,15 @@ func (u UserService) AddUser(c context.Context, userModel model.User) (model.Use
 	span, c := jtrace.T().SpanFromContext(c, "service[AddUser]")
 	defer span.Finish()
 
-	if err := u.userRepository.EmailExists(c, userModel.Email); err != nil {
+	if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.Email}); err != nil {
 		return model.User{}, err
 	}
 
-	if err := u.userRepository.NationalIdExists(c, userModel.NationalId); err != nil {
+	if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.NationalId}); err != nil {
 		return model.User{}, err
 	}
 
-	if err := u.userRepository.PhoneNumberExists(c, userModel.PhoneNumber); err != nil {
+	if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.PhoneNumber}); err != nil {
 		return model.User{}, err
 	}
 
@@ -75,7 +76,7 @@ func (u UserService) UpdateUser(c context.Context, userModel model.User) (model.
 	defer span.Finish()
 
 	userRecord, err := u.GetUser(c, model.UserQuery{
-		ID: userModel.ID.String(),
+		ID: userModel.ID,
 	})
 
 	if err != nil {
@@ -83,19 +84,19 @@ func (u UserService) UpdateUser(c context.Context, userModel model.User) (model.
 	}
 
 	if userRecord.Email != userModel.Email && len(userModel.Email) > 0 {
-		if err := u.userRepository.EmailExists(c, userModel.Email); err != nil {
+		if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.Email}); err != nil {
 			return model.User{}, err
 		}
 	}
 
 	if userRecord.NationalId != userModel.NationalId && len(userModel.NationalId) > 0 {
-		if err := u.userRepository.NationalIdExists(c, userModel.NationalId); err != nil {
+		if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.NationalId}); err != nil {
 			return model.User{}, err
 		}
 	}
 
 	if userRecord.PhoneNumber != userModel.PhoneNumber && len(userModel.PhoneNumber) > 0 {
-		if err := u.userRepository.PhoneNumberExists(c, userModel.PhoneNumber); err != nil {
+		if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.PhoneNumber}); err != nil {
 			return model.User{}, err
 		}
 	}
@@ -106,7 +107,7 @@ func (u UserService) UpdateUser(c context.Context, userModel model.User) (model.
 	}
 
 	userRecord, err = u.GetUser(c, model.UserQuery{
-		ID: userModel.ID.String(),
+		ID: userModel.ID,
 	})
 
 	if err != nil {
@@ -116,7 +117,7 @@ func (u UserService) UpdateUser(c context.Context, userModel model.User) (model.
 	return userRecord, nil
 }
 
-func (u UserService) DeleteUser(c context.Context, userId string) error {
+func (u UserService) DeleteUser(c context.Context, userId uuid.UUID) error {
 	span, c := jtrace.T().SpanFromContext(c, "service[DeleteUser]")
 	defer span.Finish()
 

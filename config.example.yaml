@@ -59,6 +59,9 @@ Nats:
 jwt:
   hmacSecret: "e5d340b9abd4dd64a19ded8bbde1102257a038ed82485ed8d39615bbfb2d8bcb"
 
+otp:
+  secret: "WPaZprvmhgjJQIJCQUBmIu3kZjod4wrV"
+
 logstash:
   endpoint: "logstash:5000"
   timeout: 5 # second

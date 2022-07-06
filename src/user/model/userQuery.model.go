@@ -1,7 +1,10 @@
 package user
 
+import "github.com/google/uuid"
+
 type UserQuery struct {
-	ID         string
-	Email      string
-	NationalId string
+	ID          uuid.UUID
+	Email       string
+	NationalId  string
+	PhoneNumber string
 }

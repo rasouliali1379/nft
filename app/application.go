@@ -13,6 +13,7 @@ import (
 	"maskan/src/jwt"
 	"maskan/src/otp"
 	"maskan/src/user"
+	"maskan/src/email"
 	"os"
 	"time"
 
@@ -39,6 +40,7 @@ func Start() {
 			user.Module,
 			jwt.Module,
 			otp.Module,
+			email.Module,
 			fx.Provide(server.New),
 			fx.Invoke(config.InitConfigs),
 			// fx.Invoke(logger.InitGlobalLogger),

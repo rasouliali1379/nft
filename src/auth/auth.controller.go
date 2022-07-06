@@ -2,9 +2,6 @@ package auth
 
 import (
 	"errors"
-	"github.com/gofiber/fiber/v2"
-	"go.uber.org/fx"
-	"log"
 	"maskan/client/jtrace"
 	"maskan/contract"
 	merror "maskan/error"
@@ -13,6 +10,10 @@ import (
 	dto "maskan/src/auth/dto"
 	jwt "maskan/src/jwt/model"
 	user "maskan/src/user"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+	"go.uber.org/fx"
 )
 
 type AuthController struct {
@@ -59,9 +60,9 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 
 	}
-	
+
 	var response jwt.Jwt
-	response, err := a.authService.SignUp(ctx, user.MapSignUpDtoToUserModel(dto, ""))
+	response, err := a.authService.SignUp(ctx, user.MapSignUpDtoToUserModel(dto, uuid.UUID{}))
 	if err != nil {
 
 		if errors.Is(err, merror.ErrEmailExists) {
@@ -82,6 +83,14 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(response)
 }
 
+// Login godoc
+// @Summary  login user
+// @Tags     auth
+// @Accept   json
+// @Produce  json
+// @Param    message  body      dto.LoginRequest  true  "login request body"
+// @Success  200      {object}  jwt.Jwt
+// @Router   /v1/auth/login [post]
 func (a AuthController) Login(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[Login]")
 	defer span.Finish()
@@ -106,7 +115,6 @@ func (a AuthController) Login(c *fiber.Ctx) error {
 		if errors.Is(err, merror.ErrInvalidCredentials) {
 			return filper.GetInvalidCredentialsError(c, "invalid credentials")
 		}
-		log.Println(err)
 		return filper.GetInternalError(c, "")
 	}
 
@@ -137,7 +145,6 @@ func (a AuthController) Refresh(c *fiber.Ctx) error {
 		if errors.Is(err, merror.ErrInvalidCredentials) {
 			return filper.GetInvalidCredentialsError(c, "invalid credentials")
 		}
-		log.Println(err)
 		return filper.GetInternalError(c, "")
 	}
 

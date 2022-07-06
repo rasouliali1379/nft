@@ -29,6 +29,7 @@ type Config struct {
 	Postgres Database `yaml:"database" required:"true"`
 	Nats     NATS     `yaml:"nats" required:"true"`
 	JWT      JWT      `yaml:"jwt" json:"jwt" required:"true"`
+	Otp      Otp      `yaml:"otp" json:"otp" required:"true"`
 	Logstash Logstash `yaml:"logstash" required:"true"`
 }
 
