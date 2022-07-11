@@ -2,18 +2,23 @@ package contract
 
 import (
 	"context"
-	"maskan/src/email/model"
+	model "maskan/src/email/model"
+
+	"github.com/google/uuid"
 )
 
 type IEmailRepository interface {
-	GetEmail(c context.Context, email string) (email.Email, error)
-	GetEmailByUserId(c context.Context, email string) (email.Email, error)
-	AddEmail(c context.Context, userId string, email string) (email.Email, error)
-	UpdateEmail(c context.Context, id uint) (email.Email, error)
+	Get(c context.Context, conditions map[string]any) (model.Email, error)
+	Add(c context.Context, userId uuid.UUID, email string) (model.Email, error)
+	Update(c context.Context, emailModel model.Email) (model.Email, error)
+	Send(c context.Context, receivers []string, message string) error
+	Exists(c context.Context, conditions map[string]any) error
 }
 
 type IEmailService interface {
-	// GetUserEmail(c context.Context, userId string) (email.Email, error)
-	// AddEmail(c context.Context, userId string, email string) (email.Email, error)
-	// AproveEmail(c context.Context, userId string, email string) (email.Email, error)
+	EmailExists(c context.Context, email string) error
+	GetUserEmail(c context.Context, userId uuid.UUID) (model.Email, error)
+	AddEmail(c context.Context, userId uuid.UUID, email string) (model.Email, error)
+	AproveEmail(c context.Context, userId uuid.UUID, email string) (model.Email, error)
+	SendOtpEmail(c context.Context, emailId uint) error
 }

@@ -8,7 +8,6 @@ import (
 	"maskan/pkg/filper"
 	"maskan/pkg/validator"
 	dto "maskan/src/auth/dto"
-	jwt "maskan/src/jwt/model"
 	user "maskan/src/user"
 
 	"github.com/gofiber/fiber/v2"
@@ -28,7 +27,7 @@ type AuthControllerParams struct {
 }
 
 func NewAuthController(params AuthControllerParams) contract.IAuthController {
-	return AuthController{
+	return &AuthController{
 		authService: params.AuthService,
 		jwtService:  params.JwtService,
 	}
@@ -43,26 +42,25 @@ func NewAuthController(params AuthControllerParams) contract.IAuthController {
 // @Success  201      {object}  jwt.Jwt
 // @Router   /v1/auth/signup [post]
 func (a AuthController) SignUp(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[SignUp]")
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "AuthController[SignUp]")
 	defer span.Finish()
 
 	if c.Body() == nil {
 		return filper.GetBadRequestError(c, "you need to provide body in your request")
 	}
 
-	var dto dto.SignUpRequest
-	if err := c.BodyParser(&dto); err != nil {
+	var signUpRequest dto.SignUpRequest
+	if err := c.BodyParser(&signUpRequest); err != nil {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
 
-	errs := validator.Validate(dto)
+	errs := validator.Validate(signUpRequest)
 	if len(errs) > 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 
 	}
 
-	var response jwt.Jwt
-	response, err := a.authService.SignUp(ctx, user.MapSignUpDtoToUserModel(dto, uuid.UUID{}))
+	token, err := a.authService.SignUp(ctx, user.MapSignUpDtoToUserModel(signUpRequest, uuid.UUID{}))
 	if err != nil {
 
 		if errors.Is(err, merror.ErrEmailExists) {
@@ -80,7 +78,7 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 		return filper.GetInternalError(c, "")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(response)
+	return c.Status(fiber.StatusCreated).JSON(dto.OtpToken{Token: token})
 }
 
 // Login godoc
@@ -92,7 +90,7 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 // @Success  200      {object}  jwt.Jwt
 // @Router   /v1/auth/login [post]
 func (a AuthController) Login(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[Login]")
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "AuthController[Login]")
 	defer span.Finish()
 
 	if c.Body() == nil {
@@ -122,7 +120,7 @@ func (a AuthController) Login(c *fiber.Ctx) error {
 }
 
 func (a AuthController) Refresh(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[Refresh]")
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "AuthController[Refresh]")
 	defer span.Finish()
 
 	if c.Body() == nil {
@@ -141,6 +139,35 @@ func (a AuthController) Refresh(c *fiber.Ctx) error {
 	}
 
 	response, err := a.jwtService.Refresh(ctx, dto.RefreshToken)
+	if err != nil {
+		if errors.Is(err, merror.ErrInvalidCredentials) {
+			return filper.GetInvalidCredentialsError(c, "invalid credentials")
+		}
+		return filper.GetInternalError(c, "")
+	}
+
+	return c.JSON(response)
+}
+
+func (a AuthController) VerifyEmail(c *fiber.Ctx) error {
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "AuthController[VerifyEmail]")
+	defer span.Finish()
+
+	if c.Body() == nil {
+		return filper.GetBadRequestError(c, "you need to provide body in your request")
+	}
+
+	var request dto.VerifyEmailRequest
+	if err := c.BodyParser(&request); err != nil {
+		return filper.GetBadRequestError(c, "invalid body data")
+	}
+
+	errs := validator.Validate(request)
+	if len(errs) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errs)
+	}
+
+	response, err := a.authService.VerifyEmail(ctx, request.Token, request.Code)
 	if err != nil {
 		if errors.Is(err, merror.ErrInvalidCredentials) {
 			return filper.GetInvalidCredentialsError(c, "invalid credentials")

@@ -31,6 +31,7 @@ type Config struct {
 	JWT      JWT      `yaml:"jwt" json:"jwt" required:"true"`
 	Otp      Otp      `yaml:"otp" json:"otp" required:"true"`
 	Logstash Logstash `yaml:"logstash" required:"true"`
+	Smtp     Smtp     `yaml:"smtp" required:"true"`
 }
 
 func Validate(c any) error {

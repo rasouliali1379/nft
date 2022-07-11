@@ -18,17 +18,17 @@ type IUserController interface {
 
 type IUserService interface {
 	GetAllUsers(c context.Context) ([]model.User, error)
-	GetUser(c context.Context, query model.UserQuery) (model.User, error)
+	GetUser(c context.Context, conditions map[string]any) (model.User, error)
 	AddUser(c context.Context, userModel model.User) (model.User, error)
 	UpdateUser(c context.Context, userModel model.User) (model.User, error)
 	DeleteUser(c context.Context, userId uuid.UUID) error
 }
 
 type IUserRepository interface {
-	UserExists(c context.Context, query model.UserQuery) error
-	AddUser(c context.Context, user model.User) (model.User, error)
-	UpdateUser(c context.Context, userModel model.User) (model.User, error)
-	DeleteUser(c context.Context, userId uuid.UUID) error
-	GetUser(c context.Context, query model.UserQuery) (model.User, error)
-	GetAllUsers(c context.Context) ([]model.User, error)
+	Exists(c context.Context, conditions map[string]any) error
+	Add(c context.Context, user model.User) (model.User, error)
+	Update(c context.Context, userModel model.User) (model.User, error)
+	Delete(c context.Context, userId uuid.UUID) error
+	Get(c context.Context, conditions map[string]any) (model.User, error)
+	GetAll(c context.Context) ([]model.User, error)
 }

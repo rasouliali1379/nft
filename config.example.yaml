@@ -65,3 +65,7 @@ otp:
 logstash:
   endpoint: "logstash:5000"
   timeout: 5 # second
+
+smtp:
+  host: "smtp.gmail.com"
+  port: "578"

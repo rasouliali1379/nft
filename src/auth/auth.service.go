@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"log"
 	"maskan/client/jtrace"
 	"maskan/contract"
 	merrors "maskan/error"
@@ -14,53 +13,64 @@ import (
 )
 
 type AuthService struct {
-	jwtService     contract.IJwtService
-	userService    contract.IUserService
-	authRepository contract.IAuthRepository
+	jwtService   contract.IJwtService
+	userService  contract.IUserService
+	emailService contract.IEmailService
+	otpService   contract.IOtpService
 }
 
 type AuthServiceParams struct {
 	fx.In
-	JwtService     contract.IJwtService
-	UserService    contract.IUserService
-	AuthRepository contract.IAuthRepository
+	JwtService   contract.IJwtService
+	UserService  contract.IUserService
+	EmailService contract.IEmailService
+	OtpService   contract.IOtpService
 }
 
-func NewAuthService(params AuthServiceParams) AuthService {
+func NewAuthService(params AuthServiceParams) contract.IAuthService {
 	return AuthService{
-		jwtService:     params.JwtService,
-		authRepository: params.AuthRepository,
-		userService:    params.UserService,
+		jwtService:   params.JwtService,
+		userService:  params.UserService,
+		emailService: params.EmailService,
+		otpService:   params.OtpService,
 	}
 }
 
-func (a AuthService) SignUp(c context.Context, userModel user.User) (jwt.Jwt, error) {
-	span, c := jtrace.T().SpanFromContext(c, "service[SignUp]")
+func (a AuthService) SignUp(c context.Context, userModel user.User) (string, error) {
+	span, c := jtrace.T().SpanFromContext(c, "AuthService[SignUp]")
 	defer span.Finish()
 
 	createdUser, err := a.userService.AddUser(c, userModel)
 	if err != nil {
-		return jwt.Jwt{}, err
+		return "", err
 	}
 
-	token, err := a.jwtService.Generate(c, createdUser.ID.String())
+	addedEmail, err := a.emailService.AddEmail(c, createdUser.ID, userModel.Email)
 	if err != nil {
-		return jwt.Jwt{}, err
+		return "", err
+	}
+
+	err = a.emailService.SendOtpEmail(c, addedEmail.ID)
+	if err != nil {
+		return "", err
+	}
+
+	token, err := a.jwtService.GenereteOtpToken(c, createdUser.ID.String())
+	if err != nil {
+		return "", err
 	}
 
 	return token, nil
 }
 
 func (a AuthService) Login(c context.Context, email string, password string) (jwt.Jwt, error) {
-	span, c := jtrace.T().SpanFromContext(c, "service[Login]")
+	span, c := jtrace.T().SpanFromContext(c, "AuthService[Login]")
 	defer span.Finish()
 
-	userModel, err := a.userService.GetUser(c, user.UserQuery{Email: email})
+	userModel, err := a.userService.GetUser(c, map[string]any{"email": email})
 	if err != nil {
 		return jwt.Jwt{}, err
 	}
-
-	log.Println(userModel)
 
 	if !crypt.CompareHash(password, userModel.Password) {
 		return jwt.Jwt{}, merrors.ErrInvalidCredentials
@@ -72,4 +82,30 @@ func (a AuthService) Login(c context.Context, email string, password string) (jw
 	}
 
 	return token, nil
+}
+
+func (a AuthService) VerifyEmail(c context.Context, token string, code string) (jwt.Jwt, error) {
+	span, c := jtrace.T().SpanFromContext(c, "AuthService[VerifyEmail]")
+	defer span.Finish()
+
+	userId, err := a.jwtService.Validate(c, token)
+	if err != nil {
+		return jwt.Jwt{}, err
+	}
+
+	emailModel, err := a.emailService.GetUserEmail(c, userId)
+	if err != nil {
+		return jwt.Jwt{}, err
+	}
+
+	if err = a.otpService.ValidateCode(c, code, emailModel.ID); err != nil {
+		return jwt.Jwt{}, err
+	}
+
+	jwtToken, err := a.jwtService.Generate(c, userId.String())
+	if err != nil {
+		return jwt.Jwt{}, err
+	}
+
+	return jwtToken, nil
 }

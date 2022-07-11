@@ -12,6 +12,6 @@ type Email struct {
 	UpdatedAt *time.Time
 
 	UserId   uuid.UUID
-	OtpCode  string
+	Email    string
 	Verified bool
 }

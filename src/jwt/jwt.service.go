@@ -8,6 +8,7 @@ import (
 	jwt "maskan/src/jwt/model"
 	"time"
 
+	"github.com/google/uuid"
 	"go.uber.org/fx"
 )
 
@@ -27,20 +28,20 @@ func NewJwtService(params JwtServiceParams) contract.IJwtService {
 }
 
 func (j JwtService) Generate(c context.Context, userId string) (jwt.Jwt, error) {
-	span, c := jtrace.T().SpanFromContext(c, "service[Generate]")
+	span, c := jtrace.T().SpanFromContext(c, "JwtService[Generate]")
 	defer span.Finish()
 
-	accessToken, err := j.jwtRepository.GenerateToken(c, userId, time.Now().Add(time.Duration(time.Minute*30)))
+	accessToken, err := j.jwtRepository.Generate(c, userId, time.Now().Add(time.Duration(time.Minute*30)))
 	if err != nil {
 		return jwt.Jwt{}, err
 	}
 
-	refreshToken, err := j.jwtRepository.GenerateToken(c, userId, time.Now().Add(time.Duration(time.Hour*720)))
+	refreshToken, err := j.jwtRepository.Generate(c, userId, time.Now().Add(time.Duration(time.Hour*720)))
 	if err != nil {
 		return jwt.Jwt{}, err
 	}
 
-	if err := j.jwtRepository.SaveToken(c, refreshToken, userId); err != nil {
+	if err := j.jwtRepository.Add(c, refreshToken, userId); err != nil {
 		return jwt.Jwt{}, err
 	}
 
@@ -50,23 +51,23 @@ func (j JwtService) Generate(c context.Context, userId string) (jwt.Jwt, error) 
 	}, nil
 }
 
-func (j JwtService) Validate(c context.Context, accessToken string) error {
-	span, c := jtrace.T().SpanFromContext(c, "service[Validate]")
+func (j JwtService) Validate(c context.Context, accessToken string) (uuid.UUID, error) {
+	span, c := jtrace.T().SpanFromContext(c, "JwtService[Validate]")
 	defer span.Finish()
 
-	_, err := j.jwtRepository.Validate(c, accessToken)
+	userId, err := j.jwtRepository.Validate(c, accessToken)
 	if err != nil {
-		return err
+		return uuid.UUID{}, err
 	}
 
-	return nil
+	return userId, nil
 }
 
 func (j JwtService) Refresh(c context.Context, refreshToken string) (jwt.Jwt, error) {
-	span, c := jtrace.T().SpanFromContext(c, "service[Refresh]")
+	span, c := jtrace.T().SpanFromContext(c, "JwtService[Refresh]")
 	defer span.Finish()
 
-	token, err := j.jwtRepository.RetrieveToken(c, refreshToken)
+	token, err := j.jwtRepository.Get(c, refreshToken)
 	if err != nil {
 		return jwt.Jwt{}, err
 	}
@@ -75,17 +76,17 @@ func (j JwtService) Refresh(c context.Context, refreshToken string) (jwt.Jwt, er
 		return jwt.Jwt{}, jerror.ErrTokenInvoked
 	}
 
-	accessToken, err := j.jwtRepository.GenerateToken(c, token.UserId, time.Now().Add(time.Duration(time.Minute*30)))
+	accessToken, err := j.jwtRepository.Generate(c, token.UserId, time.Now().Add(time.Duration(time.Minute*30)))
 	if err != nil {
 		return jwt.Jwt{}, err
 	}
 
-	refToken, err := j.jwtRepository.GenerateToken(c, token.UserId, time.Now().Add(time.Duration(time.Hour*720)))
+	refToken, err := j.jwtRepository.Generate(c, token.UserId, time.Now().Add(time.Duration(time.Hour*720)))
 	if err != nil {
 		return jwt.Jwt{}, err
 	}
 
-	if err := j.jwtRepository.UpdateToken(c, token.Id, refToken); err != nil {
+	if err := j.jwtRepository.Update(c, token.Id, refToken); err != nil {
 		return jwt.Jwt{}, err
 	}
 
@@ -93,4 +94,16 @@ func (j JwtService) Refresh(c context.Context, refreshToken string) (jwt.Jwt, er
 		AccessToken:  accessToken,
 		RefreshToken: refToken,
 	}, nil
+}
+
+func (j JwtService) GenereteOtpToken(c context.Context, userId string) (string, error) {
+	span, c := jtrace.T().SpanFromContext(c, "JwtService[GenereteOtpToken]")
+	defer span.Finish()
+
+	otpToken, err := j.jwtRepository.Generate(c, userId, time.Now().Add(time.Duration(time.Minute*5)))
+	if err != nil {
+		return "", err
+	}
+
+	return otpToken, nil
 }

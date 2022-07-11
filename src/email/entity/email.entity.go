@@ -12,6 +12,6 @@ type Email struct {
 	UpdatedAt *time.Time
 
 	UserId   uuid.UUID `gorm:"type:uuid;"`
-	OtpCode  string    `gorm:"not null"`
+	Email    string    `gorm:"not null"`
 	Verified bool      `gorm:"default:false"`
 }

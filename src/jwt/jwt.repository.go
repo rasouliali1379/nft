@@ -13,6 +13,7 @@ import (
 	"time"
 
 	jwtlib "github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 	"go.uber.org/fx"
 )
 
@@ -31,8 +32,8 @@ func NewJwtRepository(params JwtRepositoryParams) contract.IJwtRepository {
 	}
 }
 
-func (j JwtRepository) GenerateToken(c context.Context, userId string, expirationTime time.Time) (string, error) {
-	span, c := jtrace.T().SpanFromContext(c, "repository[GenerateToken]")
+func (j JwtRepository) Generate(c context.Context, userId string, expirationTime time.Time) (string, error) {
+	span, c := jtrace.T().SpanFromContext(c, "JwtRepository[Generate]")
 	defer span.Finish()
 
 	token := jwtlib.NewWithClaims(jwtlib.SigningMethodHS256, jwtlib.StandardClaims{
@@ -48,8 +49,8 @@ func (j JwtRepository) GenerateToken(c context.Context, userId string, expiratio
 	return tokenString, nil
 }
 
-func (j JwtRepository) Validate(c context.Context, token string) (string, error) {
-	span, c := jtrace.T().SpanFromContext(c, "repository[Validate]")
+func (j JwtRepository) Validate(c context.Context, token string) (uuid.UUID, error) {
+	span, c := jtrace.T().SpanFromContext(c, "JwtRepository[Validate]")
 	defer span.Finish()
 
 	parsedToken, err := jwtlib.Parse(token, func(token *jwtlib.Token) (interface{}, error) {
@@ -63,29 +64,34 @@ func (j JwtRepository) Validate(c context.Context, token string) (string, error)
 	if err != nil {
 		if ve, ok := err.(*jwtlib.ValidationError); ok {
 			if ve.Errors&jwtlib.ValidationErrorMalformed != 0 {
-				return "", jerror.ErrTokenMalformed
+				return uuid.UUID{}, jerror.ErrTokenMalformed
 			} else if ve.Errors&(jwtlib.ValidationErrorExpired|jwtlib.ValidationErrorNotValidYet) != 0 {
-				return "", jerror.ErrTokenExpired
+				return uuid.UUID{}, jerror.ErrTokenExpired
 			}
 		}
-		return "", fmt.Errorf("error happened while parsing token: %w", err)
+		return uuid.UUID{}, fmt.Errorf("error happened while parsing token: %w", err)
 	}
 
 	if !parsedToken.Valid {
-		return "", jerror.ErrInvalidToken
+		return uuid.UUID{}, jerror.ErrInvalidToken
 	}
 
 	claims, ok := parsedToken.Claims.(jwtlib.StandardClaims)
 
 	if !ok {
-		return "", errors.New("error while casting claims")
+		return uuid.UUID{}, errors.New("error while casting claims")
 	}
 
-	return claims.Id, nil
+	userId, err := uuid.Parse(claims.Id)
+	if err != nil {
+		return uuid.UUID{}, fmt.Errorf("error happened while parsing user id: %w", err)
+	}
+
+	return userId, nil
 }
 
-func (j JwtRepository) SaveToken(c context.Context, token string, userId string) error {
-	span, c := jtrace.T().SpanFromContext(c, "repository[SaveToken]")
+func (j JwtRepository) Add(c context.Context, token string, userId string) error {
+	span, c := jtrace.T().SpanFromContext(c, "JwtRepository[Add]")
 	defer span.Finish()
 
 	_, err := j.db.Create(c, &jwt.Jwt{
@@ -100,8 +106,8 @@ func (j JwtRepository) SaveToken(c context.Context, token string, userId string)
 	return nil
 }
 
-func (j JwtRepository) RetrieveToken(c context.Context, token string) (model.RefreshToken, error) {
-	span, c := jtrace.T().SpanFromContext(c, "repository[RetrieveToken]")
+func (j JwtRepository) Get(c context.Context, token string) (model.RefreshToken, error) {
+	span, c := jtrace.T().SpanFromContext(c, "JwtRepository[Get]")
 	defer span.Finish()
 
 	refresh, err := j.db.Get(c, &jwt.Jwt{}, map[string]any{
@@ -114,8 +120,8 @@ func (j JwtRepository) RetrieveToken(c context.Context, token string) (model.Ref
 	return mapJwtEntityToRefreshTokenModel(refresh.(jwt.Jwt)), nil
 }
 
-func (j JwtRepository) UpdateToken(c context.Context, id uint, token string) error {
-	span, c := jtrace.T().SpanFromContext(c, "repository[UpdateToken]")
+func (j JwtRepository) Update(c context.Context, id uint, token string) error {
+	span, c := jtrace.T().SpanFromContext(c, "JwtRepository[Update]")
 	defer span.Finish()
 
 	_, err := j.db.Update(c, &jwt.Jwt{ID: id}, map[string]any{"token": token})

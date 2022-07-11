@@ -7,4 +7,5 @@ var (
 	ErrEmailExists       = errors.New("email already exists")
 	ErrPhoneNumberExists = errors.New("phone number already exists")
 	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrEmailDoesntBelongToUser = errors.New("email doesn't belong to user")
 )

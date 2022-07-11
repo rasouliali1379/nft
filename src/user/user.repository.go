@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"errors"
-	"fmt"
+
 	"maskan/client/jtrace"
 	contract "maskan/contract"
 	merror "maskan/error"
@@ -31,40 +31,20 @@ func NewUserRepository(params UserRepositoryParams) contract.IUserRepository {
 	}
 }
 
-func (u UserRepository) UserExists(c context.Context, query usermodel.UserQuery) error {
+func (u UserRepository) Exists(c context.Context, conditions map[string]any) error {
 	span, c := jtrace.T().SpanFromContext(c, "repository[UserExists]")
 	defer span.Finish()
 
-	if len(query.Email) > 0 {
-		if err := u.db.Exists(c, &userentity.User{}, map[string]any{"email": query.Email}); err != nil {
-			if errors.Is(err, merror.ErrRecordNotFound) {
-				return nil
-			}
-			return fmt.Errorf("error happened while searching for an email: %w", err)
+	if err := u.db.Exists(c, &userentity.User{}, conditions); err != nil {
+		if errors.Is(err, merror.ErrRecordNotFound) {
+			return nil
 		}
-		return nil
-	} else if len(query.NationalId) > 0 {
-		if err := u.db.Exists(c, &userentity.User{}, map[string]any{"national_id": query.NationalId}); err != nil {
-			if errors.Is(err, merror.ErrRecordNotFound) {
-				return nil
-			}
-			return fmt.Errorf("error happened while searching for a national id: %w", err)
-		}
-		return nil
-	} else if len(query.PhoneNumber) > 0 {
-		if err := u.db.Exists(c, &userentity.User{}, map[string]any{"phone_number": query.PhoneNumber}); err != nil {
-			if errors.Is(err, merror.ErrRecordNotFound) {
-				return nil
-			}
-			return fmt.Errorf("error happened while searching for a phone number: %w", err)
-		}
-		return nil
+		return err
 	}
-
-	return merror.ErrNoQueries
+	return nil
 }
 
-func (u UserRepository) AddUser(c context.Context, model usermodel.User) (usermodel.User, error) {
+func (u UserRepository) Add(c context.Context, model usermodel.User) (usermodel.User, error) {
 	span, ctx := jtrace.T().SpanFromContext(c, "repository[AddUser]")
 	defer span.Finish()
 
@@ -86,7 +66,7 @@ func (u UserRepository) AddUser(c context.Context, model usermodel.User) (usermo
 	return mapUserEntityToModel(userEntity.(*userentity.User)), nil
 }
 
-func (u UserRepository) UpdateUser(c context.Context, userModel usermodel.User) (usermodel.User, error) {
+func (u UserRepository) Update(c context.Context, userModel usermodel.User) (usermodel.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "repository[UpdateUser]")
 	defer span.Finish()
 
@@ -94,50 +74,34 @@ func (u UserRepository) UpdateUser(c context.Context, userModel usermodel.User) 
 
 	updatedUser, err := u.db.Update(c, &userentity.User{ID: userModel.ID}, data)
 	if err != nil {
-		return usermodel.User{}, fmt.Errorf("error happened while updating jwt: %w", err)
+		return usermodel.User{}, err
 	}
 
 	return mapUserEntityToModel(updatedUser.(*userentity.User)), nil
 }
 
-func (u UserRepository) DeleteUser(c context.Context, userId uuid.UUID) error {
+func (u UserRepository) Delete(c context.Context, userId uuid.UUID) error {
 	span, c := jtrace.T().SpanFromContext(c, "repository[DeleteUser]")
 	defer span.Finish()
 
 	if _, err := u.db.Update(c, &userentity.User{ID: userId}, map[string]any{"deleted_at": time.Now()}); err != nil {
-		return fmt.Errorf("error happened while deleting a user: %w", err)
+		return err
 	}
 	return nil
 }
 
-func (u UserRepository) GetUser(c context.Context, query usermodel.UserQuery) (usermodel.User, error) {
+func (u UserRepository) Get(c context.Context, conditions map[string]any) (usermodel.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "repository[GetUser]")
 	defer span.Finish()
 
-	if query.ID != uuid.Nil {
-		user, err := u.db.Get(c, &userentity.User{}, map[string]any{"id": query.ID})
-		if err != nil {
-			return usermodel.User{}, err
-		}
-		return mapUserEntityToModel(user.(*userentity.User)), nil
-	} else if len(query.Email) > 0 {
-		user, err := u.db.Get(c, &userentity.User{}, map[string]any{"email": query.Email})
-		if err != nil {
-			return usermodel.User{}, err
-		}
-		return mapUserEntityToModel(user.(*userentity.User)), nil
-	} else if len(query.NationalId) > 0 {
-		user, err := u.db.Get(c, &userentity.User{}, map[string]any{"national_id": query.NationalId})
-		if err != nil {
-			return usermodel.User{}, err
-		}
-		return mapUserEntityToModel(user.(*userentity.User)), nil
+	user, err := u.db.Get(c, &userentity.User{}, conditions)
+	if err != nil {
+		return usermodel.User{}, err
 	}
-
-	return usermodel.User{}, merror.ErrNoQueries
+	return mapUserEntityToModel(user.(*userentity.User)), nil
 }
 
-func (u UserRepository) GetAllUsers(c context.Context) ([]usermodel.User, error) {
+func (u UserRepository) GetAll(c context.Context) ([]usermodel.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "repository[GetAllUsers]")
 	defer span.Finish()
 

@@ -6,7 +6,6 @@ import (
 	"maskan/pkg/filper"
 	"maskan/pkg/validator"
 	authdto "maskan/src/auth/dto"
-	user "maskan/src/user/model"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -54,9 +53,7 @@ func (u UserController) GetUser(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "invalid user id")
 	}
 
-	userModel, err := u.userService.GetUser(ctx, user.UserQuery{
-		ID: userId,
-	})
+	userModel, err := u.userService.GetUser(ctx, map[string]any{"id": userId})
 	if err != nil {
 		return filper.GetInternalError(c, "")
 	}

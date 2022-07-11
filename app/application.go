@@ -5,15 +5,17 @@ import (
 	"fmt"
 	"log"
 	"maskan/app/server"
+
 	// "maskan/client/elk"
 	// "maskan/client/jtrace"
+	"maskan/client/jtrace"
 	"maskan/client/persist"
 	// "maskan/pkg/logger"
 	"maskan/src/auth"
+	"maskan/src/email"
 	"maskan/src/jwt"
 	"maskan/src/otp"
 	"maskan/src/user"
-	"maskan/src/email"
 	"os"
 	"time"
 
@@ -44,7 +46,7 @@ func Start() {
 			fx.Provide(server.New),
 			fx.Invoke(config.InitConfigs),
 			// fx.Invoke(logger.InitGlobalLogger),
-			// fx.Invoke(jtrace.InitGlobalTracer),
+			fx.Invoke(jtrace.InitGlobalTracer),
 			fx.Invoke(serve),
 		)
 		startCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

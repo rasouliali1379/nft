@@ -2,11 +2,16 @@ package email
 
 import (
 	"context"
-	"go.uber.org/fx"
+	"fmt"
 	"maskan/client/jtrace"
+	"maskan/config"
 	"maskan/contract"
 	entity "maskan/src/email/entity"
 	model "maskan/src/email/model"
+	"net/smtp"
+
+	"github.com/google/uuid"
+	"go.uber.org/fx"
 )
 
 type EmailRepository struct {
@@ -24,38 +29,64 @@ func NewEmailRepository(params EmailRepositoryParams) contract.IEmailRepository 
 	}
 }
 
-func (e EmailRepository) GetEmail(c context.Context, email string) (model.Email, error) {
-	span, c := jtrace.T().SpanFromContext(c, "repository[GetEmail]")
+func (e EmailRepository) Get(c context.Context, conditions map[string]any) (model.Email, error) {
+	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Get]")
 	defer span.Finish()
 
-	emailRecord, err := e.db.Get(c, &entity.Email{}, map[string]any{"email": email})
+	emailRecord, err := e.db.Get(c, &entity.Email{}, conditions)
 	if err != nil {
 		return model.Email{}, err
 	}
 
 	return mapEmailEntityToModel(emailRecord.(*entity.Email)), nil
 }
-
-func (e EmailRepository) GetEmailByUserId(c context.Context, id string) (model.Email, error) {
-	span, c := jtrace.T().SpanFromContext(c, "repository[GetEmailByUserId]")
+func (e EmailRepository) Add(c context.Context, userId uuid.UUID, email string) (model.Email, error) {
+	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Add]")
 	defer span.Finish()
 
-	emailRecord, err := e.db.Get(c, &entity.Email{}, map[string]any{"id": id})
+	emailEntity, err := e.db.Create(c, &entity.Email{UserId: userId, Email: email})
 	if err != nil {
 		return model.Email{}, err
 	}
 
-	return mapEmailEntityToModel(emailRecord.(*entity.Email)), nil
+	return mapEmailEntityToModel(emailEntity.(*entity.Email)), nil
 }
 
-func (e EmailRepository) AddEmail(c context.Context, userId string, email string) (model.Email, error) {
-	span, c := jtrace.T().SpanFromContext(c, "repository[AddEmail]")
+func (e EmailRepository) Update(c context.Context, emailModel model.Email) (model.Email, error) {
+	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Update]")
 	defer span.Finish()
-	return model.Email{}, nil
+
+	data := createMapFromEmailModel(emailModel)
+
+	updatedEmail, err := e.db.Update(c, &entity.Email{ID: emailModel.ID}, data)
+	if err != nil {
+		return model.Email{}, fmt.Errorf("error happened while updating email: %w", err)
+	}
+
+	return mapEmailEntityToModel(updatedEmail.(*entity.Email)), nil
 }
 
-func (e EmailRepository) UpdateEmail(c context.Context, id uint) (model.Email, error) {
-	span, c := jtrace.T().SpanFromContext(c, "repository[UpdateEmail]")
+func (e EmailRepository) Send(c context.Context, receivers []string, message string) error {
+	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Send]")
 	defer span.Finish()
-	return model.Email{}, nil
+
+	from := config.C().Smtp.From
+	password := config.C().Smtp.Password
+	smtpHost := config.C().Smtp.Host
+	smtpPort := config.C().Smtp.Port
+
+	auth := smtp.PlainAuth("", from, password, smtpHost)
+
+	return smtp.SendMail(smtpHost+":"+smtpPort, auth, from, receivers, []byte(message))
+}
+
+func (e EmailRepository) Exists(c context.Context, conditions map[string]any) error {
+	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Exists]")
+	defer span.Finish()
+
+	if err := e.db.Exists(c, &entity.Email{}, conditions); err != nil {
+		return err
+	}
+
+	return nil
 }

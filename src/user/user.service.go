@@ -14,18 +14,21 @@ import (
 type UserService struct {
 	jwtService     contract.IJwtService
 	userRepository contract.IUserRepository
+	emailService   contract.IEmailService
 }
 
 type UserServiceParams struct {
 	fx.In
 	JwtService     contract.IJwtService
 	UserRepository contract.IUserRepository
+	EmailService   contract.IEmailService
 }
 
 func NewUserService(params UserServiceParams) UserService {
 	return UserService{
 		jwtService:     params.JwtService,
 		userRepository: params.UserRepository,
+		emailService:   params.EmailService,
 	}
 }
 
@@ -33,7 +36,7 @@ func (u UserService) GetAllUsers(c context.Context) ([]model.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "service[GetAllUsers]")
 	defer span.Finish()
 
-	userList, err := u.userRepository.GetAllUsers(c)
+	userList, err := u.userRepository.GetAll(c)
 	if err != nil {
 		return nil, err
 	}
@@ -41,30 +44,34 @@ func (u UserService) GetAllUsers(c context.Context) ([]model.User, error) {
 	return userList, nil
 }
 
-func (u UserService) GetUser(c context.Context, query model.UserQuery) (model.User, error) {
+func (u UserService) GetUser(c context.Context, conditions map[string]any) (model.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "service[GetUser]")
 	defer span.Finish()
-	return u.userRepository.GetUser(c, query)
+	return u.userRepository.Get(c, conditions)
 }
 
 func (u UserService) AddUser(c context.Context, userModel model.User) (model.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "service[AddUser]")
 	defer span.Finish()
 
-	if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.Email}); err != nil {
+	if err := u.emailService.EmailExists(c, userModel.Email); err != nil {
 		return model.User{}, err
 	}
 
-	if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.NationalId}); err != nil {
+	if err := u.userRepository.Exists(c, map[string]any{"national_id": userModel.NationalId}); err != nil {
 		return model.User{}, err
 	}
 
-	if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.PhoneNumber}); err != nil {
+	if err := u.userRepository.Exists(c, map[string]any{"phone_number": userModel.PhoneNumber}); err != nil {
 		return model.User{}, err
 	}
 
-	newUser, err := u.userRepository.AddUser(c, userModel)
+	newUser, err := u.userRepository.Add(c, userModel)
 	if err != nil {
+		return model.User{}, err
+	}
+
+	if _, err = u.emailService.AddEmail(c, newUser.ID, userModel.Email); err != nil {
 		return model.User{}, err
 	}
 
@@ -75,41 +82,36 @@ func (u UserService) UpdateUser(c context.Context, userModel model.User) (model.
 	span, c := jtrace.T().SpanFromContext(c, "service[UpdateUser]")
 	defer span.Finish()
 
-	userRecord, err := u.GetUser(c, model.UserQuery{
-		ID: userModel.ID,
-	})
+	userRecord, err := u.GetUser(c, map[string]any{"id": userModel.ID})
 
 	if err != nil {
 		return model.User{}, err
 	}
 
 	if userRecord.Email != userModel.Email && len(userModel.Email) > 0 {
-		if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.Email}); err != nil {
+		if err := u.userRepository.Exists(c, map[string]any{"email": userModel.Email}); err != nil {
 			return model.User{}, err
 		}
 	}
 
 	if userRecord.NationalId != userModel.NationalId && len(userModel.NationalId) > 0 {
-		if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.NationalId}); err != nil {
+		if err := u.userRepository.Exists(c, map[string]any{"national_id": userModel.NationalId}); err != nil {
 			return model.User{}, err
 		}
 	}
 
 	if userRecord.PhoneNumber != userModel.PhoneNumber && len(userModel.PhoneNumber) > 0 {
-		if err := u.userRepository.UserExists(c, model.UserQuery{Email: userModel.PhoneNumber}); err != nil {
+		if err := u.userRepository.Exists(c, map[string]any{"phone_number": userModel.PhoneNumber}); err != nil {
 			return model.User{}, err
 		}
 	}
 
-	_, err = u.userRepository.UpdateUser(c, userModel)
+	_, err = u.userRepository.Update(c, userModel)
 	if err != nil {
 		return model.User{}, err
 	}
 
-	userRecord, err = u.GetUser(c, model.UserQuery{
-		ID: userModel.ID,
-	})
-
+	userRecord, err = u.GetUser(c, map[string]any{"id": userModel.ID})
 	if err != nil {
 		return model.User{}, err
 	}
@@ -121,9 +123,9 @@ func (u UserService) DeleteUser(c context.Context, userId uuid.UUID) error {
 	span, c := jtrace.T().SpanFromContext(c, "service[DeleteUser]")
 	defer span.Finish()
 
-	if _, err := u.GetUser(c, model.UserQuery{ID: userId}); err != nil {
+	if _, err := u.GetUser(c, map[string]any{"id": userId}); err != nil {
 		return err
 	}
 
-	return u.userRepository.DeleteUser(c, userId)
+	return u.userRepository.Delete(c, userId)
 }

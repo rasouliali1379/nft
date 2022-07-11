@@ -10,4 +10,5 @@ type IPersist interface {
 	Get(c context.Context, entity any, conditions map[string]any) (any, error)
 	Create(c context.Context, entity any) (any, error)
 	Update(c context.Context, entity any, data map[string]any) (any, error)
+	Count(c context.Context, entity any, conditions map[string]any) (int, error)
 }

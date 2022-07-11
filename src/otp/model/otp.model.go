@@ -1,9 +1,9 @@
-package entity
+package otp
 
 import "time"
 
 type Otp struct {
-	Id        uint `gorm:"primaryKey;autoIncrement:true"`
+	Id        uint
 	CreatedAt time.Time
 
 	Code        string

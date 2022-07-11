@@ -20,7 +20,7 @@ app:
 ##########################################################################
 
 jaeger:
-  hostPort: "jaeger:6831"
+  hostPort: "localhost:1214"
   logSpans: true
 
 redis:
