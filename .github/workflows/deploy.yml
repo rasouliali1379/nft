@@ -22,7 +22,7 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           source: "."
-          target: "/maskan"
+          target: "/home/samrd/maskan"
 
       - name: Executing remote command
         uses: appleboy/ssh-action@master
