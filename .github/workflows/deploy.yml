@@ -12,11 +12,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Build executable
-        uses: actions/setup-go@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version-file: "go.mod"
-        run: go mod download && go mod vendor
+          go-version-file: 'go.mod'
+      - run: go mod download 
+      - run: go mod vendor
 
       - name: Copy repository contents via scp
         uses: appleboy/scp-action@master
