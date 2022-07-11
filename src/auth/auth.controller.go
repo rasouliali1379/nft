@@ -121,6 +121,14 @@ func (a AuthController) Login(c *fiber.Ctx) error {
 	return c.JSON(response)
 }
 
+// Refresh godoc
+// @Summary  refresh user token 
+// @Tags     auth
+// @Accept   json
+// @Produce  json
+// @Param    message  body      dto.RefreshRequest  true  "refresh token request body"
+// @Success  200      {object}  jwt.Jwt
+// @Router   /v1/auth/refresh [post]
 func (a AuthController) Refresh(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "AuthController[Refresh]")
 	defer span.Finish()
@@ -151,6 +159,14 @@ func (a AuthController) Refresh(c *fiber.Ctx) error {
 	return c.JSON(response)
 }
 
+// VerifyEmail godoc
+// @Summary  verify user email
+// @Tags     auth
+// @Accept   json
+// @Produce  json
+// @Param    message  body      dto.VerifyEmailRequest  true  "verify email request body"
+// @Success  200      {object}  jwt.Jwt
+// @Router   /v1/auth/verify-email [post]
 func (a AuthController) VerifyEmail(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "AuthController[VerifyEmail]")
 	defer span.Finish()

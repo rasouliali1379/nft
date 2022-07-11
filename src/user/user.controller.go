@@ -6,6 +6,7 @@ import (
 	"maskan/pkg/filper"
 	"maskan/pkg/validator"
 	authdto "maskan/src/auth/dto"
+	user "maskan/src/user/dto"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -33,6 +34,13 @@ func NewUserController(params UserControllerParams) contract.IUserController {
 	}
 }
 
+// GetAllUsers godoc
+// @Summary  get users list
+// @Tags     user
+// @Accept   json
+// @Produce  json
+// @Success  200  {object}  user.UserListDto
+// @Router   /v1/user [get]
 func (u UserController) GetAllUsers(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[GetAllUsers]")
 	defer span.Finish()
@@ -41,9 +49,19 @@ func (u UserController) GetAllUsers(c *fiber.Ctx) error {
 	if err != nil {
 		return filper.GetInternalError(c, "")
 	}
-	return c.JSON(createUserList(users))
+
+	var userList user.UserListDto = createUserList(users)
+	return c.JSON(userList)
 }
 
+// GetUser godoc
+// @Summary  get sigle user
+// @Tags     user
+// @Accept   json
+// @Produce  json
+// @Param    id   path      int  true  "user id"
+// @Success  200      {object}  user.UserDto
+// @Router   /v1/user/{id} [get]
 func (u UserController) GetUser(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[GetUser]")
 	defer span.Finish()
@@ -61,6 +79,14 @@ func (u UserController) GetUser(c *fiber.Ctx) error {
 	return c.JSON(mapUserModelToResponse(userModel))
 }
 
+// AddUser godoc
+// @Summary  add user
+// @Tags     user
+// @Accept   json
+// @Produce  json
+// @Param    message  body      authdto.SignUpRequest  true  "add user request body"
+// @Success  200      {object}  user.UserDto
+// @Router   /v1/user [post]
 func (u UserController) AddUser(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[AddUser]")
 	defer span.Finish()
@@ -88,6 +114,15 @@ func (u UserController) AddUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(mapUserModelToResponse(userModel))
 }
 
+// UpdateUser godoc
+// @Summary  update existing user
+// @Tags     user
+// @Accept   json
+// @Produce  json
+// @Param    id       path      int                    true  "user id that will be updated"
+// @Param    message  body      authdto.SignUpRequest  true  "update user request body"
+// @Success  200  {object}  user.UserDto
+// @Router   /v1/user/{id} [patch]
 func (u UserController) UpdateUser(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[UpdateUser]")
 	defer span.Finish()
@@ -113,6 +148,15 @@ func (u UserController) UpdateUser(c *fiber.Ctx) error {
 
 	return c.JSON(mapUserModelToResponse(userModel))
 }
+
+// DeleteUser godoc
+// @Summary  delete existing user
+// @Tags     user
+// @Accept   json
+// @Produce  json
+// @Param    id   path      int     true  "user id that will be deleted"
+// @Success  200  {string}  string  "user deleted successfully"
+// @Router   /v1/user/{id} [delete]
 func (u UserController) DeleteUser(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[DeleteUser]")
 	defer span.Finish()
