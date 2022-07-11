@@ -38,7 +38,8 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            cd maskan 
+            cd maskan
+            docker compose down
             docker compose build
             docker compose up -d jaeger
             docker compose up -d postgres
