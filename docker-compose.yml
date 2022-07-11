@@ -31,47 +31,47 @@ services:
   # -----------------------------
   # etcd servcie 0
   # -----------------------------
-  etcd0:
-    image: 'bitnami/etcd:latest'
-    environment:
-      - ALLOW_NONE_AUTHENTICATION=yes
-      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd0:2379
-    ports:
-      - 4379:2379
-      - 4380:2380
-    networks:
-      - customnetwork
+  # etcd0:
+  #   image: 'bitnami/etcd:latest'
+  #   environment:
+  #     - ALLOW_NONE_AUTHENTICATION=yes
+  #     - ETCD_ADVERTISE_CLIENT_URLS=http://etcd0:2379
+  #   ports:
+  #     - 4379:2379
+  #     - 4380:2380
+  #   networks:
+  #     - customnetwork
       
   # -----------------------------
   # redis database
   # -----------------------------
-  redis:
-    hostname: redis
-    image: redis
-    networks:
-      - customnetwork
+  # redis:
+  #   hostname: redis
+  #   image: redis
+  #   networks:
+  #     - customnetwork
 
   # -----------------------------
   # redis UI
   # -----------------------------
-  redis-commander:
-    hostname: redis-commander
-    image: rediscommander/redis-commander:latest
-    restart: always
-    environment:
-      - REDIS_HOSTS=local:redis:6379
-    ports:
-      - "9251:8081"
-    networks:
-      - customnetwork
+  # redis-commander:
+  #   hostname: redis-commander
+  #   image: rediscommander/redis-commander:latest
+  #   restart: always
+  #   environment:
+  #     - REDIS_HOSTS=local:redis:6379
+  #   ports:
+  #     - "9251:8081"
+  #   networks:
+  #     - customnetwork
   
   # -----------------------------
   # nats message broker
   # -----------------------------
-  nats:
-    image: nats
-    networks:
-      - customnetwork
+  # nats:
+  #   image: nats
+  #   networks:
+  #     - customnetwork
    
   # -----------------------------
   # postgres database
@@ -93,27 +93,27 @@ services:
   # -----------------------------
   # admin ui 
   # -----------------------------
-  adminer:
-    image: adminer
-    ports:
-      - 1200:8080
-    networks:
-      - customnetwork
+  # adminer:
+  #   image: adminer
+  #   ports:
+  #     - 1200:8080
+  #   networks:
+  #     - customnetwork
   # -----------------------------
   # logstash
   # -----------------------------
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.16.2
-    restart: unless-stopped
-    networks: 
-      - customnetwork
+  # logstash:
+  #   image: docker.elastic.co/logstash/logstash:7.16.2
+  #   restart: unless-stopped
+  #   networks: 
+  #     - customnetwork
 
 # -----------------------------
 # networks
 # -----------------------------
 networks:
   customnetwork:
-    external: true
+
 # -----------------------------
 # volumes
 # -----------------------------
