@@ -39,6 +39,7 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             cd maskan 
-            docker compose up -d jeager
+            docker compose build
+            docker compose up -d jaeger
             docker compose up -d postgres
             docker compose up -d maskan
