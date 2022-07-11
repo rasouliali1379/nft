@@ -8,6 +8,7 @@ import (
 	"maskan/pkg/filper"
 	"maskan/pkg/validator"
 	dto "maskan/src/auth/dto"
+	jwt "maskan/src/jwt/model"
 	user "maskan/src/user"
 
 	"github.com/gofiber/fiber/v2"
@@ -39,7 +40,7 @@ func NewAuthController(params AuthControllerParams) contract.IAuthController {
 // @Accept   json
 // @Produce  json
 // @Param    message  body      dto.SignUpRequest  true  "sign up request body"
-// @Success  201      {object}  jwt.Jwt
+// @Success  201      {object}  dto.OtpToken
 // @Router   /v1/auth/signup [post]
 func (a AuthController) SignUp(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "AuthController[SignUp]")
@@ -108,6 +109,7 @@ func (a AuthController) Login(c *fiber.Ctx) error {
 
 	}
 
+	var response jwt.Jwt
 	response, err := a.authService.Login(ctx, dto.Email, dto.Password)
 	if err != nil {
 		if errors.Is(err, merror.ErrInvalidCredentials) {
