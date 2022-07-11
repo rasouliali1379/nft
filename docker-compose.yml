@@ -7,7 +7,7 @@ services:
   maskan:
     build: 
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - .:/go/src/application
     networks:
