@@ -25,7 +25,7 @@ type EmailServiceParams struct {
 }
 
 func NewEmailService(params EmailServiceParams) contract.IEmailService {
-	return &EmailService{
+	return EmailService{
 		emailRepository: params.EmailRepository,
 		otpService:      params.OtpService,
 	}

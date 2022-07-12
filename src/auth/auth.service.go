@@ -13,25 +13,25 @@ import (
 )
 
 type AuthService struct {
+	emailService contract.IEmailService
 	jwtService   contract.IJwtService
 	userService  contract.IUserService
-	emailService contract.IEmailService
 	otpService   contract.IOtpService
 }
 
 type AuthServiceParams struct {
 	fx.In
+	EmailService contract.IEmailService
 	JwtService   contract.IJwtService
 	UserService  contract.IUserService
-	EmailService contract.IEmailService
 	OtpService   contract.IOtpService
 }
 
 func NewAuthService(params AuthServiceParams) contract.IAuthService {
 	return &AuthService{
+		emailService: params.EmailService,
 		jwtService:   params.JwtService,
 		userService:  params.UserService,
-		emailService: params.EmailService,
 		otpService:   params.OtpService,
 	}
 }

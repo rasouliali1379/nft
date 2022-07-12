@@ -7,6 +7,7 @@ import (
 	"maskan/config"
 	"maskan/contract"
 	"maskan/src/auth"
+	"maskan/src/email"
 	"maskan/src/jwt"
 	"maskan/src/otp"
 	"maskan/src/user"
@@ -15,15 +16,18 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"go.uber.org/fx"
+	"go.uber.org/fx/fxtest"
 )
 
 func TestTest(t *testing.T) {
-	fx.New(
+	fxtest.New(
+		t,
 		fx.Provide(persist.New),
 		auth.Module,
 		user.Module,
 		jwt.Module,
 		otp.Module,
+		email.Module,
 		fx.Provide(server.New),
 		fx.Invoke(config.InitConfigs),
 		fx.Invoke(migrate),
