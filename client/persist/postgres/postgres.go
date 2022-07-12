@@ -76,7 +76,7 @@ func (p *Postgres) Exists(c context.Context, entity any, conditions map[string]a
 }
 
 func (p *Postgres) Get(c context.Context, entity any, conditions map[string]any) (any, error) {
-	span, ctx := jtrace.T().SpanFromContext(c, "posPostgrestgres[Get]")
+	span, ctx := jtrace.T().SpanFromContext(c, "Postgres[Get]")
 	defer span.Finish()
 
 	tx := p.db.WithContext(ctx).Where("deleted_at is null")
@@ -86,6 +86,9 @@ func (p *Postgres) Get(c context.Context, entity any, conditions map[string]any)
 	}
 
 	if err := tx.Find(entity).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, merror.ErrRecordNotFound
+		}
 		return nil, fmt.Errorf("error happened while searching for a record: %w", err)
 	}
 
@@ -103,7 +106,7 @@ func (p *Postgres) Create(c context.Context, entity any) (any, error) {
 	return entity, nil
 }
 
-func (p *Postgres) Update(c context.Context, entity any, data map[string]any) (any, error) {
+func (p *Postgres) Update(c context.Context, entity any, data any) (any, error) {
 	span, ctx := jtrace.T().SpanFromContext(c, "Postgres[Update]")
 	defer span.Finish()
 
@@ -131,4 +134,24 @@ func (p *Postgres) Count(c context.Context, entity any, conditions map[string]an
 	}
 
 	return int(count), nil
+}
+
+func (p *Postgres) Last(c context.Context, entity any, conditions map[string]any) (any, error) {
+	span, ctx := jtrace.T().SpanFromContext(c, "Postgres[Last]")
+	defer span.Finish()
+
+	tx := p.db.WithContext(ctx).Where("deleted_at is null")
+
+	for column, value := range conditions {
+		tx = tx.Where(fmt.Sprintf("%s = ?", column), value)
+	}
+
+	if err := tx.Last(entity).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, merror.ErrRecordNotFound
+		}
+		return nil, fmt.Errorf("error happened while searching for a record: %w", err)
+	}
+
+	return entity, nil
 }

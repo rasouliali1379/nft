@@ -36,6 +36,13 @@ func (o OtpRepository) Generate(c context.Context, index int) string {
 func (o OtpRepository) Validate(c context.Context, code string, index int) bool {
 	span, c := jtrace.T().SpanFromContext(c, "OtpRepository[Validate]")
 	defer span.Finish()
+
+	if config.C().Env == config.TEST || config.C().Env == config.DEVELOPMENT {
+		if code == "111111" {
+			return true
+		}
+		return false
+	}
 	return gotp.NewDefaultHOTP(config.C().Otp.Secret).Verify(code, index)
 }
 

@@ -42,7 +42,7 @@ func NewUserController(params UserControllerParams) contract.IUserController {
 // @Success  200  {object}  user.UserListDto
 // @Router   /v1/user [get]
 func (u UserController) GetAllUsers(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[GetAllUsers]")
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "UserController[GetAllUsers]")
 	defer span.Finish()
 
 	users, err := u.userService.GetAllUsers(ctx)
@@ -63,7 +63,7 @@ func (u UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Success  200      {object}  user.UserDto
 // @Router   /v1/user/{id} [get]
 func (u UserController) GetUser(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[GetUser]")
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "UserController[GetUser]")
 	defer span.Finish()
 
 	userId, err := uuid.Parse(c.Params("id"))
@@ -88,7 +88,7 @@ func (u UserController) GetUser(c *fiber.Ctx) error {
 // @Success  200      {object}  user.UserDto
 // @Router   /v1/user [post]
 func (u UserController) AddUser(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[AddUser]")
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "UserController[AddUser]")
 	defer span.Finish()
 
 	if c.Body() == nil {
@@ -124,7 +124,7 @@ func (u UserController) AddUser(c *fiber.Ctx) error {
 // @Success  200  {object}  user.UserDto
 // @Router   /v1/user/{id} [patch]
 func (u UserController) UpdateUser(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[UpdateUser]")
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "UserController[UpdateUser]")
 	defer span.Finish()
 
 	userId, err := uuid.Parse(c.Params("id"))
@@ -158,7 +158,7 @@ func (u UserController) UpdateUser(c *fiber.Ctx) error {
 // @Success  200  {string}  string  "user deleted successfully"
 // @Router   /v1/user/{id} [delete]
 func (u UserController) DeleteUser(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "controller[DeleteUser]")
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "UserController[DeleteUser]")
 	defer span.Finish()
 
 	userId, err := uuid.Parse(c.Params("id"))

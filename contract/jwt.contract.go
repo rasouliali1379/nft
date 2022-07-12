@@ -18,7 +18,7 @@ type IJwtRepository interface {
 
 type IJwtService interface {
 	Generate(c context.Context, userId string) (model.Jwt, error)
-	Validate(c context.Context, accessToken string) (uuid.UUID, error)
+	Validate(c context.Context, token string) (uuid.UUID, error)
 	Refresh(c context.Context, refreshToken string) (model.Jwt, error)
 	GenereteOtpToken(c context.Context, userId string) (string, error)
 }

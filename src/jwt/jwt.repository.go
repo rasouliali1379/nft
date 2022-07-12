@@ -76,13 +76,12 @@ func (j JwtRepository) Validate(c context.Context, token string) (uuid.UUID, err
 		return uuid.UUID{}, jerror.ErrInvalidToken
 	}
 
-	claims, ok := parsedToken.Claims.(jwtlib.StandardClaims)
-
+	claims, ok := parsedToken.Claims.(jwtlib.MapClaims)
 	if !ok {
 		return uuid.UUID{}, errors.New("error while casting claims")
 	}
 
-	userId, err := uuid.Parse(claims.Id)
+	userId, err := uuid.Parse(claims["jti"].(string))
 	if err != nil {
 		return uuid.UUID{}, fmt.Errorf("error happened while parsing user id: %w", err)
 	}

@@ -38,6 +38,7 @@ func New(cc ControllerContainer) IServer {
 	authRouter.Post("/login", cc.AuthController.Login)
 	authRouter.Post("/refresh", cc.AuthController.Refresh)
 	authRouter.Post("/verify-email", cc.AuthController.VerifyEmail)
+	authRouter.Post("/resend-email", cc.AuthController.ResendEmail)
 
 	userRouter := router.Group("/user")
 	userRouter.Get("/", cc.UserController.GetAllUsers)

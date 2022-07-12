@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"fmt"
 	"maskan/config"
 	authdto "maskan/src/auth/dto"
@@ -32,18 +33,59 @@ var _ = Describe("Auth", func() {
 		Password: "ali1379",
 	}
 
+	var otpToken string
+
 	Describe("SignUp", func() {
 		It("should sign up new user successfully", func() {
 			resp, err := client.R().
 				SetBody(signUpDto).
 				Post(baseUrl + "signup")
 
+			Expect(err).NotTo(HaveOccurred())
+
+			By("status code should be 201")
+			Expect(resp.StatusCode()).To(Equal(http.StatusCreated))
+
+			var signUpResponse authdto.OtpToken
+			err = json.Unmarshal(resp.Body(), &signUpResponse)
+			Expect(err).NotTo(HaveOccurred())
+
+			otpToken = signUpResponse.Token
+
+			By("otp token shouldn't be empty")
+			Expect(resp.StatusCode()).NotTo(Equal(""))
+		})
+	})
+
+	Describe("Verify Email", func() {
+		It("should verify email successfully", func() {
+			resp, err := client.R().
+				SetBody(authdto.VerifyEmailRequest{
+					Token: otpToken,
+					Code:  "111111",
+				}).
+				Post(baseUrl + "verify-email")
+
+			Expect(err).NotTo(HaveOccurred())
+			
+
+			By("status code should be 200")
+			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
+		})
+	})
+
+	Describe("Resend Verification Email", func() {
+		It("should resend verification email successfully", func() {
+			resp, err := client.R().
+				SetBody(authdto.ResendEmailRequest{Token: otpToken}).
+				Post(baseUrl + "resend-email")
+
 			if err != nil {
 				Expect(err).NotTo(HaveOccurred())
 			}
 
-			By("status code should be 201")
-			Expect(resp.StatusCode()).To(Equal(http.StatusCreated))
+			By("status code should be 200")
+			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
 		})
 	})
 

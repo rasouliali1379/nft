@@ -51,11 +51,11 @@ func (j JwtService) Generate(c context.Context, userId string) (jwt.Jwt, error) 
 	}, nil
 }
 
-func (j JwtService) Validate(c context.Context, accessToken string) (uuid.UUID, error) {
+func (j JwtService) Validate(c context.Context, token string) (uuid.UUID, error) {
 	span, c := jtrace.T().SpanFromContext(c, "JwtService[Validate]")
 	defer span.Finish()
 
-	userId, err := j.jwtRepository.Validate(c, accessToken)
+	userId, err := j.jwtRepository.Validate(c, token)
 	if err != nil {
 		return uuid.UUID{}, err
 	}

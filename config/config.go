@@ -22,6 +22,7 @@ var (
 
 // Config is base of configs we need for project
 type Config struct {
+	Env      Env      `yaml:"env" required:"true"`
 	App      App      `yaml:"app" required:"true"`
 	Jaeger   Jaeger   `yaml:"jaeger" required:"true"`
 	Etcd     Etcd     `yaml:"etcd" required:"true"`

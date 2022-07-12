@@ -9,6 +9,7 @@ type IPersist interface {
 	Exists(c context.Context, entity any, conditions map[string]any) error
 	Get(c context.Context, entity any, conditions map[string]any) (any, error)
 	Create(c context.Context, entity any) (any, error)
-	Update(c context.Context, entity any, data map[string]any) (any, error)
+	Update(c context.Context, entity any, data any) (any, error)
 	Count(c context.Context, entity any, conditions map[string]any) (int, error)
+	Last(c context.Context, entity any, conditions map[string]any) (any, error)
 }

@@ -9,7 +9,7 @@ import (
 	_ "maskan/docs"
 )
 
-// @title    Maskan API Documentation
+// @title    Nft API Documentation
 // @version  1.0
 
 // @securityDefinitions.apikey  ApiKeyAuth

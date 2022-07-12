@@ -73,11 +73,11 @@ services:
   # -----------------------------
   # logstash
   # -----------------------------
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.16.2
-    restart: unless-stopped
-    networks: 
-      - customnetwork
+  # logstash:
+  #   image: docker.elastic.co/logstash/logstash:7.16.2
+  #   restart: unless-stopped
+  #   networks: 
+  #     - customnetwork
 
 # -----------------------------
 # networks

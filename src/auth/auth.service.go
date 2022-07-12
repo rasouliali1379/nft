@@ -28,7 +28,7 @@ type AuthServiceParams struct {
 }
 
 func NewAuthService(params AuthServiceParams) contract.IAuthService {
-	return AuthService{
+	return &AuthService{
 		jwtService:   params.JwtService,
 		userService:  params.UserService,
 		emailService: params.EmailService,
@@ -45,12 +45,12 @@ func (a AuthService) SignUp(c context.Context, userModel user.User) (string, err
 		return "", err
 	}
 
-	addedEmail, err := a.emailService.AddEmail(c, createdUser.ID, userModel.Email)
+	userEmail, err := a.emailService.GetUserEmail(c, createdUser.ID)
 	if err != nil {
 		return "", err
 	}
 
-	err = a.emailService.SendOtpEmail(c, addedEmail.ID)
+	err = a.emailService.SendOtpEmail(c, userEmail.ID)
 	if err != nil {
 		return "", err
 	}
@@ -67,7 +67,12 @@ func (a AuthService) Login(c context.Context, email string, password string) (jw
 	span, c := jtrace.T().SpanFromContext(c, "AuthService[Login]")
 	defer span.Finish()
 
-	userModel, err := a.userService.GetUser(c, map[string]any{"email": email})
+	userEmail, err := a.emailService.GetEmail(c, email)
+	if err != nil {
+		return jwt.Jwt{}, err
+	}
+
+	userModel, err := a.userService.GetUser(c, map[string]any{"id": userEmail.UserId})
 	if err != nil {
 		return jwt.Jwt{}, err
 	}
@@ -102,10 +107,36 @@ func (a AuthService) VerifyEmail(c context.Context, token string, code string) (
 		return jwt.Jwt{}, err
 	}
 
+	if err := a.emailService.AproveEmail(c,userId,emailModel.Email); err != nil {
+
+	}
+
 	jwtToken, err := a.jwtService.Generate(c, userId.String())
 	if err != nil {
 		return jwt.Jwt{}, err
 	}
 
 	return jwtToken, nil
+}
+
+func (a AuthService) ResendVerificationEmail(c context.Context, token string) (string, error) {
+	span, c := jtrace.T().SpanFromContext(c, "AuthService[ResendVerificationEmail]")
+	defer span.Finish()
+
+	userId, err := a.jwtService.Validate(c, token)
+	if err != nil {
+		return "", err
+	}
+
+	emailModel, err := a.emailService.GetUserEmail(c, userId)
+	if err != nil {
+		return "", err
+	}
+
+	err = a.emailService.SendOtpEmail(c, emailModel.ID)
+	if err != nil {
+		return "", err
+	}
+	
+	return token, err
 }

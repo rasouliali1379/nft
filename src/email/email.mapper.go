@@ -16,10 +16,10 @@ func mapEmailEntityToModel(emailRecord *entity.Email) model.Email {
 	}
 }
 
-func createMapFromEmailModel(emailModel model.Email) map[string]any {
-	return map[string]any{
-		"email":    emailModel.Email,
-		"verified": emailModel.Verified,
-		"user_id":  emailModel.UserId,
+func createMapFromEmailModel(emailModel model.Email) entity.Email {
+	return entity.Email{
+		Email:    emailModel.Email,
+		Verified: emailModel.Verified,
+		UserId:   emailModel.UserId,
 	}
 }

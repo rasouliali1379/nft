@@ -31,6 +31,12 @@ func NewEmailService(params EmailServiceParams) contract.IEmailService {
 	}
 }
 
+func (e EmailService) GetEmail(c context.Context, email string) (model.Email, error) {
+	span, c := jtrace.T().SpanFromContext(c, "EmailService[GetEmail]")
+	defer span.Finish()
+	return e.emailRepository.Get(c, map[string]any{"email": email})
+}
+
 func (e EmailService) GetUserEmail(c context.Context, userId uuid.UUID) (model.Email, error) {
 	span, c := jtrace.T().SpanFromContext(c, "EmailService[GetUserEmail]")
 	defer span.Finish()
@@ -41,7 +47,7 @@ func (e EmailService) AddEmail(c context.Context, userId uuid.UUID, email string
 	span, c := jtrace.T().SpanFromContext(c, "EmailService[AddEmail]")
 	defer span.Finish()
 
-	if err := e.emailRepository.Exists(c, map[string]any{"email": email}); err != nil {
+	if err := e.EmailExists(c, email); err != nil {
 		return model.Email{}, err
 	}
 
@@ -71,23 +77,24 @@ func (e EmailService) SendOtpEmail(c context.Context, emailId uint) error {
 	return nil
 }
 
-func (e EmailService) AproveEmail(c context.Context, userId uuid.UUID, email string) (model.Email, error) {
+func (e EmailService) AproveEmail(c context.Context, userId uuid.UUID, email string) error {
 	span, c := jtrace.T().SpanFromContext(c, "EmailService[AproveEmail]")
 	defer span.Finish()
 
 	emailRecord, err := e.emailRepository.Get(c, map[string]any{"email": email})
 	if err != nil {
-		return model.Email{}, err
+		return err
 	}
 
 	if emailRecord.UserId == userId {
-		return e.emailRepository.Update(c, model.Email{
-			ID:       emailRecord.ID,
-			Verified: true,
-		})
+		if _, err := e.emailRepository.Update(c, model.Email{ID: emailRecord.ID, Verified: true}); err != nil {
+			return err
+		}
+
+		return nil
 	}
 
-	return model.Email{}, merror.ErrEmailDoesntBelongToUser
+	return merror.ErrEmailDoesntBelongToUser
 }
 
 func (e EmailService) EmailExists(c context.Context, email string) error {
@@ -102,4 +109,10 @@ func (e EmailService) EmailExists(c context.Context, email string) error {
 	}
 
 	return merror.ErrEmailExists
+}
+
+func (e EmailService) GetLastVerifiedEmail(c context.Context, userId uuid.UUID) (model.Email, error) {
+	span, c := jtrace.T().SpanFromContext(c, "EmailService[GetLastVerifiedEmail]")
+	defer span.Finish()
+	return e.emailRepository.Last(c, map[string]any{"user_id": userId, "verified": true})
 }

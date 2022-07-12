@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 	"maskan/client/jtrace"
-	"maskan/config"
 	"maskan/contract"
 	entity "maskan/src/email/entity"
 	model "maskan/src/email/model"
-	"net/smtp"
 
 	"github.com/google/uuid"
 	"go.uber.org/fx"
@@ -40,6 +38,19 @@ func (e EmailRepository) Get(c context.Context, conditions map[string]any) (mode
 
 	return mapEmailEntityToModel(emailRecord.(*entity.Email)), nil
 }
+
+func (e EmailRepository) Last(c context.Context, conditions map[string]any) (model.Email, error) {
+	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Last]")
+	defer span.Finish()
+
+	emailRecord, err := e.db.Last(c, &entity.Email{}, conditions)
+	if err != nil {
+		return model.Email{}, err
+	}
+
+	return mapEmailEntityToModel(emailRecord.(*entity.Email)), nil
+}
+
 func (e EmailRepository) Add(c context.Context, userId uuid.UUID, email string) (model.Email, error) {
 	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Add]")
 	defer span.Finish()
@@ -70,14 +81,16 @@ func (e EmailRepository) Send(c context.Context, receivers []string, message str
 	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Send]")
 	defer span.Finish()
 
-	from := config.C().Smtp.From
-	password := config.C().Smtp.Password
-	smtpHost := config.C().Smtp.Host
-	smtpPort := config.C().Smtp.Port
+	// from := config.C().Smtp.From
+	// password := config.C().Smtp.Password
+	// smtpHost := config.C().Smtp.Host
+	// smtpPort := config.C().Smtp.Port
 
-	auth := smtp.PlainAuth("", from, password, smtpHost)
+	// auth := smtp.PlainAuth("", from, password, smtpHost)
 
-	return smtp.SendMail(smtpHost+":"+smtpPort, auth, from, receivers, []byte(message))
+	// return smtp.SendMail(smtpHost+":"+smtpPort, auth, from, receivers, []byte(message))
+
+	return nil
 }
 
 func (e EmailRepository) Exists(c context.Context, conditions map[string]any) error {

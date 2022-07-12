@@ -29,7 +29,6 @@ func mapSignUpRequestModelToEntity(dto auth.SignUpRequest) entity.User {
 		NationalId:     dto.NationalId,
 		FirstName:      dto.FirstName,
 		LastName:       dto.LastName,
-		Email:          dto.Email,
 		PhoneNumber:    dto.PhoneNumber,
 		LandLineNumber: dto.LandLineNumber,
 		Province:       dto.Province,
@@ -38,18 +37,17 @@ func mapSignUpRequestModelToEntity(dto auth.SignUpRequest) entity.User {
 	}
 }
 
-func createMapFromUserModel(userModel model.User) map[string]any {
-	return map[string]any{
-		"id":               userModel.ID,
-		"national_id":      userModel.NationalId,
-		"first_name":       userModel.FirstName,
-		"last_name":        userModel.LastName,
-		"email":            userModel.Email,
-		"phone_number":     userModel.PhoneNumber,
-		"land_line_number": userModel.LandLineNumber,
-		"province":         userModel.Province,
-		"city":             userModel.City,
-		"address":          userModel.Address,
+func createMapFromUserModel(userModel model.User) entity.User {
+	return entity.User{
+		ID:             userModel.ID,
+		NationalId:     userModel.NationalId,
+		FirstName:      userModel.FirstName,
+		LastName:       userModel.LastName,
+		PhoneNumber:    userModel.PhoneNumber,
+		LandLineNumber: userModel.LandLineNumber,
+		Province:       userModel.Province,
+		City:           userModel.City,
+		Address:        userModel.Address,
 	}
 }
 
@@ -63,7 +61,6 @@ func mapUserEntityToModel(e *entity.User) model.User {
 		NationalId:     e.NationalId,
 		FirstName:      e.FirstName,
 		LastName:       e.LastName,
-		Email:          e.Email,
 		PhoneNumber:    e.PhoneNumber,
 		LandLineNumber: e.LandLineNumber,
 		Province:       e.Province,
@@ -123,7 +120,6 @@ func createUserModelList(users *[]entity.User) []model.User {
 			NationalId:     userModel.NationalId,
 			FirstName:      userModel.FirstName,
 			LastName:       userModel.LastName,
-			Email:          userModel.Email,
 			PhoneNumber:    userModel.PhoneNumber,
 			LandLineNumber: userModel.LandLineNumber,
 			Province:       userModel.Province,
@@ -142,7 +138,6 @@ func mapUserModelToEntity(userModel model.User) entity.User {
 		NationalId:     userModel.NationalId,
 		FirstName:      userModel.FirstName,
 		LastName:       userModel.LastName,
-		Email:          userModel.Email,
 		PhoneNumber:    userModel.PhoneNumber,
 		LandLineNumber: userModel.LandLineNumber,
 		Province:       userModel.Province,

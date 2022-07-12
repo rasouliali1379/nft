@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	
 	"maskan/client/jtrace"
 	"maskan/contract"
 	merror "maskan/error"
@@ -63,7 +64,6 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 
 	token, err := a.authService.SignUp(ctx, user.MapSignUpDtoToUserModel(signUpRequest, uuid.UUID{}))
 	if err != nil {
-
 		if errors.Is(err, merror.ErrEmailExists) {
 			return filper.GetBadRequestError(c, "email already exists")
 		}
@@ -122,7 +122,7 @@ func (a AuthController) Login(c *fiber.Ctx) error {
 }
 
 // Refresh godoc
-// @Summary  refresh user token 
+// @Summary  refresh user token
 // @Tags     auth
 // @Accept   json
 // @Produce  json
@@ -194,4 +194,38 @@ func (a AuthController) VerifyEmail(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(response)
+}
+
+// ResendEmail godoc
+// @Summary  resend verification email
+// @Tags     auth
+// @Accept   json
+// @Produce  json
+// @Param    message  body      dto.ResendEmailRequest  true  "resend email request body"
+// @Success  200      {object}  dto.OtpToken
+// @Router   /v1/auth/resend-email [post]
+func (a AuthController) ResendEmail(c *fiber.Ctx) error {
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "AuthController[ResendEmail]")
+	defer span.Finish()
+
+	if c.Body() == nil {
+		return filper.GetBadRequestError(c, "you need to provide body in your request")
+	}
+
+	var request dto.ResendEmailRequest
+	if err := c.BodyParser(&request); err != nil {
+		return filper.GetBadRequestError(c, "invalid body data")
+	}
+
+	errs := validator.Validate(request)
+	if len(errs) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errs)
+	}
+
+	token, err := a.authService.ResendVerificationEmail(ctx, request.Token)
+	if err != nil {
+		return filper.GetInternalError(c, "")
+	}
+
+	return c.JSON(dto.OtpToken{Token: token})
 }
