@@ -12,8 +12,6 @@ RUN swag init
 
 RUN make config
 
-RUN go run main.go migrate
-
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 RUN go build  -o maskan .
 

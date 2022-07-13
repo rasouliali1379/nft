@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"log"
 	"maskan/app/server"
+	"maskan/contract"
 
 	// "maskan/client/elk"
 	// "maskan/client/jtrace"
 	"maskan/client/jtrace"
 	"maskan/client/persist"
+
 	// "maskan/pkg/logger"
 	"maskan/src/auth"
 	"maskan/src/email"
@@ -47,6 +49,7 @@ func Start() {
 			fx.Invoke(config.InitConfigs),
 			// fx.Invoke(logger.InitGlobalLogger),
 			fx.Invoke(jtrace.InitGlobalTracer),
+			fx.Invoke(migrate),
 			fx.Invoke(serve),
 		)
 		startCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -79,4 +82,14 @@ func serve(lc fx.Lifecycle, server server.IServer) {
 			return server.Shutdown()
 		},
 	})
+}
+
+func migrate(lc fx.Lifecycle, db contract.IPersist) {
+	lc.Append(
+		fx.Hook{
+			OnStart: func(c context.Context) error {
+				return db.Migrate(c)
+			},
+		},
+	)
 }

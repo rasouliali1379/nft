@@ -24,7 +24,12 @@ func (p *Postgres) Init(c context.Context) error {
 	span, _ := jtrace.T().SpanFromContext(c, "postgres[Init]")
 	defer span.Finish()
 
-	dsn := "postgresql://" + config.C().Postgres.Username + ":" + config.C().Postgres.Password + "@" + config.C().Postgres.Host + "/" + config.C().Postgres.Schema
+	dsn := "postgresql://" +
+		config.C().Postgres.Username +
+		":" + config.C().Postgres.Password +
+		"@" + config.C().Postgres.Host +
+		"/" + config.C().Postgres.Schema
+		
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return fmt.Errorf("error happened while initializing the connection to database: %w", err)
