@@ -27,8 +27,8 @@ etcd:
     - http://etcd0:2379
 
 postgres:
-  username: "admin"
-  password: "password"
+  username: "samrd"
+  password: "4v7$AaeM7DJ%9G8w"
   host: "postgres:5432"
   port: "5432"
   schema: "maskan"
