@@ -55,7 +55,7 @@ func (u UserController) GetAllUsers(c *fiber.Ctx) error {
 }
 
 // GetUser godoc
-// @Summary  get sigle user
+// @Summary  get single user
 // @Tags     user
 // @Accept   json
 // @Produce  json

@@ -4,20 +4,20 @@ services:
   # -----------------------------
   # base fiber service
   # -----------------------------
-  # maskan:
-  #   build: 
-  #     context: .
-  #     dockerfile: Dockerfile.dev
-  #   volumes:
-  #     - .:/go/src/application
-  #   networks:
-  #     - customnetwork
-  #   depends_on:
-  #     - jaeger
-  #     - postgres
-  #   ports: 
-  #     - 1212:8080
-  #     - 1213:8081
+  maskan:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/go/src/application
+    networks:
+      - customnetwork
+    depends_on:
+      - jaeger
+      - postgres
+    ports: 
+      - 1212:8080
+      - 1213:8081
 
   # -----------------------------
   # jaeger servcie 

@@ -10,6 +10,8 @@ COPY . .
 RUN go install github.com/swaggo/swag/cmd/swag@latest
 RUN swag init
 
+RUN go run main.go migrate
+
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 RUN go build  -o maskan .
 RUN make config
