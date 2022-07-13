@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 	"log"
-	"maskan/config"
+	"nft/config"
 
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"

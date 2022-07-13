@@ -5,13 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"maskan/client/jtrace"
-	"maskan/config"
-	merror "maskan/error"
-	email "maskan/src/email/entity"
-	jwt "maskan/src/jwt/entity"
-	otp "maskan/src/otp/entity"
-	user "maskan/src/user/entity"
+	"nft/client/jtrace"
+	"nft/config"
+	merror "nft/error"
+	email "nft/src/email/entity"
+	jwt "nft/src/jwt/entity"
+	otp "nft/src/otp/entity"
+	user "nft/src/user/entity"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -24,7 +24,7 @@ type Postgres struct {
 func (p *Postgres) Init(c context.Context) error {
 	span, _ := jtrace.T().SpanFromContext(c, "postgres[Init]")
 	defer span.Finish()
-	
+
 	dsn := "postgresql://" +
 		config.C().Postgres.Username +
 		":" + config.C().Postgres.Password +

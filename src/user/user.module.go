@@ -1,8 +1,9 @@
 package user
 
 import (
+	"nft/contract"
+
 	"go.uber.org/fx"
-	"maskan/contract"
 )
 
 var Module = fx.Options(

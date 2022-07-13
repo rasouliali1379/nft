@@ -2,15 +2,15 @@ package auth
 
 import (
 	"errors"
-	
-	"maskan/client/jtrace"
-	"maskan/contract"
-	merror "maskan/error"
-	"maskan/pkg/filper"
-	"maskan/pkg/validator"
-	dto "maskan/src/auth/dto"
-	jwt "maskan/src/jwt/model"
-	user "maskan/src/user"
+
+	"nft/client/jtrace"
+	"nft/contract"
+	merror "nft/error"
+	"nft/pkg/filper"
+	"nft/pkg/validator"
+	dto "nft/src/auth/dto"
+	jwt "nft/src/jwt/model"
+	user "nft/src/user"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"

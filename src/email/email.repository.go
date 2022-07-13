@@ -3,10 +3,10 @@ package email
 import (
 	"context"
 	"fmt"
-	"maskan/client/jtrace"
-	"maskan/contract"
-	entity "maskan/src/email/entity"
-	model "maskan/src/email/model"
+	"nft/client/jtrace"
+	"nft/contract"
+	entity "nft/src/email/entity"
+	model "nft/src/email/model"
 
 	"github.com/google/uuid"
 	"go.uber.org/fx"

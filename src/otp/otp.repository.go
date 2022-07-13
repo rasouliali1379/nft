@@ -2,11 +2,11 @@ package otp
 
 import (
 	"context"
-	"maskan/client/jtrace"
-	"maskan/config"
-	"maskan/contract"
-	entity "maskan/src/otp/entity"
-	model "maskan/src/otp/model"
+	"nft/client/jtrace"
+	"nft/config"
+	"nft/contract"
+	entity "nft/src/otp/entity"
+	model "nft/src/otp/model"
 
 	"github.com/xlzd/gotp"
 	"go.uber.org/fx"

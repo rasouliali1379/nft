@@ -3,13 +3,14 @@ package user
 import (
 	"context"
 	"errors"
-	"maskan/client/jtrace"
-	"maskan/contract"
+	"nft/client/jtrace"
+	"nft/contract"
+
+	merror "nft/error"
+	model "nft/src/user/model"
 
 	"github.com/google/uuid"
 	"go.uber.org/fx"
-	merror "maskan/error"
-	model "maskan/src/user/model"
 )
 
 type UserService struct {

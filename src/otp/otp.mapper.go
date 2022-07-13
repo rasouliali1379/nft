@@ -1,8 +1,8 @@
 package otp
 
 import (
-	entity "maskan/src/otp/entity"
-	model "maskan/src/otp/model"
+	entity "nft/src/otp/entity"
+	model "nft/src/otp/model"
 )
 
 func mapOtpEntityToModel(otp *entity.Otp) model.Otp {

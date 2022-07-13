@@ -2,7 +2,7 @@ package contract
 
 import (
 	"context"
-	model "maskan/src/user/model"
+	model "nft/src/user/model"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"

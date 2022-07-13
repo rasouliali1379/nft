@@ -4,7 +4,7 @@ services:
   # -----------------------------
   # base fiber service
   # -----------------------------
-  maskan:
+  nft:
     build: 
       context: .
       dockerfile: Dockerfile.dev
@@ -60,11 +60,11 @@ services:
     image: postgres:latest
     restart: unless-stopped
     volumes: 
-      - psql-micro:/var/lib/postgresql/data
+      - psql-nft:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: e35YtGPSz6agLyJH
       POSTGRES_USER: nftadmin
-      POSTGRES_DB: maskan
+      POSTGRES_DB: nft
     ports:
       - "5432:5432"
     networks: 
@@ -89,7 +89,5 @@ networks:
 # volumes
 # -----------------------------
 volumes: 
-  psql-micro:
-    driver: local
-  pgadmin:
+  psql-nft:
     driver: local

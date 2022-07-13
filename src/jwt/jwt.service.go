@@ -2,10 +2,10 @@ package jwt
 
 import (
 	"context"
-	"maskan/client/jtrace"
-	"maskan/contract"
-	jerror "maskan/error"
-	jwt "maskan/src/jwt/model"
+	"nft/client/jtrace"
+	"nft/contract"
+	jerror "nft/error"
+	jwt "nft/src/jwt/model"
 	"time"
 
 	"github.com/google/uuid"

@@ -27,7 +27,7 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           source: "."
-          target: "/home/samrd/maskan"
+          target: "/home/samrd/nft"
 
       - name: Executing remote command
         uses: appleboy/ssh-action@master
@@ -38,9 +38,9 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            cd maskan
-            docker compose down maskan
-            docker compose build maskan
+            cd nft
+            docker compose down nft
+            docker compose build nft
             docker compose up -d jaeger
             docker compose up -d postgres
-            docker compose up -d maskan
+            docker compose up -d nft

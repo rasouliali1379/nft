@@ -1,8 +1,8 @@
 package email
 
 import (
-	entity "maskan/src/email/entity"
-	model "maskan/src/email/model"
+	entity "nft/src/email/entity"
+	model "nft/src/email/model"
 )
 
 func mapEmailEntityToModel(emailRecord *entity.Email) model.Email {

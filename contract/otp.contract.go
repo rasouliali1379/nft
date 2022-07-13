@@ -2,7 +2,7 @@ package contract
 
 import (
 	"context"
-	model "maskan/src/otp/model"
+	model "nft/src/otp/model"
 )
 
 type IOtpRepository interface {

@@ -2,12 +2,12 @@ package auth
 
 import (
 	"context"
-	"maskan/client/jtrace"
-	"maskan/contract"
-	merrors "maskan/error"
-	"maskan/pkg/crypt"
-	jwt "maskan/src/jwt/model"
-	user "maskan/src/user/model"
+	"nft/client/jtrace"
+	"nft/contract"
+	merrors "nft/error"
+	"nft/pkg/crypt"
+	jwt "nft/src/jwt/model"
+	user "nft/src/user/model"
 
 	"go.uber.org/fx"
 )
@@ -107,7 +107,7 @@ func (a AuthService) VerifyEmail(c context.Context, token string, code string) (
 		return jwt.Jwt{}, err
 	}
 
-	if err := a.emailService.AproveEmail(c,userId,emailModel.Email); err != nil {
+	if err := a.emailService.AproveEmail(c, userId, emailModel.Email); err != nil {
 
 	}
 
@@ -137,6 +137,6 @@ func (a AuthService) ResendVerificationEmail(c context.Context, token string) (s
 	if err != nil {
 		return "", err
 	}
-	
+
 	return token, err
 }

@@ -1,11 +1,12 @@
 package user
 
 import (
+	auth "nft/src/auth/dto"
+	dto "nft/src/user/dto"
+	entity "nft/src/user/entity"
+	model "nft/src/user/model"
+
 	"github.com/google/uuid"
-	auth "maskan/src/auth/dto"
-	dto "maskan/src/user/dto"
-	entity "maskan/src/user/entity"
-	model "maskan/src/user/model"
 )
 
 func MapSignUpDtoToUserModel(dto auth.SignUpRequest, userId uuid.UUID) model.User {

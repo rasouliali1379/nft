@@ -3,8 +3,8 @@ package persist
 import (
 	"context"
 	"log"
-	"maskan/client/persist/postgres"
-	"maskan/contract"
+	"nft/client/persist/postgres"
+	"nft/contract"
 
 	"go.uber.org/fx"
 )

@@ -1,12 +1,12 @@
 package user
 
 import (
-	"maskan/client/jtrace"
-	"maskan/contract"
-	"maskan/pkg/filper"
-	"maskan/pkg/validator"
-	authdto "maskan/src/auth/dto"
-	user "maskan/src/user/dto"
+	"nft/client/jtrace"
+	"nft/contract"
+	"nft/pkg/filper"
+	"nft/pkg/validator"
+	authdto "nft/src/auth/dto"
+	user "nft/src/user/dto"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"

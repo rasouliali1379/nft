@@ -3,8 +3,8 @@ package logger
 import (
 	"context"
 	"log"
-	"maskan/client/elk"
-	"maskan/config"
+	"nft/client/elk"
+	"nft/config"
 	"os"
 
 	"go.elastic.co/ecszap"

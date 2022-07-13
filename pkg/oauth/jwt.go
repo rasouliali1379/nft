@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"maskan/config"
+	"nft/config"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"

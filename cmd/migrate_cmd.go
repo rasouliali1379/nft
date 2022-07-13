@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"context"
+	"nft/client/persist"
+	"nft/config"
+	"nft/contract"
+
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
-	"maskan/client/persist"
-	"maskan/config"
-	"maskan/contract"
 )
 
 var migrateCMD = cobra.Command{

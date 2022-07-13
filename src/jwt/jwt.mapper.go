@@ -1,8 +1,8 @@
 package jwt
 
 import (
-	entity "maskan/src/jwt/entity"
-	model "maskan/src/jwt/model"
+	entity "nft/src/jwt/entity"
+	model "nft/src/jwt/model"
 )
 
 func mapJwtEntityToRefreshTokenModel(refresh entity.Jwt) model.RefreshToken {

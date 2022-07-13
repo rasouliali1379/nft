@@ -3,8 +3,8 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	"maskan/config"
 	"net/http"
+	"nft/config"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -12,8 +12,8 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	authdto "maskan/src/auth/dto"
-	userdto "maskan/src/user/dto"
+	authdto "nft/src/auth/dto"
+	userdto "nft/src/user/dto"
 )
 
 var _ = Describe("User Management", func() {

@@ -3,16 +3,17 @@ package contract
 import (
 	"context"
 
+	jwt "nft/src/jwt/model"
+	user "nft/src/user/model"
+
 	"github.com/gofiber/fiber/v2"
-	jwt "maskan/src/jwt/model"
-	user "maskan/src/user/model"
 )
 
 type IAuthController interface {
 	SignUp(c *fiber.Ctx) error
 	Login(c *fiber.Ctx) error
 	Refresh(c *fiber.Ctx) error
-	VerifyEmail(c *fiber.Ctx) error	
+	VerifyEmail(c *fiber.Ctx) error
 	ResendEmail(c *fiber.Ctx) error
 }
 

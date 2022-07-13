@@ -18,7 +18,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: e35YtGPSz6agLyJH
           POSTGRES_USER: nftadmin
-          POSTGRES_DB: maskan
+          POSTGRES_DB: nft
         options: >-
           --health-cmd pg_isready
           --health-interval 10s

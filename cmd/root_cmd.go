@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"maskan/app"
-	"maskan/config"
+	"nft/app"
+	"nft/config"
 
 	"github.com/spf13/cobra"
 )

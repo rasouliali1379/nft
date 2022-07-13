@@ -3,9 +3,9 @@ package server
 import (
 	"fmt"
 	"log"
-	"maskan/config"
-	"maskan/contract"
 	"net/http"
+	"nft/config"
+	"nft/contract"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -30,7 +30,7 @@ func New(cc ControllerContainer) IServer {
 		EnableStackTrace: true,
 	}))
 	app.Get("/swagger/*", swagger.HandlerDefault) // default
-	
+
 	router := app.Group(config.C().App.BaseURL)
 
 	authRouter := router.Group("/auth")

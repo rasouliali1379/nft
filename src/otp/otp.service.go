@@ -2,10 +2,10 @@ package otp
 
 import (
 	"context"
-	"maskan/client/jtrace"
-	"maskan/contract"
-	merror "maskan/error"
-	model "maskan/src/otp/model"
+	"nft/client/jtrace"
+	"nft/contract"
+	merror "nft/error"
+	model "nft/src/otp/model"
 
 	"go.uber.org/fx"
 )

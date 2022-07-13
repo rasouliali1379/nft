@@ -2,7 +2,7 @@ package contract
 
 import (
 	"context"
-	model "maskan/src/email/model"
+	model "nft/src/email/model"
 
 	"github.com/google/uuid"
 )

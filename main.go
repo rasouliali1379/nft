@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"html"
-	"maskan/cmd"
+	"nft/cmd"
+
+	_ "nft/docs"
 
 	"github.com/logrusorgru/aurora"
-	_ "maskan/docs"
 )
 
 // @title    Nft API Documentation

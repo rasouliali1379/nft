@@ -3,9 +3,9 @@ package cmd
 import (
 	"context"
 	"log"
-	"maskan/client/persist"
-	"maskan/config"
-	"maskan/pkg/logger"
+	"nft/client/persist"
+	"nft/config"
+	"nft/pkg/logger"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/spf13/cobra"

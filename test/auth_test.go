@@ -3,9 +3,9 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	"maskan/config"
-	authdto "maskan/src/auth/dto"
 	"net/http"
+	"nft/config"
+	authdto "nft/src/auth/dto"
 
 	"github.com/go-resty/resty/v2"
 	. "github.com/onsi/ginkgo/v2"
@@ -67,7 +67,6 @@ var _ = Describe("Auth", func() {
 				Post(baseUrl + "verify-email")
 
 			Expect(err).NotTo(HaveOccurred())
-			
 
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
