@@ -27,7 +27,7 @@ etcd:
     - http://etcd0:2379
 
 postgres:
-  username: "samrd"
+  username: "nftadmin"
   password: "e35YtGPSz6agLyJH"
   host: "localhost:5432"
   port: "5432"

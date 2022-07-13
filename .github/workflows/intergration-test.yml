@@ -17,7 +17,7 @@ jobs:
         image: postgres
         env:
           POSTGRES_PASSWORD: e35YtGPSz6agLyJH
-          POSTGRES_USER: samrd
+          POSTGRES_USER: nftadmin
           POSTGRES_DB: maskan
         options: >-
           --health-cmd pg_isready
