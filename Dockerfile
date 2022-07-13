@@ -2,9 +2,6 @@ FROM golang:1.18 AS build
 
 WORKDIR /build
 
-
-RUN mkdir -p /tmp
-
 COPY . .
 
 RUN go install github.com/swaggo/swag/cmd/swag@latest

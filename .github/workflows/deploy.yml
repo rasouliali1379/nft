@@ -39,8 +39,9 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             cd nft
-            docker compose down nft
-            docker compose build nft
+            docker compose down --remove-orphans
+            docker network prune -f
+            docker compose build
             docker compose up -d jaeger
             docker compose up -d postgres
             docker compose up -d nft
