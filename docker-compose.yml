@@ -82,8 +82,8 @@ services:
     volumes: 
       - psql-micro:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 4v7$AaeM7DJ%9G8w
+      POSTGRES_USER: samrd
       POSTGRES_DB: maskan
     ports:
       - "5432:5432"
