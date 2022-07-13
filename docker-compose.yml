@@ -108,15 +108,9 @@ services:
   #   networks: 
   #     - customnetwork
 
-# -----------------------------
-# networks
-# -----------------------------
 networks:
   customnetwork:
-    external: true
-# -----------------------------
-# volumes
-# -----------------------------
+
 volumes: 
   psql-nft:
     driver: local
