@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"errors"
-
 	"nft/client/jtrace"
 	contract "nft/contract"
 	merror "nft/error"
@@ -31,21 +30,22 @@ func NewUserRepository(params UserRepositoryParams) contract.IUserRepository {
 	}
 }
 
-func (u UserRepository) Exists(c context.Context, conditions map[string]any) error {
-	span, c := jtrace.T().SpanFromContext(c, "UserRepository[UserExists]")
+func (u UserRepository) Exists(c context.Context, conditions map[string]any) (bool, error) {
+	span, c := jtrace.T().SpanFromContext(c, "UserRepository[Exists]")
 	defer span.Finish()
 
-	if err := u.db.Exists(c, &userentity.User{}, conditions); err != nil {
+	if _, err := u.db.Get(c, &userentity.User{}, conditions); err != nil {
 		if errors.Is(err, merror.ErrRecordNotFound) {
-			return nil
+			return false, nil
 		}
-		return err
+		return false, err
 	}
-	return nil
+
+	return true, nil
 }
 
 func (u UserRepository) Add(c context.Context, model usermodel.User) (usermodel.User, error) {
-	span, ctx := jtrace.T().SpanFromContext(c, "UserRepository[AddUser]")
+	span, ctx := jtrace.T().SpanFromContext(c, "UserRepository[Add]")
 	defer span.Finish()
 
 	mappedEntity := mapUserModelToEntity(model)
@@ -67,7 +67,7 @@ func (u UserRepository) Add(c context.Context, model usermodel.User) (usermodel.
 }
 
 func (u UserRepository) Update(c context.Context, userModel usermodel.User) (usermodel.User, error) {
-	span, c := jtrace.T().SpanFromContext(c, "UserRepository[UpdateUser]")
+	span, c := jtrace.T().SpanFromContext(c, "UserRepository[Update]")
 	defer span.Finish()
 
 	data := createMapFromUserModel(userModel)
@@ -81,7 +81,7 @@ func (u UserRepository) Update(c context.Context, userModel usermodel.User) (use
 }
 
 func (u UserRepository) Delete(c context.Context, userId uuid.UUID) error {
-	span, c := jtrace.T().SpanFromContext(c, "UserRepository[DeleteUser]")
+	span, c := jtrace.T().SpanFromContext(c, "UserRepository[Delete]")
 	defer span.Finish()
 
 	if _, err := u.db.Update(c, &userentity.User{ID: userId}, map[string]any{"deleted_at": time.Now()}); err != nil {
@@ -91,7 +91,7 @@ func (u UserRepository) Delete(c context.Context, userId uuid.UUID) error {
 }
 
 func (u UserRepository) Get(c context.Context, conditions map[string]any) (usermodel.User, error) {
-	span, c := jtrace.T().SpanFromContext(c, "UserRepository[GetUser]")
+	span, c := jtrace.T().SpanFromContext(c, "UserRepository[Get]")
 	defer span.Finish()
 
 	user, err := u.db.Get(c, &userentity.User{}, conditions)
@@ -102,10 +102,10 @@ func (u UserRepository) Get(c context.Context, conditions map[string]any) (userm
 }
 
 func (u UserRepository) GetAll(c context.Context) ([]usermodel.User, error) {
-	span, c := jtrace.T().SpanFromContext(c, "UserRepository[GetAllUsers]")
+	span, c := jtrace.T().SpanFromContext(c, "UserRepository[GetAll]")
 	defer span.Finish()
 
-	userList, err := u.db.Get(c, &[]userentity.User{}, map[string]any{})
+	userList, err := u.db.GetAll(c, &[]userentity.User{}, map[string]any{})
 
 	if err != nil {
 		return nil, err

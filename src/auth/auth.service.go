@@ -2,9 +2,10 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"nft/client/jtrace"
 	"nft/contract"
-	merrors "nft/error"
+	nerror "nft/error"
 	"nft/pkg/crypt"
 	jwt "nft/src/jwt/model"
 	user "nft/src/user/model"
@@ -69,6 +70,9 @@ func (a AuthService) Login(c context.Context, email string, password string) (jw
 
 	userEmail, err := a.emailService.GetEmail(c, email)
 	if err != nil {
+		if errors.Is(err, nerror.ErrEmailNotFound) {
+			return jwt.Jwt{}, nerror.ErrInvalidCredentials
+		}
 		return jwt.Jwt{}, err
 	}
 
@@ -78,7 +82,7 @@ func (a AuthService) Login(c context.Context, email string, password string) (jw
 	}
 
 	if !crypt.CompareHash(password, userModel.Password) {
-		return jwt.Jwt{}, merrors.ErrInvalidCredentials
+		return jwt.Jwt{}, nerror.ErrInvalidCredentials
 	}
 
 	token, err := a.jwtService.Generate(c, userModel.ID.String())

@@ -34,7 +34,17 @@ func NewEmailService(params EmailServiceParams) contract.IEmailService {
 func (e EmailService) GetEmail(c context.Context, email string) (model.Email, error) {
 	span, c := jtrace.T().SpanFromContext(c, "EmailService[GetEmail]")
 	defer span.Finish()
-	return e.emailRepository.Get(c, map[string]any{"email": email})
+
+	emailModel, err := e.emailRepository.Get(c, map[string]any{"email": email})
+	if err != nil {
+		if errors.Is(err, merror.ErrRecordNotFound) {
+			return model.Email{}, merror.ErrEmailNotFound
+		}
+
+		return model.Email{}, err
+	}
+
+	return emailModel, nil
 }
 
 func (e EmailService) GetUserEmail(c context.Context, userId uuid.UUID) (model.Email, error) {
@@ -47,8 +57,13 @@ func (e EmailService) AddEmail(c context.Context, userId uuid.UUID, email string
 	span, c := jtrace.T().SpanFromContext(c, "EmailService[AddEmail]")
 	defer span.Finish()
 
-	if err := e.EmailExists(c, email); err != nil {
+	emailExists, err := e.EmailExists(c, email)
+	if err != nil {
 		return model.Email{}, err
+	}
+
+	if emailExists {
+		return model.Email{}, merror.ErrEmailExists
 	}
 
 	emailRecord, err := e.emailRepository.Add(c, userId, email)
@@ -97,18 +112,10 @@ func (e EmailService) AproveEmail(c context.Context, userId uuid.UUID, email str
 	return merror.ErrEmailDoesntBelongToUser
 }
 
-func (e EmailService) EmailExists(c context.Context, email string) error {
+func (e EmailService) EmailExists(c context.Context, email string) (bool, error) {
 	span, c := jtrace.T().SpanFromContext(c, "EmailService[EmailExists]")
 	defer span.Finish()
-
-	if err := e.emailRepository.Exists(c, map[string]any{"email": email, "verified": true}); err != nil {
-		if errors.Is(err, merror.ErrRecordNotFound) {
-			return nil
-		}
-		return err
-	}
-
-	return merror.ErrEmailExists
+	return e.emailRepository.Exists(c, map[string]any{"email": email, "verified": true})
 }
 
 func (e EmailService) GetLastVerifiedEmail(c context.Context, userId uuid.UUID) (model.Email, error) {

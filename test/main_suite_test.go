@@ -2,11 +2,13 @@ package test
 
 import (
 	"context"
-	"nft/app/server"
 	"nft/client/persist"
+	"nft/client/server"
 	"nft/config"
 	"nft/contract"
 	"nft/src/auth"
+	"nft/src/category"
+	"nft/src/collection"
 	"nft/src/email"
 	"nft/src/jwt"
 	"nft/src/otp"
@@ -16,29 +18,28 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"go.uber.org/fx"
-	"go.uber.org/fx/fxtest"
 )
 
 func TestTest(t *testing.T) {
-	fxtest.New(
-		t,
+	fx.New(
 		fx.Provide(persist.New),
 		auth.Module,
 		user.Module,
 		jwt.Module,
 		otp.Module,
 		email.Module,
+		collection.Module,
+		category.Module,
 		fx.Provide(server.New),
 		fx.Invoke(config.InitConfigs),
 		fx.Invoke(migrate),
 		fx.Invoke(serve),
-	).Start(context.TODO())
-
+	).Start(context.Background())
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Test Suite")
 }
 
-func serve(lc fx.Lifecycle, server server.IServer) {
+func serve(lc fx.Lifecycle, server contract.IServer) {
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
 			return server.ListenAndServe()

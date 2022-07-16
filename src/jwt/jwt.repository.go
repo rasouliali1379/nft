@@ -7,7 +7,7 @@ import (
 	"nft/client/jtrace"
 	"nft/config"
 	"nft/contract"
-	jerror "nft/error"
+	nerror "nft/error"
 	jwt "nft/src/jwt/entity"
 	model "nft/src/jwt/model"
 	"time"
@@ -55,7 +55,7 @@ func (j JwtRepository) Validate(c context.Context, token string) (uuid.UUID, err
 
 	parsedToken, err := jwtlib.Parse(token, func(token *jwtlib.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwtlib.SigningMethodHMAC); !ok {
-			return nil, jerror.ErrInvalidSigningMethod
+			return nil, nerror.ErrInvalidSigningMethod
 		}
 
 		return []byte(config.C().JWT.HMACSecret), nil
@@ -64,16 +64,16 @@ func (j JwtRepository) Validate(c context.Context, token string) (uuid.UUID, err
 	if err != nil {
 		if ve, ok := err.(*jwtlib.ValidationError); ok {
 			if ve.Errors&jwtlib.ValidationErrorMalformed != 0 {
-				return uuid.UUID{}, jerror.ErrTokenMalformed
+				return uuid.UUID{}, nerror.ErrTokenMalformed
 			} else if ve.Errors&(jwtlib.ValidationErrorExpired|jwtlib.ValidationErrorNotValidYet) != 0 {
-				return uuid.UUID{}, jerror.ErrTokenExpired
+				return uuid.UUID{}, nerror.ErrTokenExpired
 			}
 		}
 		return uuid.UUID{}, fmt.Errorf("error happened while parsing token: %w", err)
 	}
 
 	if !parsedToken.Valid {
-		return uuid.UUID{}, jerror.ErrInvalidToken
+		return uuid.UUID{}, nerror.ErrInvalidToken
 	}
 
 	claims, ok := parsedToken.Claims.(jwtlib.MapClaims)
@@ -116,7 +116,7 @@ func (j JwtRepository) Get(c context.Context, token string) (model.RefreshToken,
 		return model.RefreshToken{}, fmt.Errorf("error happened while retrieving token from database: %w", err)
 	}
 
-	return mapJwtEntityToRefreshTokenModel(refresh.(jwt.Jwt)), nil
+	return mapJwtEntityToRefreshTokenModel(refresh.(*jwt.Jwt)), nil
 }
 
 func (j JwtRepository) Update(c context.Context, id uint, token string) error {

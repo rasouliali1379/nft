@@ -20,12 +20,6 @@ func GetInternalError(c *fiber.Ctx, message string) error {
 	})
 }
 
-func GetInvalidCredentialsError(c *fiber.Ctx, message string) error {
-	return c.Status(fiber.ErrUnauthorized.Code).JSON(fiber.Map{
-		"message": message,
-	})
-}
-
 func GetSuccessResponse(c *fiber.Ctx, message string) error {
 	
 	if len(message) < 1 {
@@ -33,6 +27,12 @@ func GetSuccessResponse(c *fiber.Ctx, message string) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": message,
+	})
+}
+
+func GetUnAuthError(c *fiber.Ctx, message string) error {
+	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 		"message": message,
 	})
 }

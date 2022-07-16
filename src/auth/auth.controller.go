@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"log"
 
 	"nft/client/jtrace"
 	"nft/contract"
@@ -64,6 +65,7 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 
 	token, err := a.authService.SignUp(ctx, user.MapSignUpDtoToUserModel(signUpRequest, uuid.UUID{}))
 	if err != nil {
+		log.Println(err)
 		if errors.Is(err, merror.ErrEmailExists) {
 			return filper.GetBadRequestError(c, "email already exists")
 		}
@@ -113,7 +115,7 @@ func (a AuthController) Login(c *fiber.Ctx) error {
 	response, err := a.authService.Login(ctx, dto.Email, dto.Password)
 	if err != nil {
 		if errors.Is(err, merror.ErrInvalidCredentials) {
-			return filper.GetInvalidCredentialsError(c, "invalid credentials")
+			return filper.GetUnAuthError(c, "invalid credentials")
 		}
 		return filper.GetInternalError(c, "")
 	}
@@ -150,8 +152,8 @@ func (a AuthController) Refresh(c *fiber.Ctx) error {
 
 	response, err := a.jwtService.Refresh(ctx, dto.RefreshToken)
 	if err != nil {
-		if errors.Is(err, merror.ErrInvalidCredentials) {
-			return filper.GetInvalidCredentialsError(c, "invalid credentials")
+		if errors.Is(err, merror.ErrTokenInvoked) {
+			return filper.GetUnAuthError(c, "token invoked")
 		}
 		return filper.GetInternalError(c, "")
 	}
@@ -188,7 +190,7 @@ func (a AuthController) VerifyEmail(c *fiber.Ctx) error {
 	response, err := a.authService.VerifyEmail(ctx, request.Token, request.Code)
 	if err != nil {
 		if errors.Is(err, merror.ErrInvalidCredentials) {
-			return filper.GetInvalidCredentialsError(c, "invalid credentials")
+			return filper.GetUnAuthError(c, "invalid credentials")
 		}
 		return filper.GetInternalError(c, "")
 	}

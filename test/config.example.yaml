@@ -47,9 +47,12 @@ Nats:
 
 jwt:
   hmacSecret: "e5d340b9abd4dd64a19ded8bbde1102257a038ed82485ed8d39615bbfb2d8bcb"
+  accExpInMin: 30
+  refExpInHour: 720
 
 otp:
   secret: "K5IGCWTQOJ3G22DHNJFFCSKKINIVKQTNJF2TG222NJXWINDXOJLA===="
+  tokenExpInMin: 5
 
 logstash:
   endpoint: "logstash:5000"

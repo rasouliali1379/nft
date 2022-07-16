@@ -2,9 +2,11 @@ package email
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"nft/client/jtrace"
 	"nft/contract"
+	merror "nft/error"
 	entity "nft/src/email/entity"
 	model "nft/src/email/model"
 
@@ -93,13 +95,16 @@ func (e EmailRepository) Send(c context.Context, receivers []string, message str
 	return nil
 }
 
-func (e EmailRepository) Exists(c context.Context, conditions map[string]any) error {
+func (e EmailRepository) Exists(c context.Context, conditions map[string]any) (bool, error) {
 	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Exists]")
 	defer span.Finish()
 
-	if err := e.db.Exists(c, &entity.Email{}, conditions); err != nil {
-		return err
+	if _, err := e.db.Get(c, &entity.Email{}, conditions); err != nil {
+		if errors.Is(err, merror.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
 	}
 
-	return nil
+	return true, nil
 }

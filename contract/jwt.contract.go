@@ -5,9 +5,13 @@ import (
 	model "nft/src/jwt/model"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
+type IJwtMiddleware interface {
+	Handle(c *fiber.Ctx) error
+}
 type IJwtRepository interface {
 	Generate(c context.Context, userId string, expirationTime time.Time) (string, error)
 	Validate(c context.Context, token string) (uuid.UUID, error)

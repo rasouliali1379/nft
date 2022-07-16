@@ -5,15 +5,15 @@ type UserListDto struct {
 }
 
 type UserDto struct {
-	ID             string `json:"id"`
-	FirstName      string `json:"first_name"`
-	LastName       string `json:"last_name"`
-	NationalId     string `json:"national_id"`
-	Email          string `json:"email"`
-	PhoneNumber    string `json:"phone_number"`
-	LandLineNumber string `json:"land_line_number"`
-	Province       string `json:"province"`
-	City           string `json:"city"`
-	Address        string `json:"address"`
-	PublicKey      string `josn:"public_key"`
+	ID             string `json:"id,omitempty"`
+	FirstName      string `json:"first_name,omitempty"`
+	LastName       string `json:"last_name,omitempty"`
+	NationalId     string `json:"national_id,omitempty"`
+	Email          string `json:"email,omitempty"`
+	PhoneNumber    string `json:"phone_number,omitempty"`
+	LandLineNumber string `json:"land_line_number,omitempty"`
+	Province       string `json:"province,omitempty"`
+	City           string `json:"city,omitempty"`
+	Address        string `json:"address,omitempty"`
+	PublicKey      string `josn:"public_key,omitempty"`
 }

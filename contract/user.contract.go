@@ -25,7 +25,7 @@ type IUserService interface {
 }
 
 type IUserRepository interface {
-	Exists(c context.Context, conditions map[string]any) error
+	Exists(c context.Context, conditions map[string]any) (bool, error)
 	Add(c context.Context, user model.User) (model.User, error)
 	Update(c context.Context, userModel model.User) (model.User, error)
 	Delete(c context.Context, userId uuid.UUID) error

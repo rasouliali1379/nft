@@ -5,7 +5,7 @@ import (
 	model "nft/src/jwt/model"
 )
 
-func mapJwtEntityToRefreshTokenModel(refresh entity.Jwt) model.RefreshToken {
+func mapJwtEntityToRefreshTokenModel(refresh *entity.Jwt) model.RefreshToken {
 	return model.RefreshToken{
 		Id:        refresh.ID,
 		Token:     refresh.Token,

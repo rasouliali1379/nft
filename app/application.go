@@ -4,54 +4,48 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"nft/app/server"
-	"nft/contract"
-
-	// "nft/client/elk"
-	// "nft/client/jtrace"
 	"nft/client/jtrace"
 	"nft/client/persist"
+	"nft/client/server"
+	"nft/config"
+	"nft/contract"
+	"os"
+	"time"
 
-	// "nft/pkg/logger"
+	//modules
 	"nft/src/auth"
+	"nft/src/category"
+	"nft/src/collection"
 	"nft/src/email"
 	"nft/src/jwt"
 	"nft/src/otp"
 	"nft/src/user"
-	"os"
-	"time"
-
-	"nft/config"
 
 	"go.uber.org/fx"
 )
 
-// StartApplication func
 func Start() {
 	fmt.Println("\n\n--------------------------------")
 	// if go code crashed we get error and line
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	// init configs
-
 	for {
 		fxNew := fx.New(
-			//		fx.Provide(broker.NewNats),
-			//		fx.Provide(redis.NewRedis),
-			// fx.Provide(elk.NewLogStash),
 			fx.Provide(persist.New),
 			auth.Module,
 			user.Module,
 			jwt.Module,
 			otp.Module,
 			email.Module,
+			collection.Module,
+			category.Module,
 			fx.Provide(server.New),
 			fx.Invoke(config.InitConfigs),
-			// fx.Invoke(logger.InitGlobalLogger),
 			fx.Invoke(jtrace.InitGlobalTracer),
 			fx.Invoke(migrate),
 			fx.Invoke(serve),
 		)
+
 		startCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
@@ -73,7 +67,7 @@ func Start() {
 	}
 }
 
-func serve(lc fx.Lifecycle, server server.IServer) {
+func serve(lc fx.Lifecycle, server contract.IServer) {
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
 			return server.ListenAndServe()

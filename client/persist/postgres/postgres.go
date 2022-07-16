@@ -4,17 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"nft/client/jtrace"
 	"nft/config"
 	merror "nft/error"
+	category "nft/src/category/entity"
 	email "nft/src/email/entity"
 	jwt "nft/src/jwt/entity"
 	otp "nft/src/otp/entity"
 	user "nft/src/user/entity"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 type Postgres struct {
@@ -30,7 +29,6 @@ func (p *Postgres) Init(c context.Context) error {
 		":" + config.C().Postgres.Password +
 		"@" + config.C().Postgres.Host +
 		"/" + config.C().Postgres.Schema
-	log.Println(dsn)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return fmt.Errorf("error happened while initializing the connection to database: %w", err)
@@ -46,7 +44,12 @@ func (p *Postgres) Migrate(c context.Context) error {
 	defer span.Finish()
 
 	return p.db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.AutoMigrate(&user.User{}, &jwt.Jwt{}, &email.Email{}, &otp.Otp{}); err != nil {
+		if err := tx.AutoMigrate(
+			&category.Category{},
+			&user.User{},
+			&jwt.Jwt{},
+			&email.Email{},
+			&otp.Otp{}); err != nil {
 			return fmt.Errorf("error happened while migrating tables: %w", err)
 		}
 
@@ -60,8 +63,8 @@ func (p *Postgres) Close(c context.Context) error {
 	return nil
 }
 
-func (p *Postgres) Exists(c context.Context, entity any, conditions map[string]any) error {
-	span, ctx := jtrace.T().SpanFromContext(c, "Postgres[Exists]")
+func (p *Postgres) Get(c context.Context, entity any, conditions map[string]any) (any, error) {
+	span, ctx := jtrace.T().SpanFromContext(c, "Postgres[Get]")
 	defer span.Finish()
 
 	tx := p.db.WithContext(ctx).Where("deleted_at is null")
@@ -72,17 +75,16 @@ func (p *Postgres) Exists(c context.Context, entity any, conditions map[string]a
 
 	if err := tx.First(entity).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return merror.ErrRecordNotFound
+			return nil, merror.ErrRecordNotFound
 		}
-
-		return fmt.Errorf("error happened while searching for a record to see if exists: %w", err)
+		return nil, fmt.Errorf("error happened while searching for a record: %w", err)
 	}
 
-	return nil
+	return entity, nil
 }
 
-func (p *Postgres) Get(c context.Context, entity any, conditions map[string]any) (any, error) {
-	span, ctx := jtrace.T().SpanFromContext(c, "Postgres[Get]")
+func (p *Postgres) GetAll(c context.Context, entity any, conditions map[string]any) (any, error) {
+	span, ctx := jtrace.T().SpanFromContext(c, "Postgres[GetAll]")
 	defer span.Finish()
 
 	tx := p.db.WithContext(ctx).Where("deleted_at is null")

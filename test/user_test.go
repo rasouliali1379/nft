@@ -39,7 +39,7 @@ var _ = Describe("User Management", func() {
 		It("should add new user successfully", func() {
 			resp, err := client.R().
 				SetBody(user).
-				Post(fmt.Sprintf("%s/", baseUrl))
+				Post(baseUrl)
 
 			if err != nil {
 				Expect(err).NotTo(HaveOccurred())
@@ -69,7 +69,7 @@ var _ = Describe("User Management", func() {
 	})
 
 	Describe("Get user", func() {
-		It("should get users list successfully", func() {
+		It("should get single user successfully", func() {
 			resp, err := client.R().
 				Get(baseUrl + userList.Users[0].ID)
 
@@ -131,11 +131,8 @@ var _ = Describe("User Management", func() {
 				Fail("user list is empty")
 			}
 
-			userDetails := userList.Users[0]
-
 			resp, err := client.R().
-				SetBody(userDetails).
-				Delete(baseUrl + userDetails.ID)
+				Delete(baseUrl + userList.Users[0].ID)
 
 			if err != nil {
 				Expect(err).NotTo(HaveOccurred())

@@ -26,8 +26,8 @@ type UserServiceParams struct {
 	EmailService   contract.IEmailService
 }
 
-func NewUserService(params UserServiceParams) UserService {
-	return UserService{
+func NewUserService(params UserServiceParams) contract.IUserService {
+	return &UserService{
 		jwtService:     params.JwtService,
 		userRepository: params.UserRepository,
 		emailService:   params.EmailService,
@@ -79,17 +79,28 @@ func (u UserService) GetUser(c context.Context, conditions map[string]any) (mode
 func (u UserService) AddUser(c context.Context, userModel model.User) (model.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "UserService[AddUser]")
 	defer span.Finish()
-
-	if err := u.emailService.EmailExists(c, userModel.Email); err != nil {
+	exists, err := u.emailService.EmailExists(c, userModel.Email)
+	if err != nil {
 		return model.User{}, err
 	}
-
-	if err := u.userRepository.Exists(c, map[string]any{"national_id": userModel.NationalId}); err != nil {
-		return model.User{}, err
+	if exists {
+		return model.User{}, merror.ErrEmailExists
 	}
 
-	if err := u.userRepository.Exists(c, map[string]any{"phone_number": userModel.PhoneNumber}); err != nil {
+	exists, err = u.userRepository.Exists(c, map[string]any{"national_id": userModel.NationalId})
+	if err != nil {
 		return model.User{}, err
+	}
+	if exists {
+		return model.User{}, merror.ErrNationalIdExists
+	}
+
+	exists, err = u.userRepository.Exists(c, map[string]any{"phone_number": userModel.PhoneNumber})
+	if err != nil {
+		return model.User{}, err
+	}
+	if exists {
+		return model.User{}, merror.ErrPhoneNumberExists
 	}
 
 	newUser, err := u.userRepository.Add(c, userModel)
@@ -119,20 +130,32 @@ func (u UserService) UpdateUser(c context.Context, userModel model.User) (model.
 	}
 
 	if userRecord.Email != userModel.Email && len(userModel.Email) > 0 {
-		if err := u.emailService.EmailExists(c, userModel.Email); err != nil {
+		exists, err := u.emailService.EmailExists(c, userModel.Email)
+		if err != nil {
 			return model.User{}, err
+		}
+		if exists {
+			return model.User{}, merror.ErrEmailExists
 		}
 	}
 
 	if userRecord.NationalId != userModel.NationalId && len(userModel.NationalId) > 0 {
-		if err := u.userRepository.Exists(c, map[string]any{"national_id": userModel.NationalId}); err != nil {
+		exists, err := u.userRepository.Exists(c, map[string]any{"national_id": userModel.NationalId})
+		if err != nil {
 			return model.User{}, err
+		}
+		if exists {
+			return model.User{}, merror.ErrNationalIdExists
 		}
 	}
 
 	if userRecord.PhoneNumber != userModel.PhoneNumber && len(userModel.PhoneNumber) > 0 {
-		if err := u.userRepository.Exists(c, map[string]any{"phone_number": userModel.PhoneNumber}); err != nil {
+		exists, err := u.userRepository.Exists(c, map[string]any{"phone_number": userModel.PhoneNumber})
+		if err != nil {
 			return model.User{}, err
+		}
+		if exists {
+			return model.User{}, merror.ErrPhoneNumberExists
 		}
 	}
 
