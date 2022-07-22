@@ -7,10 +7,13 @@ import (
 	"nft/config"
 	"nft/contract"
 	"nft/src/auth"
+	"nft/src/card"
 	"nft/src/category"
 	"nft/src/collection"
 	"nft/src/email"
 	"nft/src/jwt"
+	"nft/src/kyc"
+	"nft/src/nft"
 	"nft/src/otp"
 	"nft/src/user"
 	"testing"
@@ -30,6 +33,9 @@ func TestTest(t *testing.T) {
 		email.Module,
 		collection.Module,
 		category.Module,
+		kyc.Module,
+		card.Module,
+		nft.Module,
 		fx.Provide(server.New),
 		fx.Invoke(config.InitConfigs),
 		fx.Invoke(migrate),

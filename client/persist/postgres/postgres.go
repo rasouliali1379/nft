@@ -9,6 +9,7 @@ import (
 	"nft/client/jtrace"
 	"nft/config"
 	merror "nft/error"
+	card "nft/src/card/entity"
 	category "nft/src/category/entity"
 	email "nft/src/email/entity"
 	jwt "nft/src/jwt/entity"
@@ -49,7 +50,8 @@ func (p *Postgres) Migrate(c context.Context) error {
 			&user.User{},
 			&jwt.Jwt{},
 			&email.Email{},
-			&otp.Otp{}); err != nil {
+			&otp.Otp{},
+			&card.Card{}); err != nil {
 			return fmt.Errorf("error happened while migrating tables: %w", err)
 		}
 

@@ -5,7 +5,7 @@ services:
   # base fiber service
   # -----------------------------
   nft:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.dev
     volumes:
@@ -15,7 +15,7 @@ services:
     depends_on:
       - jaeger
       - postgres
-    ports: 
+    ports:
       - 1212:8080
       - 1213:8081
 
@@ -29,7 +29,7 @@ services:
       - "1215:16686"
     networks:
       - customnetwork
-      
+
   # -----------------------------
   # redis database
   # -----------------------------
@@ -52,14 +52,14 @@ services:
   #     - "9251:8081"
   #   networks:
   #     - customnetwork
-   
+
   # -----------------------------
   # postgres database
   # -----------------------------
   postgres:
     image: postgres:latest
     restart: unless-stopped
-    volumes: 
+    volumes:
       - psql-nft:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: e35YtGPSz6agLyJH
@@ -67,9 +67,31 @@ services:
       POSTGRES_DB: nft
     ports:
       - "5432:5432"
-    networks: 
+    networks:
       - customnetwork
 
+  # minio:
+  #   image: minio/minio:latest
+  #   volumes:
+  #     - data1-1:/data1
+  #     - data1-2:/data2
+  #   ports:
+  #     - "9000:9000"
+  #   environment:
+  #     MINIO_ACCESS_KEY: minio
+  #     MINIO_SECRET_KEY: minio123
+  #   command: server data1
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "curl",
+  #         "-f",
+  #         "http://localhost:9000/minio/health/live"
+  #       ]
+  #     interval: 30s
+  #     timeout: 20s
+  #     retries: 3
   # -----------------------------
   # logstash
   # -----------------------------
@@ -79,15 +101,17 @@ services:
   #   networks: 
   #     - customnetwork
 
-# -----------------------------
-# networks
-# -----------------------------
+  # -----------------------------
+  # networks
+  # -----------------------------
 networks:
   customnetwork:
     external: true
 # -----------------------------
 # volumes
 # -----------------------------
-volumes: 
+volumes:
   psql-nft:
     driver: local
+  data1-1:
+  data1-2:

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"nft/client/jtrace"
+	"nft/client/persist/model"
 	"nft/contract"
 	entity "nft/src/category/entity"
 	model "nft/src/category/model"
@@ -28,7 +29,7 @@ func NewCategoryRepository(params CategoryRepositoryParams) contract.ICategoryRe
 	}
 }
 
-func (cat CategoryRepository) Exists(c context.Context, conditions map[string]any) error {
+func (cat CategoryRepository) Exists(c context.Context, conditions persist.Conds) error {
 	span, c := jtrace.T().SpanFromContext(c, "CategoryRepository[Exists]")
 	defer span.Finish()
 
@@ -42,7 +43,7 @@ func (cat CategoryRepository) Exists(c context.Context, conditions map[string]an
 func (cat CategoryRepository) Add(c context.Context, category model.Category) (model.Category, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CategoryRepository[Add]")
 	defer span.Finish()
-	
+
 	catEntity := mapCategoryModelToEntity(category)
 	catEntity.ID = uuid.New()
 
@@ -78,7 +79,7 @@ func (cat CategoryRepository) Delete(c context.Context, userId uuid.UUID) error 
 	return nil
 }
 
-func (cat CategoryRepository) Get(c context.Context, conditions map[string]any) (model.Category, error) {
+func (cat CategoryRepository) Get(c context.Context, conditions persist.Conds) (model.Category, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CategoryRepository[Get]")
 	defer span.Finish()
 
@@ -89,7 +90,7 @@ func (cat CategoryRepository) Get(c context.Context, conditions map[string]any) 
 	return mapCategoryEntityToModel(category.(*entity.Category)), nil
 }
 
-func (cat CategoryRepository) GetAll(c context.Context, conditions map[string]any) ([]model.Category, error) {
+func (cat CategoryRepository) GetAll(c context.Context, conditions persist.Conds) ([]model.Category, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CategoryRepository[GetAll]")
 	defer span.Finish()
 

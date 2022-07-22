@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"nft/client/jtrace"
+	persist "nft/client/persist/model"
 	"nft/contract"
 
 	merror "nft/error"
@@ -58,7 +59,7 @@ func (u UserService) GetAllUsers(c context.Context) ([]model.User, error) {
 	return userList, nil
 }
 
-func (u UserService) GetUser(c context.Context, conditions map[string]any) (model.User, error) {
+func (u UserService) GetUser(c context.Context, conditions persist.Conds) (model.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "UserService[GetUser]")
 	defer span.Finish()
 
@@ -87,7 +88,7 @@ func (u UserService) AddUser(c context.Context, userModel model.User) (model.Use
 		return model.User{}, merror.ErrEmailExists
 	}
 
-	exists, err = u.userRepository.Exists(c, map[string]any{"national_id": userModel.NationalId})
+	exists, err = u.userRepository.Exists(c, persist.Conds{"national_id": userModel.NationalId})
 	if err != nil {
 		return model.User{}, err
 	}
@@ -95,7 +96,7 @@ func (u UserService) AddUser(c context.Context, userModel model.User) (model.Use
 		return model.User{}, merror.ErrNationalIdExists
 	}
 
-	exists, err = u.userRepository.Exists(c, map[string]any{"phone_number": userModel.PhoneNumber})
+	exists, err = u.userRepository.Exists(c, persist.Conds{"phone_number": userModel.PhoneNumber})
 	if err != nil {
 		return model.User{}, err
 	}
@@ -123,7 +124,7 @@ func (u UserService) UpdateUser(c context.Context, userModel model.User) (model.
 	span, c := jtrace.T().SpanFromContext(c, "UserService[UpdateUser]")
 	defer span.Finish()
 
-	userRecord, err := u.GetUser(c, map[string]any{"id": userModel.ID})
+	userRecord, err := u.GetUser(c, persist.Conds{"id": userModel.ID})
 
 	if err != nil {
 		return model.User{}, err
@@ -140,7 +141,7 @@ func (u UserService) UpdateUser(c context.Context, userModel model.User) (model.
 	}
 
 	if userRecord.NationalId != userModel.NationalId && len(userModel.NationalId) > 0 {
-		exists, err := u.userRepository.Exists(c, map[string]any{"national_id": userModel.NationalId})
+		exists, err := u.userRepository.Exists(c, persist.Conds{"national_id": userModel.NationalId})
 		if err != nil {
 			return model.User{}, err
 		}
@@ -150,7 +151,7 @@ func (u UserService) UpdateUser(c context.Context, userModel model.User) (model.
 	}
 
 	if userRecord.PhoneNumber != userModel.PhoneNumber && len(userModel.PhoneNumber) > 0 {
-		exists, err := u.userRepository.Exists(c, map[string]any{"phone_number": userModel.PhoneNumber})
+		exists, err := u.userRepository.Exists(c, persist.Conds{"phone_number": userModel.PhoneNumber})
 		if err != nil {
 			return model.User{}, err
 		}
@@ -164,7 +165,7 @@ func (u UserService) UpdateUser(c context.Context, userModel model.User) (model.
 		return model.User{}, err
 	}
 
-	userRecord, err = u.GetUser(c, map[string]any{"id": userModel.ID})
+	userRecord, err = u.GetUser(c, persist.Conds{"id": userModel.ID})
 	if err != nil {
 		return model.User{}, err
 	}
@@ -176,7 +177,7 @@ func (u UserService) DeleteUser(c context.Context, userId uuid.UUID) error {
 	span, c := jtrace.T().SpanFromContext(c, "UserService[DeleteUser]")
 	defer span.Finish()
 
-	if _, err := u.GetUser(c, map[string]any{"id": userId}); err != nil {
+	if _, err := u.GetUser(c, persist.Conds{"id": userId}); err != nil {
 		return err
 	}
 

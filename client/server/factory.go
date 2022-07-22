@@ -31,6 +31,7 @@ type ControllerContainer struct {
 	AuthController     contract.IAuthController
 	UserController     contract.IUserController
 	CategoryController contract.ICategoryController
+	CardController     contract.ICardController
 }
 
 func New(cc ControllerContainer) contract.IServer {
@@ -64,6 +65,14 @@ func New(cc ControllerContainer) contract.IServer {
 	categoryRouter.Post("/", cc.CategoryController.AddCategory)
 	categoryRouter.Patch("/:id", cc.CategoryController.UpdateCategory)
 	categoryRouter.Delete("/:id", cc.CategoryController.DeleteCategory)
+
+	cardRouter := router.Group("/card")
+	cardRouter.Use(cc.JwtMiddleware.Handle)
+	cardRouter.Get("/", cc.CardController.GetAllCards)
+	cardRouter.Get("/:id", cc.CardController.GetCard)
+	cardRouter.Post("/", cc.CardController.AddCard)
+	cardRouter.Post("/:id/approve", cc.CardController.ApproveCard)
+	cardRouter.Delete("/:id", cc.CardController.RemoveCard)
 
 	return &fiberapp.Server{
 		App: app,

@@ -13,5 +13,5 @@ docker-compose-dev.yml
 .vscode
 docs/*
 
-nft
+
 main

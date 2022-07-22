@@ -126,9 +126,9 @@ func (cat CategoryController) AddCategory(c *fiber.Ctx) error {
 // @Tags     category
 // @Accept   json
 // @Produce  json
-// @Param    id       path  int                     true      "category id that will be updated"
-// @Param    message  body  dto.AddCategoryRequest  true      "update category request body"
-// @Success  200                                    {object}  dto.CategoryDto
+// @Param    id       path      int                     true  "category id that will be updated"
+// @Param    message  body      dto.AddCategoryRequest  true  "update category request body"
+// @Success  200      {object}  dto.CategoryDto
 // @Router   /v1/category/{id} [patch]
 func (cat CategoryController) UpdateCategory(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "CategoryController[UpdateCategory]")

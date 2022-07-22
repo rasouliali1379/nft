@@ -9,13 +9,24 @@ func GetBadRequestError(c *fiber.Ctx, message string) error {
 	})
 }
 
+func GetNotFoundError(c *fiber.Ctx, message string) error {
+
+	if len(message) < 1 {
+		message = "not found"
+	}
+
+	return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		"message": message,
+	})
+}
+
 func GetInternalError(c *fiber.Ctx, message string) error {
 
 	if len(message) < 1 {
 		message = "somthing unexpected happened"
 	}
 
-	return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 		"message": message,
 	})
 }

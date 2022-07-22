@@ -2,6 +2,7 @@ package contract
 
 import (
 	"context"
+	"nft/client/persist/model"
 	model "nft/src/category/model"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,10 +27,10 @@ type ICategoryService interface {
 }
 
 type ICategoryRepository interface {
-	Exists(c context.Context, conditions map[string]any) error
+	Exists(c context.Context, conditions persist.Conds) error
 	Add(c context.Context, category model.Category) (model.Category, error)
 	Update(c context.Context, userModel model.Category) (model.Category, error)
 	Delete(c context.Context, userId uuid.UUID) error
-	Get(c context.Context, conditions map[string]any) (model.Category, error)
-	GetAll(c context.Context, conditions map[string]any) ([]model.Category, error)
+	Get(c context.Context, conditions persist.Conds) (model.Category, error)
+	GetAll(c context.Context, conditions persist.Conds) ([]model.Category, error)
 }

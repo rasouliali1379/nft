@@ -14,12 +14,15 @@ import (
 
 	//modules
 	"nft/src/auth"
+	"nft/src/card"
 	"nft/src/category"
 	"nft/src/collection"
 	"nft/src/email"
 	"nft/src/jwt"
+	"nft/src/kyc"
 	"nft/src/otp"
 	"nft/src/user"
+	"nft/src/nft"
 
 	"go.uber.org/fx"
 )
@@ -39,6 +42,9 @@ func Start() {
 			email.Module,
 			collection.Module,
 			category.Module,
+			kyc.Module,
+			card.Module,
+			nft.Module,
 			fx.Provide(server.New),
 			fx.Invoke(config.InitConfigs),
 			fx.Invoke(jtrace.InitGlobalTracer),
