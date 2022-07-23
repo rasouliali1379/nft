@@ -15,3 +15,12 @@ func mapJwtEntityToRefreshTokenModel(refresh *entity.Jwt) model.RefreshToken {
 		UpdatedAt: refresh.UpdatedAt,
 	}
 }
+
+func mapRefreshTokenModelToJwtEntity(data model.RefreshToken) entity.Jwt {
+	return entity.Jwt{
+		ID:      data.Id,
+		Token:   data.Token,
+		Invoked: data.Invoked,
+		UserId:  data.UserId,
+	}
+}

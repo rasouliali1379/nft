@@ -50,6 +50,7 @@ func New(cc ControllerContainer) contract.IServer {
 	authRouter.Post("/refresh", cc.AuthController.Refresh)
 	authRouter.Post("/verify-email", cc.AuthController.VerifyEmail)
 	authRouter.Post("/resend-email", cc.AuthController.ResendEmail)
+	authRouter.Post("/logout", cc.AuthController.Logout)
 
 	userRouter := router.Group("/user")
 	userRouter.Get("/", cc.UserController.GetAllUsers)

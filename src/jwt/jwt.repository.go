@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"nft/client/jtrace"
+	persist "nft/client/persist/model"
 	"nft/config"
 	"nft/contract"
 	nerror "nft/error"
@@ -105,13 +106,11 @@ func (j JwtRepository) Add(c context.Context, token string, userId string) error
 	return nil
 }
 
-func (j JwtRepository) Get(c context.Context, token string) (model.RefreshToken, error) {
+func (j JwtRepository) Get(c context.Context, conditions persist.Conds) (model.RefreshToken, error) {
 	span, c := jtrace.T().SpanFromContext(c, "JwtRepository[Get]")
 	defer span.Finish()
 
-	refresh, err := j.db.Get(c, &jwt.Jwt{}, map[string]any{
-		"token": token,
-	})
+	refresh, err := j.db.Get(c, &jwt.Jwt{}, conditions)
 	if err != nil {
 		return model.RefreshToken{}, fmt.Errorf("error happened while retrieving token from database: %w", err)
 	}
@@ -119,12 +118,11 @@ func (j JwtRepository) Get(c context.Context, token string) (model.RefreshToken,
 	return mapJwtEntityToRefreshTokenModel(refresh.(*jwt.Jwt)), nil
 }
 
-func (j JwtRepository) Update(c context.Context, id uint, token string) error {
+func (j JwtRepository) Update(c context.Context, data model.RefreshToken) error {
 	span, c := jtrace.T().SpanFromContext(c, "JwtRepository[Update]")
 	defer span.Finish()
 
-	_, err := j.db.Update(c, &jwt.Jwt{ID: id}, map[string]any{"token": token})
-	if err != nil {
+	if _, err := j.db.Update(c, &jwt.Jwt{ID: data.Id}, mapRefreshTokenModelToJwtEntity(data)); err != nil {
 		return fmt.Errorf("error happened while updating jwt: %w", err)
 	}
 

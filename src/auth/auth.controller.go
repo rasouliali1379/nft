@@ -6,6 +6,7 @@ import (
 
 	"nft/client/jtrace"
 	"nft/contract"
+	apperrors "nft/error"
 	merror "nft/error"
 	"nft/pkg/filper"
 	"nft/pkg/validator"
@@ -230,4 +231,44 @@ func (a AuthController) ResendEmail(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(dto.OtpToken{Token: token})
+}
+
+// Logout godoc
+// @Summary  logout user and invoke refresh token
+// @Tags     auth
+// @Accept   json
+// @Produce  json
+// @Param    message  body      dto.RefreshRequest  true  "resend email request body"
+// @Success  200  {string}  string  "logged out successfully"
+// @Router   /v1/auth/logout [post]
+func (a AuthController) Logout(c *fiber.Ctx) error {
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "AuthController[Logout]")
+	defer span.Finish()
+
+	if c.Body() == nil {
+		return filper.GetBadRequestError(c, "you need to provide body in your request")
+	}
+
+	var request dto.RefreshRequest
+	if err := c.BodyParser(&request); err != nil {
+		return filper.GetBadRequestError(c, "invalid body data")
+	}
+
+	errs := validator.Validate(request)
+	if len(errs) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errs)
+	}
+
+	if err := a.jwtService.InvokeRefreshToken(ctx, request.RefreshToken); err != nil {
+		if errors.Is(err, apperrors.ErrTokenInvoked) {
+			return filper.GetBadRequestError(c, "token already invoked")
+		} else if errors.Is(err, apperrors.ErrTokenNotFound) {
+			return filper.GetNotFoundError(c, "token not found")
+		} else if errors.Is(err, apperrors.ErrTokenExpired) {
+			return filper.GetBadRequestError(c, "token expired")
+		}
+		return filper.GetInternalError(c, "")
+	}
+
+	return filper.GetSuccessResponse(c, "logged out successfully")
 }

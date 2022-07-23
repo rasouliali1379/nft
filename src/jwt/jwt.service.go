@@ -73,29 +73,12 @@ func (j JwtService) Refresh(c context.Context, refreshToken string) (jwt.Jwt, er
 	span, c := jtrace.T().SpanFromContext(c, "JwtService[Refresh]")
 	defer span.Finish()
 
-	token, err := j.jwtRepository.Get(c, refreshToken)
+	token, err := j.GetToken(c, refreshToken)
 	if err != nil {
-		if errors.Is(err, merror.ErrRecordNotFound) {
-			return jwt.Jwt{}, merror.ErrTokenInvoked
-		}
 		return jwt.Jwt{}, err
 	}
 
 	exp := time.Hour * time.Duration(config.C().JWT.RefExpInHour)
-
-	if token.UpdatedAt != nil {
-		if time.Now().After(token.UpdatedAt.Add(exp)) {
-			return jwt.Jwt{}, merror.ErrTokenExpired
-		}
-	} else {
-		if time.Now().After(token.CreatedAt.Add(exp)) {
-			return jwt.Jwt{}, merror.ErrTokenExpired
-		}
-	}
-
-	if token.Invoked {
-		return jwt.Jwt{}, merror.ErrTokenInvoked
-	}
 
 	accessToken, err := j.jwtRepository.Generate(c,
 		token.UserId,
@@ -111,7 +94,7 @@ func (j JwtService) Refresh(c context.Context, refreshToken string) (jwt.Jwt, er
 		return jwt.Jwt{}, err
 	}
 
-	if err := j.jwtRepository.Update(c, token.Id, refToken); err != nil {
+	if err := j.jwtRepository.Update(c, jwt.RefreshToken{Id: token.Id, Token: refToken}); err != nil {
 		return jwt.Jwt{}, err
 	}
 
@@ -134,4 +117,47 @@ func (j JwtService) GenereteOtpToken(c context.Context, userId string) (string, 
 	}
 
 	return otpToken, nil
+}
+
+func (j JwtService) InvokeRefreshToken(c context.Context, refreshToken string) error {
+	span, c := jtrace.T().SpanFromContext(c, "JwtService[InvokeRefreshToken]")
+	defer span.Finish()
+
+	token, err := j.GetToken(c, refreshToken)
+	if err != nil {
+		return err
+	}
+
+	return j.jwtRepository.Update(c, jwt.RefreshToken{Id: token.Id, Invoked: true})
+}
+
+func (j JwtService) GetToken(c context.Context, refreshToken string) (jwt.RefreshToken, error) {
+	span, c := jtrace.T().SpanFromContext(c, "JwtService[GetToken]")
+	defer span.Finish()
+
+	token, err := j.jwtRepository.Get(c, map[string]any{"token": refreshToken})
+	if err != nil {
+		if errors.Is(err, merror.ErrRecordNotFound) {
+			return jwt.RefreshToken{}, merror.ErrTokenNotFound
+		}
+		return jwt.RefreshToken{}, err
+	}
+
+	exp := time.Hour * time.Duration(config.C().JWT.RefExpInHour)
+
+	if token.UpdatedAt != nil {
+		if time.Now().After(token.UpdatedAt.Add(exp)) {
+			return jwt.RefreshToken{}, merror.ErrTokenExpired
+		}
+	} else {
+		if time.Now().After(token.CreatedAt.Add(exp)) {
+			return jwt.RefreshToken{}, merror.ErrTokenExpired
+		}
+	}
+
+	if token.Invoked {
+		return jwt.RefreshToken{}, merror.ErrTokenInvoked
+	}
+
+	return token, nil
 }

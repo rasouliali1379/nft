@@ -2,6 +2,7 @@ package contract
 
 import (
 	"context"
+	"nft/client/persist/model"
 	model "nft/src/jwt/model"
 	"time"
 
@@ -16,8 +17,8 @@ type IJwtRepository interface {
 	Generate(c context.Context, userId string, expirationTime time.Time) (string, error)
 	Validate(c context.Context, token string) (uuid.UUID, error)
 	Add(c context.Context, token string, userId string) error
-	Update(c context.Context, id uint, token string) error
-	Get(c context.Context, token string) (model.RefreshToken, error)
+	Update(c context.Context, data model.RefreshToken) error
+	Get(c context.Context, conditions persist.Conds) (model.RefreshToken, error)
 }
 
 type IJwtService interface {
@@ -25,4 +26,6 @@ type IJwtService interface {
 	Validate(c context.Context, token string) (uuid.UUID, error)
 	Refresh(c context.Context, refreshToken string) (model.Jwt, error)
 	GenereteOtpToken(c context.Context, userId string) (string, error)
+	InvokeRefreshToken(c context.Context, refreshToken string) error
+	GetToken(c context.Context, refreshToken string) (model.RefreshToken, error)
 }

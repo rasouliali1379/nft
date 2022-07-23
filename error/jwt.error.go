@@ -7,5 +7,6 @@ var (
 	ErrInvalidToken = errors.New("invalid token")
 	ErrTokenExpired = errors.New("token expired")
 	ErrTokenMalformed = errors.New("malformed token")
-	ErrTokenInvoked = errors.New("token invoked")
+	ErrTokenNotFound = errors.New("token not found")
+	ErrTokenInvoked = errors.New("token already invoked")
 )

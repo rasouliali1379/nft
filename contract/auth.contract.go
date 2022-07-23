@@ -15,6 +15,7 @@ type IAuthController interface {
 	Refresh(c *fiber.Ctx) error
 	VerifyEmail(c *fiber.Ctx) error
 	ResendEmail(c *fiber.Ctx) error
+	Logout(c *fiber.Ctx) error
 }
 
 type IAuthService interface {

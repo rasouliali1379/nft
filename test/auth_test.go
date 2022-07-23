@@ -3,13 +3,13 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"nft/config"
-	authdto "nft/src/auth/dto"
-
 	"github.com/go-resty/resty/v2"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"net/http"
+	"nft/config"
+	authdto "nft/src/auth/dto"
+	jwt "nft/src/jwt/model"
 )
 
 var _ = Describe("Auth", func() {
@@ -34,6 +34,7 @@ var _ = Describe("Auth", func() {
 	}
 
 	var otpToken string
+	var jwtToken jwt.Jwt
 
 	Describe("SignUp", func() {
 		It("should sign up new user successfully", func() {
@@ -93,6 +94,44 @@ var _ = Describe("Auth", func() {
 			resp, err := client.R().
 				SetBody(loginDto).
 				Post(baseUrl + "login")
+
+			if err != nil {
+				Expect(err).NotTo(HaveOccurred())
+			}
+
+			if err = json.Unmarshal(resp.Body(), &jwtToken); err != nil {
+				Fail("unable to unmarshal jwt object")
+			}
+
+			By("status code should be 200")
+			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
+		})
+	})
+
+	Describe("Refresh", func() {
+		It("should refresh user token successfully", func() {
+			resp, err := client.R().
+				SetBody(authdto.RefreshRequest{RefreshToken: jwtToken.RefreshToken}).
+				Post(baseUrl + "refresh")
+
+			if err != nil {
+				Expect(err).NotTo(HaveOccurred())
+			}
+
+			if err = json.Unmarshal(resp.Body(), &jwtToken); err != nil {
+				Fail("unable to unmarshal jwt object")
+			}
+
+			By("status code should be 200")
+			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
+		})
+	})
+
+	Describe("Logout", func() {
+		It("should logout the user successfully", func() {
+			resp, err := client.R().
+				SetBody(authdto.RefreshRequest{RefreshToken: jwtToken.RefreshToken}).
+				Post(baseUrl + "logout")
 
 			if err != nil {
 				Expect(err).NotTo(HaveOccurred())
