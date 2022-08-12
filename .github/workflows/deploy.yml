@@ -26,6 +26,7 @@ jobs:
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSHKEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
+          rm: true
           source: "."
           target: "/home/samrd/nft"
 
