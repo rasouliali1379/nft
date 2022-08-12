@@ -33,6 +33,20 @@ postgres:
   port: "5432"
   schema: "nft"
 
+
+storage:
+  url: "http://195.154.232.208:9000"
+  username: "fGyKWBuw8Hq1EqEMvCyVTDCXunmjlH4X"
+  password: "2bQvNZ0Mg0LGckuzsLGILj8SLoLR6ospPQiAC6BDTvM3JVjfTRAp7n4QGDlIzLyn"
+  ssl: false
+  urlExpInMin: 60
+  buckets:
+    kyc: "kyc"
+    nft: "nft"
+
+file:
+  tempDir: "temp"
+
 Nats:
   username: ""
   password: ""

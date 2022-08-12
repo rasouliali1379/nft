@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"nft/client/jtrace"
 	"nft/contract"
-	merror "nft/error"
+	"nft/error"
 	model "nft/src/email/model"
 
 	"github.com/google/uuid"
@@ -37,10 +37,9 @@ func (e EmailService) GetEmail(c context.Context, email string) (model.Email, er
 
 	emailModel, err := e.emailRepository.Get(c, map[string]any{"email": email})
 	if err != nil {
-		if errors.Is(err, merror.ErrRecordNotFound) {
-			return model.Email{}, merror.ErrEmailNotFound
+		if errors.Is(err, apperrors.ErrRecordNotFound) {
+			return model.Email{}, apperrors.ErrEmailNotFound
 		}
-
 		return model.Email{}, err
 	}
 
@@ -63,7 +62,7 @@ func (e EmailService) AddEmail(c context.Context, userId uuid.UUID, email string
 	}
 
 	if emailExists {
-		return model.Email{}, merror.ErrEmailExists
+		return model.Email{}, apperrors.ErrEmailExists
 	}
 
 	emailRecord, err := e.emailRepository.Add(c, userId, email)
@@ -92,8 +91,8 @@ func (e EmailService) SendOtpEmail(c context.Context, emailId uint) error {
 	return nil
 }
 
-func (e EmailService) AproveEmail(c context.Context, userId uuid.UUID, email string) error {
-	span, c := jtrace.T().SpanFromContext(c, "EmailService[AproveEmail]")
+func (e EmailService) ApproveEmail(c context.Context, userId uuid.UUID, email string) error {
+	span, c := jtrace.T().SpanFromContext(c, "EmailService[ApproveEmail]")
 	defer span.Finish()
 
 	emailRecord, err := e.emailRepository.Get(c, map[string]any{"email": email})
@@ -105,11 +104,10 @@ func (e EmailService) AproveEmail(c context.Context, userId uuid.UUID, email str
 		if _, err := e.emailRepository.Update(c, model.Email{ID: emailRecord.ID, Verified: true}); err != nil {
 			return err
 		}
-
 		return nil
 	}
 
-	return merror.ErrEmailDoesntBelongToUser
+	return apperrors.ErrEmailDoesntBelongToUser
 }
 
 func (e EmailService) EmailExists(c context.Context, email string) (bool, error) {

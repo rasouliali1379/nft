@@ -7,10 +7,13 @@ import (
 	"nft/client/jtrace"
 	"nft/client/persist"
 	"nft/client/server"
+	"nft/client/storage"
 	"nft/config"
 	"nft/contract"
-	"os"
+	"syscall"
 	"time"
+
+	"go.uber.org/fx"
 
 	//modules
 	"nft/src/auth"
@@ -18,13 +21,12 @@ import (
 	"nft/src/category"
 	"nft/src/collection"
 	"nft/src/email"
+	"nft/src/file"
 	"nft/src/jwt"
 	"nft/src/kyc"
+	"nft/src/nft"
 	"nft/src/otp"
 	"nft/src/user"
-	"nft/src/nft"
-
-	"go.uber.org/fx"
 )
 
 func Start() {
@@ -34,7 +36,10 @@ func Start() {
 
 	for {
 		fxNew := fx.New(
+			fx.Provide(server.New),
 			fx.Provide(persist.New),
+			fx.Provide(storage.New),
+
 			auth.Module,
 			user.Module,
 			jwt.Module,
@@ -45,7 +50,8 @@ func Start() {
 			kyc.Module,
 			card.Module,
 			nft.Module,
-			fx.Provide(server.New),
+			file.Module,
+
 			fx.Invoke(config.InitConfigs),
 			fx.Invoke(jtrace.InitGlobalTracer),
 			fx.Invoke(migrate),
@@ -59,7 +65,8 @@ func Start() {
 			log.Println(err)
 			break
 		}
-		if val := <-fxNew.Done(); val == os.Interrupt {
+
+		if val := <-fxNew.Done(); val == syscall.SIGTERM {
 			break
 		}
 

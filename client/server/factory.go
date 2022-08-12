@@ -32,6 +32,7 @@ type ControllerContainer struct {
 	UserController     contract.IUserController
 	CategoryController contract.ICategoryController
 	CardController     contract.ICardController
+	KYCController      contract.IKYCController
 }
 
 func New(cc ControllerContainer) contract.IServer {
@@ -74,6 +75,14 @@ func New(cc ControllerContainer) contract.IServer {
 	cardRouter.Post("/", cc.CardController.AddCard)
 	cardRouter.Post("/:id/approve", cc.CardController.ApproveCard)
 	cardRouter.Delete("/:id", cc.CardController.RemoveCard)
+
+	kycRouter := router.Group("/kyc")
+	kycRouter.Use(cc.JwtMiddleware.Handle)
+	kycRouter.Get("/", cc.KYCController.GetAllAppeals)
+	kycRouter.Get("/:id", cc.KYCController.GetAppeal)
+	kycRouter.Post("/", cc.KYCController.Appeal)
+	kycRouter.Post("/:id/approve", cc.KYCController.Approve)
+	kycRouter.Post("/:id/reject", cc.KYCController.Reject)
 
 	return &fiberapp.Server{
 		App: app,

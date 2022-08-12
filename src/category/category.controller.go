@@ -79,7 +79,7 @@ func (cat CategoryController) GetAllCategories(c *fiber.Ctx) error {
 // @Tags     category
 // @Accept   json
 // @Produce  json
-// @Param    message  body      dto.AddCategoryRequest  true  "Add category request body. Not providing paent_id means the it's a main category"
+// @Param    message  body      dto.AddCategoryRequest  true  "Add category request body. Not providing parent_id means that it's a main category"
 // @Success  200      {object}  dto.CategoryDto
 // @Router   /v1/category [post]
 func (cat CategoryController) AddCategory(c *fiber.Ctx) error {

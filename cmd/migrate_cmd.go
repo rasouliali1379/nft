@@ -17,7 +17,6 @@ var migrateCMD = cobra.Command{
 	Run:     Runner.Migrate,
 }
 
-// migrate database with fake data
 func (c *command) Migrate(cmd *cobra.Command, args []string) {
 	fx.New(
 		fx.Provide(persist.New),

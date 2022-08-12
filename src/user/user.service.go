@@ -113,7 +113,7 @@ func (u UserService) AddUser(c context.Context, userModel model.User) (model.Use
 		return model.User{}, err
 	}
 
-	if err := u.emailService.AproveEmail(c, newUser.ID, userModel.Email); err != nil {
+	if err := u.emailService.ApproveEmail(c, newUser.ID, userModel.Email); err != nil {
 		return model.User{}, err
 	}
 

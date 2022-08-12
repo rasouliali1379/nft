@@ -22,7 +22,6 @@ type CommandLine interface {
 type command struct {
 }
 
-// rootCmd will run the log streamer
 var rootCmd = cobra.Command{
 	Use:  "micro",
 	Long: "A service that will validate restful transactions and send them to stripe.",

@@ -22,7 +22,7 @@ type IEmailService interface {
 	GetEmail(c context.Context, email string) (model.Email, error)
 	GetUserEmail(c context.Context, userId uuid.UUID) (model.Email, error)
 	AddEmail(c context.Context, userId uuid.UUID, email string) (model.Email, error)
-	AproveEmail(c context.Context, userId uuid.UUID, email string) error
+	ApproveEmail(c context.Context, userId uuid.UUID, email string) error
 	SendOtpEmail(c context.Context, emailId uint) error
 	GetLastVerifiedEmail(c context.Context, userId uuid.UUID) (model.Email, error)
 }

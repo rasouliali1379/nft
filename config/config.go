@@ -28,6 +28,8 @@ type Config struct {
 	Etcd     Etcd     `yaml:"etcd" required:"true"`
 	Redis    Redis    `yaml:"redis" required:"true"`
 	Postgres Database `yaml:"database" required:"true"`
+	Storage  Storage  `yaml:"storage" required:"true"`
+	File     File     `yaml:"file" required:"true"`
 	Nats     NATS     `yaml:"nats" required:"true"`
 	JWT      JWT      `yaml:"jwt" json:"jwt" required:"true"`
 	Otp      Otp      `yaml:"otp" json:"otp" required:"true"`

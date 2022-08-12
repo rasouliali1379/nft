@@ -20,7 +20,6 @@ var (
 	}
 )
 
-// seed database with fake data
 func (c *command) Seed(cmd *cobra.Command, args []string) {
 	fx.New(
 		fx.Provide(persist.New),

@@ -3,7 +3,6 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"nft/config"
 	"time"
@@ -45,13 +44,13 @@ var _ = Describe("Category Management", Ordered, func() {
 			Post(baseUrl + "signup")
 
 		if err != nil {
-			Fail(fmt.Sprintf("failed to verify user email for testing categories: %s", err.Error()), 5)
+			AbortSuite(fmt.Sprintf("failed to verify user email for testing categories: %s", err.Error()))
 		}
 
 		var signUpResponse authdto.OtpToken
 		err = json.Unmarshal(resp.Body(), &signUpResponse)
 		if err != nil {
-			Fail(fmt.Sprintf("failed to unmarshal sign up response for testing categories: %s", err.Error()), 5)
+			AbortSuite(fmt.Sprintf("failed to unmarshal sign up response for testing categories: %s", err.Error()))
 		}
 
 		resp, err = client.R().
@@ -62,7 +61,7 @@ var _ = Describe("Category Management", Ordered, func() {
 			Post(baseUrl + "verify-email")
 
 		if err != nil {
-			Fail(fmt.Sprintf("failed to verify user email for testing categories: %s", err.Error()), 5)
+			AbortSuite(fmt.Sprintf("failed to verify user email for testing categories: %s", err.Error()))
 		}
 
 		loginDto := authdto.LoginRequest{
@@ -75,20 +74,19 @@ var _ = Describe("Category Management", Ordered, func() {
 			Post(baseUrl + "login")
 
 		if err != nil {
-			Fail(fmt.Sprintf("failed to unmarshal login response: %s", err.Error()), 5)
+			AbortSuite(fmt.Sprintf("failed to unmarshal login response: %s", err.Error()))
 		}
-		log.Println(resp)
+
 		var jwtToken jwt.Jwt
 		err = json.Unmarshal(resp.Body(), &jwtToken)
 		if err != nil {
-			Fail(fmt.Sprintf("failed unmarshal jwt struct: %s", err.Error()), 5)
+			AbortSuite(fmt.Sprintf("failed unmarshal jwt struct: %s", err.Error()))
 		}
-
 		token = jwtToken.AccessToken
 	})
 
 	cat := catdto.AddCategoryRequest{
-		Name: "Fisrt",
+		Name: "First",
 	}
 
 	var catId uuid.UUID

@@ -239,7 +239,7 @@ func (a AuthController) ResendEmail(c *fiber.Ctx) error {
 // @Accept   json
 // @Produce  json
 // @Param    message  body      dto.RefreshRequest  true  "resend email request body"
-// @Success  200  {string}  string  "logged out successfully"
+// @Success  200      {string}  string              "logged out successfully"
 // @Router   /v1/auth/logout [post]
 func (a AuthController) Logout(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "AuthController[Logout]")

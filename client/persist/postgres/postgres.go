@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"nft/client/jtrace"
 	"nft/config"
 	merror "nft/error"
@@ -13,8 +11,12 @@ import (
 	category "nft/src/category/entity"
 	email "nft/src/email/entity"
 	jwt "nft/src/jwt/entity"
+	kyc "nft/src/kyc/entity"
 	otp "nft/src/otp/entity"
 	user "nft/src/user/entity"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Postgres struct {
@@ -51,7 +53,9 @@ func (p *Postgres) Migrate(c context.Context) error {
 			&jwt.Jwt{},
 			&email.Email{},
 			&otp.Otp{},
-			&card.Card{}); err != nil {
+			&card.Card{},
+			&kyc.KYC{},
+		); err != nil {
 			return fmt.Errorf("error happened while migrating tables: %w", err)
 		}
 
