@@ -68,7 +68,6 @@ func C() *Config {
 	return &confs
 }
 
-// init configs
 func InitConfigs(shutdowner fx.Shutdowner) {
 	dir, _ := os.Getwd()
 	viper.SetConfigName("config")

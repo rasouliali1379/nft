@@ -80,6 +80,7 @@ func (u UserService) GetUser(c context.Context, conditions persist.Conds) (model
 func (u UserService) AddUser(c context.Context, userModel model.User) (model.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "UserService[AddUser]")
 	defer span.Finish()
+
 	exists, err := u.emailService.EmailExists(c, userModel.Email)
 	if err != nil {
 		return model.User{}, err

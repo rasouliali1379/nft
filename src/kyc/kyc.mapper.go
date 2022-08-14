@@ -3,7 +3,6 @@ package kyc
 import (
 	"database/sql"
 	"io"
-	"log"
 	"mime/multipart"
 	file "nft/src/file/model"
 	dto "nft/src/kyc/dto"
@@ -50,10 +49,16 @@ func createKYCModel(idCard *multipart.FileHeader, portrait *multipart.FileHeader
 
 func mapKYCModelToDto(res model.KYC) dto.KYC {
 	var status dto.KYCStatus
-	approved := *res.ApprovedBy != uuid.Nil
-	rejected := *res.RejectedBy != uuid.Nil
-	log.Println(res.ApprovedBy, approved, rejected)
+	approved, rejected := false, false
 
+	if res.ApprovedBy != nil {
+		approved = *res.ApprovedBy != uuid.Nil
+	}
+
+	if res.RejectedBy != nil {
+		rejected = *res.RejectedBy != uuid.Nil
+	}
+	
 	if approved {
 		status = dto.KYCStatusApproved
 	} else if rejected {

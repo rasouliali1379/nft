@@ -73,6 +73,7 @@ func (k KYCController) Appeal(c *fiber.Ctx) error {
 
 	appeal, err := k.kycService.Appeal(ctx, kycModel)
 	if err != nil {
+		log.Println(err)
 		return filper.GetInternalError(c, "")
 	}
 

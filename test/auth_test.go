@@ -12,9 +12,11 @@ import (
 	jwt "nft/src/jwt/model"
 )
 
-var _ = Describe("Auth", func() {
+var _ = Describe("Auth", Ordered, func() {
+
+	var baseUrl string
+
 	client := resty.New()
-	baseUrl := fmt.Sprintf("http://%s:%s/v1/auth/", config.C().App.Http.Host, config.C().App.Http.Port)
 	signUpDto := authdto.SignUpRequest{
 		FirstName:      "Ali",
 		LastName:       "Rasouli",
@@ -35,6 +37,10 @@ var _ = Describe("Auth", func() {
 
 	var otpToken string
 	var jwtToken jwt.Jwt
+
+	BeforeAll(func() {
+		baseUrl = fmt.Sprintf("http://%s:%s/v1/auth/", config.C().App.Http.Host, config.C().App.Http.Port)
+	})
 
 	Describe("SignUp", func() {
 		It("should sign up new user successfully", func() {
@@ -60,13 +66,13 @@ var _ = Describe("Auth", func() {
 
 	Describe("Verify Email", func() {
 		It("should verify email successfully", func() {
+
 			resp, err := client.R().
 				SetBody(authdto.VerifyEmailRequest{
 					Token: otpToken,
 					Code:  "111111",
 				}).
 				Post(baseUrl + "verify-email")
-
 			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 200")
@@ -76,13 +82,11 @@ var _ = Describe("Auth", func() {
 
 	Describe("Resend Verification Email", func() {
 		It("should resend verification email successfully", func() {
+
 			resp, err := client.R().
 				SetBody(authdto.ResendEmailRequest{Token: otpToken}).
 				Post(baseUrl + "resend-email")
-
-			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
@@ -91,13 +95,11 @@ var _ = Describe("Auth", func() {
 
 	Describe("Login", func() {
 		It("should login the user successfully", func() {
+
 			resp, err := client.R().
 				SetBody(loginDto).
 				Post(baseUrl + "login")
-
-			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			if err = json.Unmarshal(resp.Body(), &jwtToken); err != nil {
 				Fail("unable to unmarshal jwt object")
@@ -110,13 +112,11 @@ var _ = Describe("Auth", func() {
 
 	Describe("Refresh", func() {
 		It("should refresh user token successfully", func() {
+
 			resp, err := client.R().
 				SetBody(authdto.RefreshRequest{RefreshToken: jwtToken.RefreshToken}).
 				Post(baseUrl + "refresh")
-
-			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			if err = json.Unmarshal(resp.Body(), &jwtToken); err != nil {
 				Fail("unable to unmarshal jwt object")
@@ -129,13 +129,11 @@ var _ = Describe("Auth", func() {
 
 	Describe("Logout", func() {
 		It("should logout the user successfully", func() {
+
 			resp, err := client.R().
 				SetBody(authdto.RefreshRequest{RefreshToken: jwtToken.RefreshToken}).
 				Post(baseUrl + "logout")
-
-			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))

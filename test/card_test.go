@@ -11,79 +11,12 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	authdto "nft/src/auth/dto"
 	carddto "nft/src/card/dto"
-	jwt "nft/src/jwt/model"
 )
-
-var cardToken string
 
 var _ = Describe("Card Management", Ordered, func() {
 
-	BeforeAll(func() {
-		client := resty.New()
-		baseUrl := fmt.Sprintf("http://%s:%s/v1/auth/", config.C().App.Http.Host, config.C().App.Http.Port)
-
-		signUpDto := authdto.SignUpRequest{
-			FirstName:      "Ali",
-			LastName:       "Rasouli",
-			NationalId:     "0123456785",
-			Email:          "testcard@gmail.com",
-			PhoneNumber:    "09368045734",
-			LandLineNumber: "02133073333",
-			Password:       "ali1379",
-			Province:       "tehran",
-			City:           "terhan",
-			Address:        "mahallati",
-		}
-
-		resp, err := client.R().
-			SetBody(signUpDto).
-			Post(baseUrl + "signup")
-
-		if err != nil {
-			AbortSuite(fmt.Sprintf("failed to verify user email for testing cardegories: %s", err.Error()))
-		}
-
-		var signUpResponse authdto.OtpToken
-		err = json.Unmarshal(resp.Body(), &signUpResponse)
-		if err != nil {
-			AbortSuite(fmt.Sprintf("failed to unmarshal sign up response for testing cardegories: %s", err.Error()))
-		}
-
-		resp, err = client.R().
-			SetBody(authdto.VerifyEmailRequest{
-				Token: signUpResponse.Token,
-				Code:  "111111",
-			}).
-			Post(baseUrl + "verify-email")
-
-		if err != nil {
-			AbortSuite(fmt.Sprintf("failed to verify user email for testing cardegories: %s", err.Error()))
-		}
-
-		loginDto := authdto.LoginRequest{
-			Email:    "testcard@gmail.com",
-			Password: "ali1379",
-		}
-
-		resp, err = client.R().
-			SetBody(loginDto).
-			Post(baseUrl + "login")
-
-		if err != nil {
-			AbortSuite(fmt.Sprintf("failed to login: %s", err.Error()))
-		}
-
-		var jwtToken jwt.Jwt
-		err = json.Unmarshal(resp.Body(), &jwtToken)
-		if err != nil {
-			AbortSuite(fmt.Sprintf("failed unmarshal jwt struct: %s", err.Error()))
-		}
-
-		cardToken = jwtToken.AccessToken
-	})
-
+	var baseUrl string
 	card := carddto.AddCardRequest{
 		CardNumber: "31230213809",
 		IBAN:       "2131123122",
@@ -92,15 +25,18 @@ var _ = Describe("Card Management", Ordered, func() {
 	var cardId uuid.UUID
 
 	client := resty.New()
-	baseUrl := fmt.Sprintf("http://%s:%s/v1/card/", config.C().App.Http.Host, config.C().App.Http.Port)
+
+	BeforeAll(func() {
+		baseUrl = fmt.Sprintf("http://%s:%s/v1/card/", config.C().App.Http.Host, config.C().App.Http.Port)
+	})
 
 	Describe("add new card", func() {
 		It("should add new card successfully", func() {
+
 			resp, err := client.R().
 				SetBody(card).
-				SetAuthToken(cardToken).
+				SetAuthToken(token).
 				Post(baseUrl)
-
 			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 201")
@@ -111,11 +47,10 @@ var _ = Describe("Card Management", Ordered, func() {
 	Describe("Get cards list", func() {
 		It("should get cards list successfully", func() {
 			resp, err := client.R().
-				SetAuthToken(cardToken).
+				SetAuthToken(token).
 				Get(baseUrl)
-
 			if err != nil {
-				Fail(fmt.Sprintf("failed to make request to get cards list: %s", err.Error()))
+				Fail("unable to make request to get card list", 3)
 			}
 
 			By("status code should be 200")
@@ -123,7 +58,7 @@ var _ = Describe("Card Management", Ordered, func() {
 
 			var cardList carddto.CardList
 			if err = json.Unmarshal(resp.Body(), &cardList); err != nil {
-				Fail("unable to unmarshal card list")
+				Fail("unable to unmarshal card list", 3)
 			}
 
 			By("cards list should have one item")
@@ -136,12 +71,9 @@ var _ = Describe("Card Management", Ordered, func() {
 	Describe("Approve card", func() {
 		It("should approve card successfully", func() {
 			resp, err := client.R().
-				SetAuthToken(cardToken).
+				SetAuthToken(token).
 				Post(baseUrl + cardId.String() + "/approve")
-
-			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
@@ -151,17 +83,10 @@ var _ = Describe("Card Management", Ordered, func() {
 	Describe("Get card", func() {
 		It("should get single card successfully", func() {
 
-			if cardId == uuid.Nil {
-				Fail("card id is empty")
-			}
-
 			resp, err := client.R().
-				SetAuthToken(cardToken).
+				SetAuthToken(token).
 				Get(baseUrl + cardId.String())
-
-			if err != nil {
-				Fail(fmt.Sprintf("failed to make the request to get card: %s", err.Error()))
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
@@ -180,12 +105,9 @@ var _ = Describe("Card Management", Ordered, func() {
 		It("should delete user successfully", func() {
 
 			resp, err := client.R().
-				SetAuthToken(cardToken).
+				SetAuthToken(token).
 				Delete(baseUrl + cardId.String())
-
-			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))

@@ -16,7 +16,7 @@ import (
 	userdto "nft/src/user/dto"
 )
 
-var _ = Describe("User Management", func() {
+var _ = Describe("User Management", Ordered, func() {
 	user := authdto.SignUpRequest{
 		FirstName:      "Mohammad",
 		LastName:       "Javadi",
@@ -31,19 +31,19 @@ var _ = Describe("User Management", func() {
 	}
 
 	var userList userdto.UserListDto
-
+	var baseUrl string
 	client := resty.New()
-	baseUrl := fmt.Sprintf("http://%s:%s/v1/user/", config.C().App.Http.Host, config.C().App.Http.Port)
+
+	BeforeAll(func() {
+		baseUrl = fmt.Sprintf("http://%s:%s/v1/user/", config.C().App.Http.Host, config.C().App.Http.Port)
+	})
 
 	Describe("add new user", func() {
 		It("should add new user successfully", func() {
 			resp, err := client.R().
 				SetBody(user).
 				Post(baseUrl)
-
-			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 201")
 			Expect(resp.StatusCode()).To(Equal(http.StatusCreated))
@@ -52,15 +52,16 @@ var _ = Describe("User Management", func() {
 
 	Describe("Get users list", func() {
 		It("should get users list successfully", func() {
+
 			resp, err := client.R().
 				Get(baseUrl)
-
 			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
+				Fail(fmt.Sprintf("unable to make request to get user list: %s", err.Error()), 3)
 			}
 
-			if err = json.Unmarshal(resp.Body(), &userList); err != nil {
-				Fail("unable to unmarshal user list")
+			err = json.Unmarshal(resp.Body(), &userList)
+			if err != nil {
+				Fail(fmt.Sprintf("unable to unmarshal user list: %s", err.Error()), 3)
 			}
 
 			By("status code should be 200")
@@ -70,18 +71,14 @@ var _ = Describe("User Management", func() {
 
 	Describe("Get user", func() {
 		It("should get single user successfully", func() {
+
 			resp, err := client.R().
 				Get(baseUrl + userList.Users[0].ID)
-
-			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			var user userdto.UserDto
-
-			if err = json.Unmarshal(resp.Body(), &user); err != nil {
-				Fail("unable to unmarshal user details")
-			}
+			err = json.Unmarshal(resp.Body(), &user)
+			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
@@ -94,10 +91,6 @@ var _ = Describe("User Management", func() {
 	Describe("Update user", func() {
 		It("should update user successfully", func() {
 
-			if userList.Users == nil {
-				Fail("user list is empty")
-			}
-
 			userDetails := userList.Users[0]
 			generatedName := ng.NewNameGenerator(time.Now().UTC().UnixNano()).Generate()
 			userDetails.FirstName = generatedName
@@ -105,16 +98,11 @@ var _ = Describe("User Management", func() {
 			resp, err := client.R().
 				SetBody(userDetails).
 				Patch(baseUrl + userDetails.ID)
-
-			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			var updatedUser userdto.UserDto
-
-			if err = json.Unmarshal(resp.Body(), &updatedUser); err != nil {
-				Fail("unable to unmarshal user details")
-			}
+			err = json.Unmarshal(resp.Body(), &updatedUser)
+			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
@@ -127,16 +115,9 @@ var _ = Describe("User Management", func() {
 	Describe("Delete user", func() {
 		It("should delete user successfully", func() {
 
-			if userList.Users == nil {
-				Fail("user list is empty")
-			}
-
 			resp, err := client.R().
 				Delete(baseUrl + userList.Users[0].ID)
-
-			if err != nil {
-				Expect(err).NotTo(HaveOccurred())
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
