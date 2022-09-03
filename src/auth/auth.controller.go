@@ -58,9 +58,9 @@ func (a AuthController) SignUp(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
 
-	errs := validator.Validate(signUpRequest)
-	if len(errs) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
+	errRes := validator.Validate(signUpRequest)
+	if len(errRes.Errors) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errRes)
 
 	}
 
@@ -106,9 +106,9 @@ func (a AuthController) Login(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
 
-	errs := validator.Validate(dto)
-	if len(errs) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
+	errRes := validator.Validate(dto)
+	if len(errRes.Errors) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errRes)
 
 	}
 
@@ -140,18 +140,18 @@ func (a AuthController) Refresh(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "you need to provide body in your request")
 	}
 
-	var dto dto.RefreshRequest
-	if err := c.BodyParser(&dto); err != nil {
+	var request dto.RefreshRequest
+	if err := c.BodyParser(&request); err != nil {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
 
-	errs := validator.Validate(dto)
-	if len(errs) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
+	errRes := validator.Validate(request)
+	if len(errRes.Errors) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errRes)
 
 	}
 
-	response, err := a.jwtService.Refresh(ctx, dto.RefreshToken)
+	response, err := a.jwtService.Refresh(ctx, request.RefreshToken)
 	if err != nil {
 		if errors.Is(err, merror.ErrTokenInvoked) {
 			return filper.GetUnAuthError(c, "token invoked")
@@ -183,9 +183,9 @@ func (a AuthController) VerifyEmail(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
 
-	errs := validator.Validate(request)
-	if len(errs) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
+	errRes := validator.Validate(request)
+	if len(errRes.Errors) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errRes)
 	}
 
 	response, err := a.authService.VerifyEmail(ctx, request.Token, request.Code)
@@ -220,9 +220,9 @@ func (a AuthController) ResendEmail(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
 
-	errs := validator.Validate(request)
-	if len(errs) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
+	errRes := validator.Validate(request)
+	if len(errRes.Errors) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errRes)
 	}
 
 	token, err := a.authService.ResendVerificationEmail(ctx, request.Token)
@@ -254,9 +254,9 @@ func (a AuthController) Logout(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
 
-	errs := validator.Validate(request)
-	if len(errs) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
+	errRes := validator.Validate(request)
+	if len(errRes.Errors) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errRes)
 	}
 
 	if err := a.jwtService.InvokeRefreshToken(ctx, request.RefreshToken); err != nil {

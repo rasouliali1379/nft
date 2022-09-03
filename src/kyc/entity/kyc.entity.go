@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type KYC struct {
+type Kyc struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key;"`
 	CreatedAt time.Time
 	UpdatedAt *time.Time

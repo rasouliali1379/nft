@@ -54,7 +54,7 @@ func (p *Postgres) Migrate(c context.Context) error {
 			&email.Email{},
 			&otp.Otp{},
 			&card.Card{},
-			&kyc.KYC{},
+			&kyc.Kyc{},
 		); err != nil {
 			return fmt.Errorf("error happened while migrating tables: %w", err)
 		}

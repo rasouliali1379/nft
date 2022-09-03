@@ -1,0 +1,9 @@
+package apperrors
+
+import "errors"
+
+var (
+	ErrNftNotFound      = errors.New("nft doesn't exist")
+	ErrNftDraftNotFound = errors.New("nft draft not found")
+	ErrNftIsNotDraft    = errors.New("nft isn't drafted")
+)

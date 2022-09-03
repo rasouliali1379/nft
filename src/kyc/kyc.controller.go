@@ -16,31 +16,31 @@ import (
 	"go.uber.org/fx"
 )
 
-type KYCController struct {
-	kycService contract.IKYCService
+type KycController struct {
+	kycService contract.IKycService
 }
 
-type KYCControllerParams struct {
+type KycControllerParams struct {
 	fx.In
-	KYCService contract.IKYCService
+	KycService contract.IKycService
 }
 
-func NewKYCController(params KYCControllerParams) contract.IKYCController {
-	return &KYCController{
-		kycService: params.KYCService,
+func NewKycController(params KycControllerParams) contract.IKycController {
+	return &KycController{
+		kycService: params.KycService,
 	}
 }
 
 // Appeal godoc
-// @Summary  appeal for KYC
+// @Summary  appeal for Kyc
 // @Tags     kyc
 // @Accept   multipart/form-data
 // @Produce  json
 // @Param    id_card   formData  file  true  "Image of user's id card"
 // @Param    portrait  formData  file  true  "Image of user holding his id card are other things request by business"
 // @Router   /v1/kyc [post]
-func (k KYCController) Appeal(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "KYCController[Appeal]")
+func (k KycController) Appeal(c *fiber.Ctx) error {
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "KycController[Appeal]")
 	defer span.Finish()
 
 	if c.Locals("user_id") == nil {
@@ -66,7 +66,7 @@ func (k KYCController) Appeal(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "you need to provide an image of user holding his id card")
 	}
 
-	kycModel, err := createKYCModel(idCard[0], portrait[0], userId)
+	kycModel, err := createKycModel(idCard[0], portrait[0], userId)
 	if err != nil {
 		return filper.GetInternalError(c, "")
 	}
@@ -77,19 +77,19 @@ func (k KYCController) Appeal(c *fiber.Ctx) error {
 		return filper.GetInternalError(c, "")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(mapKYCModelToDto(appeal))
+	return c.Status(fiber.StatusCreated).JSON(mapKycModelToDto(appeal))
 }
 
 // Approve godoc
-// @Summary  approve KYC appeal
+// @Summary  approve Kyc appeal
 // @Tags     kyc
 // @Accept   json
 // @Produce  json
 // @Param    id   path      int     true  "appeal id that will be approved"
 // @Success  200  {string}  string  "appeal approved successfully"
 // @Router   /v1/kyc/{id}/approve [post]
-func (k KYCController) Approve(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "KYCController[Approve]")
+func (k KycController) Approve(c *fiber.Ctx) error {
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "KycController[Approve]")
 	defer span.Finish()
 
 	if c.Locals("user_id") == nil {
@@ -102,7 +102,7 @@ func (k KYCController) Approve(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "invalid appeal id")
 	}
 
-	err = k.kycService.Approve(ctx, kyc.KYC{ID: appealId, ApprovedBy: &userId})
+	err = k.kycService.Approve(ctx, kyc.Kyc{ID: appealId, ApprovedBy: &userId})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrAppealNotFoundError) {
 			return filper.GetNotFoundError(c, "appeal not found")
@@ -114,16 +114,16 @@ func (k KYCController) Approve(c *fiber.Ctx) error {
 }
 
 // Reject godoc
-// @Summary  reject KYC appeal
+// @Summary  reject Kyc appeal
 // @Tags     kyc
 // @Accept   json
 // @Produce  json
-// @Param    id   path      int     true  "appeal id that will be rejected"
-// @Param    message  body      dto.KYC  true  "optional rejection message"
-// @Success  200  {string}  string  "appeal rejected successfully"
+// @Param    id       path      int               true  "appeal id that will be rejected"
+// @Param    message  body      dto.RejectAppeal  true  "optional rejection message"
+// @Success  200      {string}  string            "appeal rejected successfully"
 // @Router   /v1/kyc/{id}/reject [post]
-func (k KYCController) Reject(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "KYCController[Reject]")
+func (k KycController) Reject(c *fiber.Ctx) error {
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "KycController[Reject]")
 	defer span.Finish()
 
 	if c.Locals("user_id") == nil {
@@ -145,7 +145,7 @@ func (k KYCController) Reject(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
 
-	err = k.kycService.Reject(ctx, kyc.KYC{ID: appealId, RejectedBy: &userId, RejectionReason: request.Message})
+	err = k.kycService.Reject(ctx, kyc.Kyc{ID: appealId, RejectedBy: &userId, RejectionReason: request.Message})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrAppealNotFoundError) {
 			return filper.GetNotFoundError(c, "appeal not found")
@@ -157,15 +157,15 @@ func (k KYCController) Reject(c *fiber.Ctx) error {
 }
 
 // GetAppeal godoc
-// @Summary  get KYC appeal
+// @Summary  get Kyc appeal
 // @Tags     kyc
 // @Accept   json
 // @Produce  json
-// @Param    id   path      int     true  "appeal id that will be retrieved"
-// @Success  200  {object}  dto.KYC
+// @Param    id   path      int  true  "appeal id that will be retrieved"
+// @Success  200  {object}  dto.Kyc
 // @Router   /v1/kyc/{id} [get]
-func (k KYCController) GetAppeal(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "KYCController[GetAppeal]")
+func (k KycController) GetAppeal(c *fiber.Ctx) error {
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "KycController[GetAppeal]")
 	defer span.Finish()
 
 	if c.Locals("user_id") == nil {
@@ -178,7 +178,7 @@ func (k KYCController) GetAppeal(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "invalid appeal id")
 	}
 
-	appeal, err := k.kycService.GetAppeal(ctx, kyc.KYC{ID: appealId, UserId: userId})
+	appeal, err := k.kycService.GetAppeal(ctx, kyc.Kyc{ID: appealId, UserId: userId})
 	if err != nil {
 		log.Println(err)
 		if errors.Is(err, apperrors.ErrAppealNotFoundError) {
@@ -188,18 +188,18 @@ func (k KYCController) GetAppeal(c *fiber.Ctx) error {
 		return filper.GetInternalError(c, "")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(mapKYCModelToDto(appeal))
+	return c.Status(fiber.StatusOK).JSON(mapKycModelToDto(appeal))
 }
 
 // GetAllAppeals godoc
-// @Summary  get all KYC appeals
+// @Summary  get all Kyc appeals
 // @Tags     kyc
 // @Accept   json
 // @Produce  json
-// @Success  200  {object}  dto.KYCList
+// @Success  200  {object}  dto.KycList
 // @Router   /v1/kyc [get]
-func (k KYCController) GetAllAppeals(c *fiber.Ctx) error {
-	span, ctx := jtrace.T().SpanFromContext(c.Context(), "KYCController[GetAllAppeals]")
+func (k KycController) GetAllAppeals(c *fiber.Ctx) error {
+	span, ctx := jtrace.T().SpanFromContext(c.Context(), "KycController[GetAllAppeals]")
 	defer span.Finish()
 
 	if c.Locals("user_id") == nil {
@@ -207,10 +207,10 @@ func (k KYCController) GetAllAppeals(c *fiber.Ctx) error {
 	}
 	userId := c.Locals("user_id").(uuid.UUID)
 
-	appeal, err := k.kycService.GetAllAppeals(ctx, kyc.KYC{UserId: userId})
+	appeal, err := k.kycService.GetAllAppeals(ctx, kyc.Kyc{UserId: userId})
 	if err != nil {
 		return filper.GetInternalError(c, "")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(createKYCListDtoFromModel(appeal))
+	return c.Status(fiber.StatusOK).JSON(createKycListDtoFromModel(appeal))
 }

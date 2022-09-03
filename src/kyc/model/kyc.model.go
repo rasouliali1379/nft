@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type KYC struct {
+type Kyc struct {
 	ID              uuid.UUID
 	ApprovedBy      *uuid.UUID
 	RejectedBy      *uuid.UUID

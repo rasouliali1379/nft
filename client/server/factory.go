@@ -32,7 +32,8 @@ type ControllerContainer struct {
 	UserController     contract.IUserController
 	CategoryController contract.ICategoryController
 	CardController     contract.ICardController
-	KYCController      contract.IKYCController
+	KYCController      contract.IKycController
+	NftController      contract.INftController
 }
 
 func New(cc ControllerContainer) contract.IServer {
@@ -83,6 +84,14 @@ func New(cc ControllerContainer) contract.IServer {
 	kycRouter.Post("/", cc.KYCController.Appeal)
 	kycRouter.Post("/:id/approve", cc.KYCController.Approve)
 	kycRouter.Post("/:id/reject", cc.KYCController.Reject)
+
+	nftRouter := router.Group("/nft")
+	nftRouter.Use(cc.JwtMiddleware.Handle)
+	nftRouter.Get("/", cc.NftController.GetNftList)
+	nftRouter.Get("/:id", cc.NftController.GetNft)
+	nftRouter.Post("/", cc.NftController.Create)
+	nftRouter.Post("/:id/approve", cc.NftController.Approve)
+	nftRouter.Post("/:id/reject", cc.NftController.Reject)
 
 	return &fiberapp.Server{
 		App: app,

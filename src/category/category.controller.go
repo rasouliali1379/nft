@@ -97,10 +97,9 @@ func (cat CategoryController) AddCategory(c *fiber.Ctx) error {
 		return filper.GetBadRequestError(c, "invalid body data")
 	}
 
-	errs := validator.Validate(request)
-	if len(errs) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
-
+	errRes := validator.Validate(request)
+	if len(errRes.Errors) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errRes)
 	}
 
 	catModel, err := cat.categoryService.AddCategory(ctx, category.Category{

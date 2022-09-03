@@ -14,91 +14,91 @@ import (
 	"go.uber.org/fx"
 )
 
-type KYCRepository struct {
+type KycRepository struct {
 	db contract.IPersist
 }
 
-type KYCRepositoryParams struct {
+type KycRepositoryParams struct {
 	fx.In
 	DB contract.IPersist
 }
 
-func NewKYCRepository(params KYCRepositoryParams) contract.IKYCRepository {
-	return &KYCRepository{
+func NewKYCRepository(params KycRepositoryParams) contract.IKycRepository {
+	return &KycRepository{
 		db: params.DB,
 	}
 }
 
-func (k KYCRepository) Exists(c context.Context, conditions persist.Conds) error {
-	span, c := jtrace.T().SpanFromContext(c, "KYCRepository[Exists]")
+func (k KycRepository) Exists(c context.Context, conditions persist.Conds) error {
+	span, c := jtrace.T().SpanFromContext(c, "KycRepository[Exists]")
 	defer span.Finish()
 
-	if _, err := k.db.Get(c, &entity.KYC{}, conditions); err != nil {
+	if _, err := k.db.Get(c, &entity.Kyc{}, conditions); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (k KYCRepository) Add(c context.Context, kyc model.KYC) (model.KYC, error) {
-	span, c := jtrace.T().SpanFromContext(c, "KYCRepository[Add]")
+func (k KycRepository) Add(c context.Context, kyc model.Kyc) (model.Kyc, error) {
+	span, c := jtrace.T().SpanFromContext(c, "KycRepository[Add]")
 	defer span.Finish()
 
-	kycEntity := mapKYCModelToEntity(kyc)
+	kycEntity := mapKycModelToEntity(kyc)
 	kycEntity.ID = uuid.New()
 
 	appeal, err := k.db.Create(c, &kycEntity)
 	if err != nil {
-		return model.KYC{}, err
+		return model.Kyc{}, err
 	}
 
-	return mapKYCEntityToModel(appeal.(*entity.KYC)), nil
+	return mapKycEntityToModel(appeal.(*entity.Kyc)), nil
 }
 
-func (k KYCRepository) Update(c context.Context, kyc model.KYC) (model.KYC, error) {
-	span, c := jtrace.T().SpanFromContext(c, "KYCRepository[Update]")
+func (k KycRepository) Update(c context.Context, kyc model.Kyc) (model.Kyc, error) {
+	span, c := jtrace.T().SpanFromContext(c, "KycRepository[Update]")
 	defer span.Finish()
 
-	data := mapKYCModelToEntity(kyc)
-	updatedAppeal, err := k.db.Update(c, &entity.KYC{ID: kyc.ID}, data)
+	data := mapKycModelToEntity(kyc)
+	updatedAppeal, err := k.db.Update(c, &entity.Kyc{ID: kyc.ID}, data)
 	if err != nil {
-		return model.KYC{}, err
+		return model.Kyc{}, err
 	}
 
-	return mapKYCEntityToModel(updatedAppeal.(*entity.KYC)), nil
+	return mapKycEntityToModel(updatedAppeal.(*entity.Kyc)), nil
 }
 
-func (k KYCRepository) Delete(c context.Context, userId uuid.UUID) error {
-	span, c := jtrace.T().SpanFromContext(c, "KYCRepository[Delete]")
+func (k KycRepository) Delete(c context.Context, userId uuid.UUID) error {
+	span, c := jtrace.T().SpanFromContext(c, "KycRepository[Delete]")
 	defer span.Finish()
 
-	if _, err := k.db.Update(c, &entity.KYC{ID: userId}, map[string]any{"deleted_at": time.Now()}); err != nil {
+	if _, err := k.db.Update(c, &entity.Kyc{ID: userId}, map[string]any{"deleted_at": time.Now()}); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (k KYCRepository) Get(c context.Context, conditions persist.Conds) (model.KYC, error) {
-	span, c := jtrace.T().SpanFromContext(c, "KYCRepository[Get]")
+func (k KycRepository) Get(c context.Context, conditions persist.Conds) (model.Kyc, error) {
+	span, c := jtrace.T().SpanFromContext(c, "KycRepository[Get]")
 	defer span.Finish()
 
-	category, err := k.db.Get(c, &entity.KYC{}, conditions)
+	category, err := k.db.Get(c, &entity.Kyc{}, conditions)
 	if err != nil {
-		return model.KYC{}, err
+		return model.Kyc{}, err
 	}
 
-	return mapKYCEntityToModel(category.(*entity.KYC)), nil
+	return mapKycEntityToModel(category.(*entity.Kyc)), nil
 }
 
-func (k KYCRepository) GetAll(c context.Context, conditions persist.Conds) ([]model.KYC, error) {
-	span, c := jtrace.T().SpanFromContext(c, "KYCRepository[GetAll]")
+func (k KycRepository) GetAll(c context.Context, conditions persist.Conds) ([]model.Kyc, error) {
+	span, c := jtrace.T().SpanFromContext(c, "KycRepository[GetAll]")
 	defer span.Finish()
 
-	catList, err := k.db.GetAll(c, &[]entity.KYC{}, conditions)
+	catList, err := k.db.GetAll(c, &[]entity.Kyc{}, conditions)
 	if err != nil {
 		return nil, err
 	}
 
-	return createModelKYCList(catList.(*[]entity.KYC)), nil
+	return createModelKycList(catList.(*[]entity.Kyc)), nil
 }

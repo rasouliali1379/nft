@@ -2,24 +2,24 @@ package kyc
 
 import "github.com/google/uuid"
 
-type KYC struct {
+type Kyc struct {
 	ID              uuid.UUID `json:"id"`
 	IdCardImageUrl  string    `json:"id_card_image_url"`
 	PortraitImage   string    `json:"portrait_image"`
-	Status          KYCStatus `json:"status"`
+	Status          KycStatus `json:"status"`
 	RejectionReason string    `json:"rejection_reason,omitempty"`
 }
 
-type KYCStatus string
+type KycStatus string
 
 const (
-	KYCStatusApproved  KYCStatus = "approved"
-	KYCStatusRejected  KYCStatus = "rejected"
-	KYCStatusUndefined KYCStatus = "undefined"
+	KYCStatusApproved  KycStatus = "approved"
+	KYCStatusRejected  KycStatus = "rejected"
+	KYCStatusUndefined KycStatus = "undefined"
 )
 
-type KYCList struct {
-	KYCList []KYC `json:"kyc_list"`
+type KycList struct {
+	KYCList []Kyc `json:"kyc_list"`
 }
 
 type RejectAppeal struct {

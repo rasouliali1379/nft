@@ -12,29 +12,29 @@ import (
 	"github.com/google/uuid"
 )
 
-func createKYCModel(idCard *multipart.FileHeader, portrait *multipart.FileHeader, userId uuid.UUID) (model.KYC, error) {
+func createKycModel(idCard *multipart.FileHeader, portrait *multipart.FileHeader, userId uuid.UUID) (model.Kyc, error) {
 
 	idCardFile, err := idCard.Open()
 	if err != nil {
-		return model.KYC{}, err
+		return model.Kyc{}, err
 	}
 
 	idCardBytes, err := io.ReadAll(idCardFile)
 	if err != nil {
-		return model.KYC{}, err
+		return model.Kyc{}, err
 	}
 
 	portraitFile, err := idCard.Open()
 	if err != nil {
-		return model.KYC{}, err
+		return model.Kyc{}, err
 	}
 
 	portraitBytes, err := io.ReadAll(portraitFile)
 	if err != nil {
-		return model.KYC{}, err
+		return model.Kyc{}, err
 	}
 
-	return model.KYC{
+	return model.Kyc{
 		IdCardImage: file.Image{
 			FileName: idCard.Filename,
 			Content:  idCardBytes,
@@ -47,8 +47,8 @@ func createKYCModel(idCard *multipart.FileHeader, portrait *multipart.FileHeader
 	}, nil
 }
 
-func mapKYCModelToDto(res model.KYC) dto.KYC {
-	var status dto.KYCStatus
+func mapKycModelToDto(res model.Kyc) dto.Kyc {
+	var status dto.KycStatus
 	approved, rejected := false, false
 
 	if res.ApprovedBy != nil {
@@ -58,7 +58,7 @@ func mapKYCModelToDto(res model.KYC) dto.KYC {
 	if res.RejectedBy != nil {
 		rejected = *res.RejectedBy != uuid.Nil
 	}
-	
+
 	if approved {
 		status = dto.KYCStatusApproved
 	} else if rejected {
@@ -67,7 +67,7 @@ func mapKYCModelToDto(res model.KYC) dto.KYC {
 		status = dto.KYCStatusUndefined
 	}
 
-	return dto.KYC{
+	return dto.Kyc{
 		ID:              res.ID,
 		IdCardImageUrl:  res.IdCardImage.FileUrl,
 		PortraitImage:   res.PortraitImage.FileUrl,
@@ -76,20 +76,20 @@ func mapKYCModelToDto(res model.KYC) dto.KYC {
 	}
 }
 
-func createKYCListDtoFromModel(kycList []model.KYC) dto.KYCList {
-	list := make([]dto.KYC, 0, len(kycList))
+func createKycListDtoFromModel(kycList []model.Kyc) dto.KycList {
+	list := make([]dto.Kyc, 0, len(kycList))
 
 	for _, kyc := range kycList {
-		list = append(list, mapKYCModelToDto(kyc))
+		list = append(list, mapKycModelToDto(kyc))
 	}
 
-	return dto.KYCList{
+	return dto.KycList{
 		KYCList: list,
 	}
 }
 
-func mapKYCModelToEntity(kyc model.KYC) entity.KYC {
-	return entity.KYC{
+func mapKycModelToEntity(kyc model.Kyc) entity.Kyc {
+	return entity.Kyc{
 		ID:              kyc.ID,
 		ApprovedBy:      kyc.ApprovedBy,
 		RejectedBy:      kyc.RejectedBy,
@@ -100,14 +100,14 @@ func mapKYCModelToEntity(kyc model.KYC) entity.KYC {
 	}
 }
 
-func mapKYCEntityToModel(kyc *entity.KYC) model.KYC {
+func mapKycEntityToModel(kyc *entity.Kyc) model.Kyc {
 
 	var rejectionReason string
 	if kyc.RejectionReason != nil {
 		rejectionReason = kyc.RejectionReason.String
 	}
 
-	return model.KYC{
+	return model.Kyc{
 		ID:              kyc.ID,
 		ApprovedBy:      kyc.ApprovedBy,
 		RejectedBy:      kyc.RejectedBy,
@@ -122,12 +122,11 @@ func mapKYCEntityToModel(kyc *entity.KYC) model.KYC {
 	}
 }
 
-func createModelKYCList(kycs *[]entity.KYC) []model.KYC {
-	var kycList []model.KYC
+func createModelKycList(kycs *[]entity.Kyc) []model.Kyc {
+	var kycList []model.Kyc
 
 	for _, kyc := range *kycs {
-		kycList = append(kycList, mapKYCEntityToModel(&kyc))
-
+		kycList = append(kycList, mapKycEntityToModel(&kyc))
 	}
 
 	return kycList

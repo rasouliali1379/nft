@@ -78,7 +78,7 @@ var _ = Describe("Kyc Management", Ordered, func() {
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
 
-			var kycList dto.KYCList
+			var kycList dto.KycList
 			if err = json.Unmarshal(resp.Body(), &kycList); err != nil {
 				Fail("unable to unmarshal kyc list", 3)
 			}
@@ -104,7 +104,7 @@ var _ = Describe("Kyc Management", Ordered, func() {
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
 
-			var kyc dto.KYC
+			var kyc dto.Kyc
 			if err = json.Unmarshal(resp.Body(), &kyc); err != nil {
 				Fail("unable to unmarshal kyc object")
 			}
@@ -141,7 +141,7 @@ var _ = Describe("Kyc Management", Ordered, func() {
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
 
-			var kyc dto.KYC
+			var kyc dto.Kyc
 			if err = json.Unmarshal(resp.Body(), &kyc); err != nil {
 				Fail("unable to unmarshal kyc object")
 			}
@@ -178,7 +178,7 @@ var _ = Describe("Kyc Management", Ordered, func() {
 			By("status code should be 200")
 			Expect(resp.StatusCode()).To(Equal(http.StatusOK))
 
-			var kyc dto.KYC
+			var kyc dto.Kyc
 			if err = json.Unmarshal(resp.Body(), &kyc); err != nil {
 				Fail("unable to unmarshal kyc object")
 			}
