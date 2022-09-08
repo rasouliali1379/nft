@@ -12,7 +12,7 @@ import (
 	email "nft/src/email/entity"
 	jwt "nft/src/jwt/entity"
 	kyc "nft/src/kyc/entity"
-	nft "nft/src/nft/entity"
+	entity "nft/src/nft/entity"
 	otp "nft/src/otp/entity"
 	user "nft/src/user/entity"
 
@@ -56,7 +56,7 @@ func (p *Postgres) Migrate(c context.Context) error {
 			&otp.Otp{},
 			&card.Card{},
 			&kyc.Kyc{},
-			&nft.Nft{},
+			&entity.Nft{},
 		); err != nil {
 			return fmt.Errorf("error happened while migrating tables: %w", err)
 		}
