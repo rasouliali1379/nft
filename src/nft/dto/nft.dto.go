@@ -6,10 +6,9 @@ import (
 )
 
 type Nft struct {
-	ID          string `json:"id,omitempty"`
-	Title       string `json:"title,omitempty"`
-	Description string `json:"description,omitempty"`
-	//CollectionId *uuid.UUID
+	ID              string               `json:"id,omitempty"`
+	Title           string               `json:"title,omitempty"`
+	Description     string               `json:"description,omitempty"`
 	Categories      []catdto.CategoryDto `json:"categories,omitempty"`
 	User            userdto.UserDto      `json:"user,omitempty"`
 	Status          string               `json:"status,omitempty"`

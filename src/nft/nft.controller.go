@@ -175,9 +175,9 @@ func (n NftController) Approve(c *fiber.Ctx) error {
 // @Tags     nft
 // @Accept   json
 // @Produce  json
-// @Param    id       path      int               true  "nft id that will be rejected"
+// @Param    id       path      int            true  "nft id that will be rejected"
 // @Param    message  body      dto.RejectNft  true  "optional rejection message"
-// @Success  200      {string}  string            "nft rejected successfully"
+// @Success  200      {string}  string         "nft rejected successfully"
 // @Router   /v1/nft/{id}/reject [post]
 func (n NftController) Reject(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "NftController[Reject]")
