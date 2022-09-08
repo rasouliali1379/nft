@@ -7,7 +7,7 @@ services:
   nft:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - .:/go/src/application
     networks:

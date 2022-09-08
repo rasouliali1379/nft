@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/go/src/application
+      - .:/builder
     networks:
       - customnetwork
     depends_on:
