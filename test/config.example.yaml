@@ -1,7 +1,7 @@
 env: "test"
 
 app:
-  name: "nftasset"
+  name: "nft"
   baseURL: "/v1"
   http:
     host: "localhost"
@@ -31,7 +31,7 @@ postgres:
   password: "e35YtGPSz6agLyJH"
   host: "localhost:5432"
   port: "5432"
-  schema: "nftasset"
+  schema: "nft"
 
 
 storage:
@@ -42,7 +42,7 @@ storage:
   urlExpInMin: 60
   buckets:
     kyc: "kyc"
-    nft: "nftasset"
+    nft: "nft"
 
 file:
   tempDir: "temp"

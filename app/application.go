@@ -24,7 +24,7 @@ import (
 	"nft/src/file"
 	"nft/src/jwt"
 	"nft/src/kyc"
-	"nft/src/nftasset"
+	"nft/src/nft"
 	"nft/src/otp"
 	"nft/src/user"
 )
@@ -49,7 +49,7 @@ func Start() {
 			category.Module,
 			kyc.Module,
 			card.Module,
-			nftasset.Module,
+			nft.Module,
 			file.Module,
 
 			fx.Invoke(config.InitConfigs),

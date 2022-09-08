@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	persist "nft/client/persist/model"
-	model "nft/src/nftasset/model"
+	model "nft/src/nft/model"
 )
 
 type INftController interface {

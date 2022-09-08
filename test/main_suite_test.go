@@ -20,7 +20,7 @@ import (
 	"nft/src/jwt"
 	jwtmodel "nft/src/jwt/model"
 	"nft/src/kyc"
-	"nft/src/nftasset"
+	"nft/src/nft"
 	"nft/src/otp"
 	"nft/src/user"
 	"testing"
@@ -52,7 +52,7 @@ var _ = BeforeSuite(func() {
 		category.Module,
 		kyc.Module,
 		card.Module,
-		nftasset.Module,
+		nft.Module,
 		file.Module,
 
 		fx.Invoke(config.InitConfigs),

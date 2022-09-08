@@ -85,7 +85,7 @@ func New(cc ControllerContainer) contract.IServer {
 	kycRouter.Post("/:id/approve", cc.KYCController.Approve)
 	kycRouter.Post("/:id/reject", cc.KYCController.Reject)
 
-	nftRouter := router.Group("/nftasset")
+	nftRouter := router.Group("/nft")
 	nftRouter.Use(cc.JwtMiddleware.Handle)
 	nftRouter.Get("/", cc.NftController.GetNftList)
 	nftRouter.Get("/:id", cc.NftController.GetNft)
