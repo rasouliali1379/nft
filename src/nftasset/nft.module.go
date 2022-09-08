@@ -1,4 +1,4 @@
-package nft
+package nftasset
 
 import "go.uber.org/fx"
 

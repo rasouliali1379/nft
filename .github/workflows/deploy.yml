@@ -28,7 +28,7 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           rm: true
           source: "."
-          target: "/home/samrd/nft"
+          target: "/home/samrd/nftasset"
 
       - name: Executing remote command
         uses: appleboy/ssh-action@master

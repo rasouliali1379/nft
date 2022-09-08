@@ -12,7 +12,7 @@ import (
 	email "nft/src/email/entity"
 	jwt "nft/src/jwt/entity"
 	kyc "nft/src/kyc/entity"
-	entity "nft/src/nft/entity"
+	entity "nft/src/nftasset/entity"
 	otp "nft/src/otp/entity"
 	user "nft/src/user/entity"
 
