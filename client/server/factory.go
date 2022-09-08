@@ -92,7 +92,7 @@ func New(cc ControllerContainer) contract.IServer {
 	nftRouter.Post("/", cc.NftController.Create)
 	nftRouter.Post("/:id/approve", cc.NftController.Approve)
 	nftRouter.Post("/:id/reject", cc.NftController.Reject)
-
+	nftRouter.Delete("/:id", cc.NftController.DeleteDraft)
 	return &fiberapp.Server{
 		App: app,
 	}

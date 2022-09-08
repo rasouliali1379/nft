@@ -10,6 +10,7 @@ type IPersist interface {
 	GetAll(c context.Context, entity any, conditions map[string]any) (any, error)
 	Create(c context.Context, entity any) (any, error)
 	Update(c context.Context, entity any, data any) (any, error)
+	Delete(c context.Context, entity any) error
 	Count(c context.Context, entity any, conditions map[string]any) (int, error)
 	Last(c context.Context, entity any, conditions map[string]any) (any, error)
 }

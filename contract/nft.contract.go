@@ -14,14 +14,16 @@ type INftController interface {
 	GetNftList(c *fiber.Ctx) error
 	Approve(c *fiber.Ctx) error
 	Reject(c *fiber.Ctx) error
+	DeleteDraft(c *fiber.Ctx) error
 }
 
 type INftService interface {
 	Create(c context.Context, m model.Nft) (model.Nft, error)
-	Approve(c context.Context, m model.Nft) (model.Nft, error)
-	Reject(c context.Context, m model.Nft) (model.Nft, error)
-	GetNft(c context.Context, id uuid.UUID) (model.Nft, error)
-	GetAllNfts(c context.Context) ([]model.Nft, error)
+	Approve(c context.Context, m model.Nft) error
+	Reject(c context.Context, m model.Nft) error
+	GetNft(c context.Context, m model.Nft) (model.Nft, error)
+	GetAllNfts(c context.Context, userId uuid.UUID) ([]model.Nft, error)
+	DeleteDraft(c context.Context, m model.Nft) error
 }
 
 type INftRepository interface {
@@ -29,6 +31,7 @@ type INftRepository interface {
 	Add(c context.Context, kyc model.Nft) (model.Nft, error)
 	Update(c context.Context, kyc model.Nft) (model.Nft, error)
 	Delete(c context.Context, userId uuid.UUID) error
+	HardDelete(c context.Context, id uuid.UUID) error
 	Get(c context.Context, conditions persist.Conds) (model.Nft, error)
 	GetAll(c context.Context, conditions persist.Conds) ([]model.Nft, error)
 }

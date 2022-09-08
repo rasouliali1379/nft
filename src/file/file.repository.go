@@ -3,11 +3,13 @@ package file
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"io"
 	"nft/client/jtrace"
 	storage "nft/client/storage/model"
 	"nft/config"
 	"nft/contract"
+	apperrors "nft/error"
 	file "nft/src/file/model"
 	"os"
 	"strings"
@@ -36,7 +38,11 @@ func (f FileRepository) AddTemp(c context.Context, imageFile file.Image) (string
 	defer span.Finish()
 
 	splittedName := strings.Split(imageFile.FileName, ".")
-	tempFile, err := os.CreateTemp(config.C().File.TempDir, "kyc-*."+splittedName[len(splittedName)-1])
+	if len(splittedName) != 2 {
+		return "", apperrors.ErrInvalidFileExtension
+	}
+
+	tempFile, err := os.CreateTemp(config.C().File.TempDir, uuid.NewString()+"-*."+splittedName[len(splittedName)-1])
 	if err != nil {
 		return "", fmt.Errorf("error while creating temp image file: %w", err)
 	}

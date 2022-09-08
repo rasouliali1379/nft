@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"nft/client/jtrace"
 	"nft/config"
-	merror "nft/error"
+	apperrors "nft/error"
 	card "nft/src/card/entity"
 	category "nft/src/category/entity"
 	email "nft/src/email/entity"
 	jwt "nft/src/jwt/entity"
 	kyc "nft/src/kyc/entity"
+	nft "nft/src/nft/entity"
 	otp "nft/src/otp/entity"
 	user "nft/src/user/entity"
 
@@ -55,6 +56,7 @@ func (p *Postgres) Migrate(c context.Context) error {
 			&otp.Otp{},
 			&card.Card{},
 			&kyc.Kyc{},
+			&nft.Nft{},
 		); err != nil {
 			return fmt.Errorf("error happened while migrating tables: %w", err)
 		}
@@ -81,7 +83,7 @@ func (p *Postgres) Get(c context.Context, entity any, conditions map[string]any)
 
 	if err := tx.First(entity).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, merror.ErrRecordNotFound
+			return nil, apperrors.ErrRecordNotFound
 		}
 		return nil, fmt.Errorf("error happened while searching for a record: %w", err)
 	}
@@ -101,7 +103,7 @@ func (p *Postgres) GetAll(c context.Context, entity any, conditions map[string]a
 
 	if err := tx.Find(entity).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, merror.ErrRecordNotFound
+			return nil, apperrors.ErrRecordNotFound
 		}
 		return nil, fmt.Errorf("error happened while searching for a record: %w", err)
 	}
@@ -129,6 +131,15 @@ func (p *Postgres) Update(c context.Context, entity any, data any) (any, error) 
 	}
 
 	return entity, nil
+}
+
+func (p *Postgres) Delete(c context.Context, entity any) error {
+	span, ctx := jtrace.T().SpanFromContext(c, "Postgres[Delete]")
+	defer span.Finish()
+	if err := p.db.WithContext(ctx).Delete(entity).Error; err != nil {
+		return fmt.Errorf("error happened while updating a record: %w", err)
+	}
+	return nil
 }
 
 func (p *Postgres) Count(c context.Context, entity any, conditions map[string]any) (int, error) {
@@ -162,7 +173,7 @@ func (p *Postgres) Last(c context.Context, entity any, conditions map[string]any
 
 	if err := tx.Last(entity).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, merror.ErrRecordNotFound
+			return nil, apperrors.ErrRecordNotFound
 		}
 		return nil, fmt.Errorf("error happened while searching for a record: %w", err)
 	}

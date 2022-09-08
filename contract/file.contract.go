@@ -9,8 +9,10 @@ import (
 
 type IFileService interface {
 	// NewImageFile(c context.Context, f file.Image) (string, error)
-	UploadKYCImage(c context.Context, imageFile file.Image) (string, error)
-	GetKYCImageUrl(c context.Context, name string) (string, error)
+	UploadKycImage(c context.Context, imageFile file.Image) (string, error)
+	UploadNftImage(c context.Context, imageFile file.Image) (string, error)
+	GetKycImageUrl(c context.Context, name string) (string, error)
+	GetNftImageUrl(c context.Context, name string) (string, error)
 }
 
 type IFileRepository interface {

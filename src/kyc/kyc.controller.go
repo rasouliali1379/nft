@@ -73,7 +73,9 @@ func (k KycController) Appeal(c *fiber.Ctx) error {
 
 	appeal, err := k.kycService.Appeal(ctx, kycModel)
 	if err != nil {
-		log.Println(err)
+		if errors.Is(err, apperrors.ErrInvalidFileExtension) {
+			return filper.GetBadRequestError(c, err.Error())
+		}
 		return filper.GetInternalError(c, "")
 	}
 
@@ -104,7 +106,7 @@ func (k KycController) Approve(c *fiber.Ctx) error {
 
 	err = k.kycService.Approve(ctx, kyc.Kyc{ID: appealId, ApprovedBy: &userId})
 	if err != nil {
-		if errors.Is(err, apperrors.ErrAppealNotFoundError) {
+		if errors.Is(err, apperrors.ErrAppealNotFound) {
 			return filper.GetNotFoundError(c, "appeal not found")
 		}
 		return filper.GetInternalError(c, "")
@@ -147,7 +149,7 @@ func (k KycController) Reject(c *fiber.Ctx) error {
 
 	err = k.kycService.Reject(ctx, kyc.Kyc{ID: appealId, RejectedBy: &userId, RejectionReason: request.Message})
 	if err != nil {
-		if errors.Is(err, apperrors.ErrAppealNotFoundError) {
+		if errors.Is(err, apperrors.ErrAppealNotFound) {
 			return filper.GetNotFoundError(c, "appeal not found")
 		}
 		return filper.GetInternalError(c, "")
@@ -181,7 +183,7 @@ func (k KycController) GetAppeal(c *fiber.Ctx) error {
 	appeal, err := k.kycService.GetAppeal(ctx, kyc.Kyc{ID: appealId, UserId: userId})
 	if err != nil {
 		log.Println(err)
-		if errors.Is(err, apperrors.ErrAppealNotFoundError) {
+		if errors.Is(err, apperrors.ErrAppealNotFound) {
 			return filper.GetNotFoundError(c, "appeal not found")
 		}
 

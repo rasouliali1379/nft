@@ -15,5 +15,5 @@ type UserDto struct {
 	Province       string `json:"province,omitempty"`
 	City           string `json:"city,omitempty"`
 	Address        string `json:"address,omitempty"`
-	PublicKey      string `josn:"public_key,omitempty"`
+	PublicKey      string `json:"public_key,omitempty"`
 }

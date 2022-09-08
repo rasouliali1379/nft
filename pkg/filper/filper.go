@@ -1,4 +1,4 @@
-// filper Fiber framework helper package
+// Package filper Fiber framework helper package
 package filper
 
 import "github.com/gofiber/fiber/v2"
@@ -24,7 +24,7 @@ func GetNotFoundError(c *fiber.Ctx, message string) error {
 func GetInternalError(c *fiber.Ctx, message string) error {
 
 	if len(message) < 1 {
-		message = "somthing unexpected happened"
+		message = "something unexpected happened"
 	}
 
 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -35,7 +35,7 @@ func GetInternalError(c *fiber.Ctx, message string) error {
 func GetSuccessResponse(c *fiber.Ctx, message string) error {
 
 	if len(message) < 1 {
-		message = "somthing unexpected happened"
+		message = "something unexpected happened"
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{

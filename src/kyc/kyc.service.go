@@ -13,34 +13,34 @@ import (
 	"go.uber.org/fx"
 )
 
-type KYCService struct {
+type KycService struct {
 	fileService   contract.IFileService
 	kycRepository contract.IKycRepository
 }
 
-type KYCServiceParams struct {
+type KycServiceParams struct {
 	fx.In
 	FileService   contract.IFileService
 	KYCRepository contract.IKycRepository
 }
 
-func NewKYCService(params KYCServiceParams) contract.IKycService {
-	return KYCService{
+func NewKYCService(params KycServiceParams) contract.IKycService {
+	return KycService{
 		fileService:   params.FileService,
 		kycRepository: params.KYCRepository,
 	}
 }
 
-func (k KYCService) Appeal(c context.Context, m model.Kyc) (model.Kyc, error) {
+func (k KycService) Appeal(c context.Context, m model.Kyc) (model.Kyc, error) {
 	span, c := jtrace.T().SpanFromContext(c, "KycService[Appeal]")
 	defer span.Finish()
 
-	idCardFileName, err := k.fileService.UploadKYCImage(c, m.IdCardImage)
+	idCardFileName, err := k.fileService.UploadKycImage(c, m.IdCardImage)
 	if err != nil {
 		return model.Kyc{}, err
 	}
 
-	portraitFileName, err := k.fileService.UploadKYCImage(c, m.PortraitImage)
+	portraitFileName, err := k.fileService.UploadKycImage(c, m.PortraitImage)
 	if err != nil {
 		return model.Kyc{}, err
 	}
@@ -52,12 +52,12 @@ func (k KYCService) Appeal(c context.Context, m model.Kyc) (model.Kyc, error) {
 		return model.Kyc{}, err
 	}
 
-	idCardUrl, err := k.fileService.GetKYCImageUrl(c, m.IdCardImage.FileName)
+	idCardUrl, err := k.fileService.GetKycImageUrl(c, m.IdCardImage.FileName)
 	if err != nil {
 		return model.Kyc{}, err
 	}
 
-	portraitUrl, err := k.fileService.GetKYCImageUrl(c, m.PortraitImage.FileName)
+	portraitUrl, err := k.fileService.GetKycImageUrl(c, m.PortraitImage.FileName)
 	if err != nil {
 		return model.Kyc{}, err
 	}
@@ -68,14 +68,14 @@ func (k KYCService) Appeal(c context.Context, m model.Kyc) (model.Kyc, error) {
 	return kyc, nil
 }
 
-func (k KYCService) Approve(c context.Context, m model.Kyc) error {
+func (k KycService) Approve(c context.Context, m model.Kyc) error {
 	span, c := jtrace.T().SpanFromContext(c, "KycService[Approve]")
 	defer span.Finish()
 
 	kycModel, err := k.kycRepository.Get(c, persist.Conds{"id": m.ID})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
-			return apperrors.ErrAppealNotFoundError
+			return apperrors.ErrAppealNotFound
 		}
 		return err
 	}
@@ -90,14 +90,14 @@ func (k KYCService) Approve(c context.Context, m model.Kyc) error {
 	return nil
 }
 
-func (k KYCService) Reject(c context.Context, m model.Kyc) error {
+func (k KycService) Reject(c context.Context, m model.Kyc) error {
 	span, c := jtrace.T().SpanFromContext(c, "KycService[Reject]")
 	defer span.Finish()
 
 	kycModel, err := k.kycRepository.Get(c, persist.Conds{"id": m.ID})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
-			return apperrors.ErrAppealNotFoundError
+			return apperrors.ErrAppealNotFound
 		}
 		return err
 	}
@@ -111,24 +111,24 @@ func (k KYCService) Reject(c context.Context, m model.Kyc) error {
 	return nil
 }
 
-func (k KYCService) GetAppeal(c context.Context, m model.Kyc) (model.Kyc, error) {
+func (k KycService) GetAppeal(c context.Context, m model.Kyc) (model.Kyc, error) {
 	span, c := jtrace.T().SpanFromContext(c, "KycService[GetAppeal]")
 	defer span.Finish()
 
 	appeal, err := k.kycRepository.Get(c, persist.Conds{"id": m.ID, "user_id": m.UserId})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
-			return model.Kyc{}, apperrors.ErrAppealNotFoundError
+			return model.Kyc{}, apperrors.ErrAppealNotFound
 		}
 		return model.Kyc{}, err
 	}
 
-	idCardUrl, err := k.fileService.GetKYCImageUrl(c, appeal.IdCardImage.FileName)
+	idCardUrl, err := k.fileService.GetKycImageUrl(c, appeal.IdCardImage.FileName)
 	if err != nil {
 		return model.Kyc{}, err
 	}
 
-	portraitUrl, err := k.fileService.GetKYCImageUrl(c, appeal.PortraitImage.FileName)
+	portraitUrl, err := k.fileService.GetKycImageUrl(c, appeal.PortraitImage.FileName)
 	if err != nil {
 		return model.Kyc{}, err
 	}
@@ -139,7 +139,7 @@ func (k KYCService) GetAppeal(c context.Context, m model.Kyc) (model.Kyc, error)
 	return appeal, nil
 }
 
-func (k KYCService) GetAllAppeals(c context.Context, m model.Kyc) ([]model.Kyc, error) {
+func (k KycService) GetAllAppeals(c context.Context, m model.Kyc) ([]model.Kyc, error) {
 	span, c := jtrace.T().SpanFromContext(c, "KycService[GetAllAppeals]")
 	defer span.Finish()
 
@@ -149,12 +149,12 @@ func (k KYCService) GetAllAppeals(c context.Context, m model.Kyc) ([]model.Kyc, 
 	}
 
 	for i, appeal := range appeals {
-		idCardUrl, err := k.fileService.GetKYCImageUrl(c, appeal.IdCardImage.FileName)
+		idCardUrl, err := k.fileService.GetKycImageUrl(c, appeal.IdCardImage.FileName)
 		if err != nil {
 			return nil, err
 		}
 
-		portraitUrl, err := k.fileService.GetKYCImageUrl(c, appeal.PortraitImage.FileName)
+		portraitUrl, err := k.fileService.GetKycImageUrl(c, appeal.PortraitImage.FileName)
 		if err != nil {
 			return nil, err
 		}
