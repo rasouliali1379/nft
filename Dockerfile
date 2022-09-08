@@ -10,7 +10,7 @@ RUN swag init
 RUN make config
 
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-RUN go build  -o nftasset
+RUN go build  -o nft
 
 FROM scratch
 

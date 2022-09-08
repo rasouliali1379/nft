@@ -1,8 +1,8 @@
 FROM golang:1.19
 
-RUN mkdir -p /go/src/application 
+RUN mkdir -p /build
 
-WORKDIR /go/src/application 
+WORKDIR /build
 
 ADD . .
 
