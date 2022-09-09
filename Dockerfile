@@ -4,6 +4,7 @@ WORKDIR /build
 
 COPY . .
 
+RUN mkdir -p /docs
 RUN go install github.com/swaggo/swag/cmd/swag@v1.8.1
 RUN swag fmt && swag init --parseDependency --parseInternal --parseDepth 1 -g main.go
 
