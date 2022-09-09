@@ -30,6 +30,18 @@ func NewCollectionController(params CollectionControllerParams) contract.ICollec
 	}
 }
 
+// Add godoc
+// @Summary  add new collection
+// @Tags     collection
+// @Accept   multipart/form-data
+// @Produce  json
+// @Router   /v1/collection [post]
+// @Param    id            formData  string   false  "Collection id. Required for updating draft"
+// @Param    title         formData  string   false  "Collection title. Not required for draft"
+// @Param    description   formData  string   false  "Collection description. Not required for draft"
+// @Param    draft         formData  boolean  true   "Collection submission type. If it's true it will be saved as draft. If it's false it will be submitted to be processed."
+// @Param    category_id   formData  array    false  "Collection category or sub category id."
+// @Param    header_image  formData  file     true   "Collection header image"
 func (co CollectionController) Add(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "CollectionController[Add]")
 	defer span.Finish()
@@ -65,6 +77,14 @@ func (co CollectionController) Add(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(mapCollectionModelToDto(collectionModel))
 }
 
+// Get godoc
+// @Summary  get collection
+// @Tags     collection
+// @Accept   json
+// @Produce  json
+// @Param    id   path      string  true  "collection id that will be retrieved"
+// @Success  200  {object}  dto.Collection
+// @Router   /v1/collection/{id} [get]
 func (co CollectionController) Get(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "CollectionController[Get]")
 	defer span.Finish()
@@ -93,6 +113,13 @@ func (co CollectionController) Get(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(mapCollectionModelToDto(collectionModel))
 }
 
+// GetAll godoc
+// @Summary  get all collections
+// @Tags     collection
+// @Accept   json
+// @Produce  json
+// @Success  200  {object}  dto.CollectionList
+// @Router   /v1/collection [get]
 func (co CollectionController) GetAll(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "CollectionController[GetAll]")
 	defer span.Finish()
@@ -113,6 +140,14 @@ func (co CollectionController) GetAll(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(createCollectionListDtoFromModel(collections))
 }
 
+// Delete godoc
+// @Summary  delete draft collection
+// @Tags     collection
+// @Accept   json
+// @Produce  json
+// @Param    id   path      string  true  "collection id that will be deleted"
+// @Success  200  {string}  string  "collection deleted successfully"
+// @Router   /v1/collection/{id} [delete]
 func (co CollectionController) Delete(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "CollectionController[Delete]")
 	defer span.Finish()

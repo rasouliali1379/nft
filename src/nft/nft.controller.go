@@ -42,6 +42,7 @@ func NewNftController(params NftControllerParams) contract.INftController {
 // @Param    draft          formData  boolean  true   "Nft submission type. If it's true it will be saved as draft. If it's false it will be submitted to be processed."
 // @Param    category_id    formData  array    false  "Nft category or sub category id."
 // @Param    collection_id  formData  string   false  "Nft related collection id"
+// @Param    nft_image      formData  file     true   "Nft image"
 func (n NftController) Create(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "NftController[Create]")
 	defer span.Finish()
@@ -220,7 +221,7 @@ func (n NftController) Reject(c *fiber.Ctx) error {
 // @Tags     nft
 // @Accept   json
 // @Produce  json
-// @Param    id   path      int     true  "nft id that will be deleted"
+// @Param    id   path      string  true  "nft id that will be deleted"
 // @Success  200  {string}  string  "draft deleted successfully"
 // @Router   /v1/nft/{id} [delete]
 func (n NftController) DeleteDraft(c *fiber.Ctx) error {
