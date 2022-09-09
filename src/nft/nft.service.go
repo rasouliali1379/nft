@@ -7,6 +7,7 @@ import (
 	"go.uber.org/fx"
 	"nft/client/jtrace"
 	persist "nft/client/persist/model"
+	"nft/config"
 	"nft/contract"
 	apperrors "nft/error"
 	model "nft/src/nft/model"
@@ -53,7 +54,8 @@ func (n NftService) Create(c context.Context, m model.Nft) (model.Nft, error) {
 	}
 
 	if m.NftImage != nil {
-		nftFileName, err := n.fileService.UploadNftImage(c, *m.NftImage)
+		m.NftImage.Bucket = config.C().Storage.Buckets.NFT
+		nftFileName, err := n.fileService.UploadImage(c, *m.NftImage)
 		if err != nil {
 			return model.Nft{}, err
 		}
@@ -138,7 +140,8 @@ func (n NftService) GetNft(c context.Context, m model.Nft) (model.Nft, error) {
 		}
 	}
 
-	nftImageUrl, err := n.fileService.GetNftImageUrl(c, nftModel.NftImage.FileName)
+	nftModel.NftImage.Bucket = config.C().Storage.Buckets.NFT
+	nftImageUrl, err := n.fileService.GetImageUrl(c, *nftModel.NftImage)
 	if err != nil {
 		return model.Nft{}, err
 	}
@@ -160,7 +163,9 @@ func (n NftService) GetAllNfts(c context.Context, userId uuid.UUID) ([]model.Nft
 		if nft.NftImage == nil {
 			continue
 		}
-		nftUrl, err := n.fileService.GetNftImageUrl(c, nft.NftImage.FileName)
+
+		nft.NftImage.Bucket = config.C().Storage.Buckets.NFT
+		nftUrl, err := n.fileService.GetImageUrl(c, *nft.NftImage)
 		if err != nil {
 			return nil, err
 		}

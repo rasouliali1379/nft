@@ -158,11 +158,11 @@ func mapNftModelToEntity(m model.Nft) entity.Nft {
 		nftEntity.Title = &sql.NullString{String: m.Title, Valid: true}
 	}
 
-	if len(m.Title) > 0 {
+	if len(m.Description) > 0 {
 		nftEntity.Description = &sql.NullString{String: m.Description, Valid: true}
 	}
 
-	if len(m.Title) > 0 {
+	if m.NftImage != nil {
 		nftEntity.NftImage = &sql.NullString{String: m.NftImage.FileName, Valid: true}
 	}
 
@@ -202,9 +202,15 @@ func mapNftEntityToModel(nft entity.Nft) model.Nft {
 		nftModel.NftImage = &file.Image{FileName: nft.NftImage.String}
 	}
 
+	if nft.Title != nil {
+		nftModel.Title = nft.Title.String
+	}
+
+	if nft.Description != nil {
+		nftModel.Description = nft.Description.String
+	}
+
 	nftModel.ID = &nft.ID
-	nftModel.Title = nft.Title.String
-	nftModel.Description = nft.Description.String
 	nftModel.Status = status
 	nftModel.Categories = categories
 	nftModel.User = user.User{ID: nft.UserId}
@@ -213,10 +219,10 @@ func mapNftEntityToModel(nft entity.Nft) model.Nft {
 }
 
 func createNftListDtoFromModel(nfts []model.Nft) dto.NftList {
-	var nftList []dto.Nft
+	nftList := make([]dto.Nft, len(nfts))
 
-	for _, nft := range nfts {
-		nftList = append(nftList, mapNftModelToDto(nft))
+	for i, nft := range nfts {
+		nftList[i] = mapNftModelToDto(nft)
 	}
 
 	return dto.NftList{Nfts: nftList}

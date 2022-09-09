@@ -10,6 +10,7 @@ type Storage struct {
 }
 
 type Buckets struct {
-	KYC string `yaml:"storage.buckets.kyc" required:"true"`
-	NFT string `yaml:"storage.buckets.nft" required:"true"`
+	KYC        string `yaml:"storage.buckets.kyc" required:"true"`
+	NFT        string `yaml:"storage.buckets.nft" required:"true"`
+	Collection string `yaml:"storage.buckets.collection" required:"true"`
 }

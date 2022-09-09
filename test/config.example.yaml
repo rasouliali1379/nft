@@ -43,6 +43,7 @@ storage:
   buckets:
     kyc: "kyc"
     nft: "nft"
+    collection: "collection"
 
 file:
   tempDir: "temp"

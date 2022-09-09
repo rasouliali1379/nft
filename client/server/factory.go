@@ -27,13 +27,14 @@ func corsHandler(h http.Handler) http.Handler {
 
 type ControllerContainer struct {
 	fx.In
-	JwtMiddleware      contract.IJwtMiddleware
-	AuthController     contract.IAuthController
-	UserController     contract.IUserController
-	CategoryController contract.ICategoryController
-	CardController     contract.ICardController
-	KYCController      contract.IKycController
-	NftController      contract.INftController
+	JwtMiddleware        contract.IJwtMiddleware
+	AuthController       contract.IAuthController
+	UserController       contract.IUserController
+	CategoryController   contract.ICategoryController
+	CardController       contract.ICardController
+	KYCController        contract.IKycController
+	NftController        contract.INftController
+	CollectionController contract.ICollectionController
 }
 
 func New(cc ControllerContainer) contract.IServer {
@@ -93,6 +94,13 @@ func New(cc ControllerContainer) contract.IServer {
 	nftRouter.Post("/:id/approve", cc.NftController.Approve)
 	nftRouter.Post("/:id/reject", cc.NftController.Reject)
 	nftRouter.Delete("/:id", cc.NftController.DeleteDraft)
+
+	collectionRouter := router.Group("/collection")
+	collectionRouter.Use(cc.JwtMiddleware.Handle)
+	collectionRouter.Get("/", cc.CollectionController.GetAll)
+	collectionRouter.Get("/:id", cc.CollectionController.Get)
+	collectionRouter.Post("/", cc.CollectionController.Add)
+	collectionRouter.Delete("/:id", cc.CollectionController.Delete)
 	return &fiberapp.Server{
 		App: app,
 	}

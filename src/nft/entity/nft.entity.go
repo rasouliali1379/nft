@@ -15,8 +15,8 @@ type Nft struct {
 
 	ApprovedBy      *uuid.UUID `gorm:"type:uuid"`
 	RejectedBy      *uuid.UUID `gorm:"type:uuid"`
-	UserId          uuid.UUID  `gorm:"type:uuid"`
 	RejectionReason *sql.NullString
+	UserId          uuid.UUID `gorm:"type:uuid"`
 	NftImage        *sql.NullString
 	Title           *sql.NullString
 	Description     *sql.NullString

@@ -9,6 +9,7 @@ import (
 	apperrors "nft/error"
 	card "nft/src/card/entity"
 	category "nft/src/category/entity"
+	collection "nft/src/collection/entity"
 	email "nft/src/email/entity"
 	jwt "nft/src/jwt/entity"
 	kyc "nft/src/kyc/entity"
@@ -57,6 +58,7 @@ func (p *Postgres) Migrate(c context.Context) error {
 			&card.Card{},
 			&kyc.Kyc{},
 			&nft.Nft{},
+			&collection.Collection{},
 		); err != nil {
 			return fmt.Errorf("error happened while migrating tables: %w", err)
 		}

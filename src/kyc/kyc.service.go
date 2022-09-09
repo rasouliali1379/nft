@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"nft/client/jtrace"
 	persist "nft/client/persist/model"
+	"nft/config"
 	"nft/contract"
 	apperrors "nft/error"
 	model "nft/src/kyc/model"
@@ -35,12 +36,14 @@ func (k KycService) Appeal(c context.Context, m model.Kyc) (model.Kyc, error) {
 	span, c := jtrace.T().SpanFromContext(c, "KycService[Appeal]")
 	defer span.Finish()
 
-	idCardFileName, err := k.fileService.UploadKycImage(c, m.IdCardImage)
+	m.IdCardImage.Bucket = config.C().Storage.Buckets.KYC
+	idCardFileName, err := k.fileService.UploadImage(c, m.IdCardImage)
 	if err != nil {
 		return model.Kyc{}, err
 	}
 
-	portraitFileName, err := k.fileService.UploadKycImage(c, m.PortraitImage)
+	m.PortraitImage.Bucket = config.C().Storage.Buckets.KYC
+	portraitFileName, err := k.fileService.UploadImage(c, m.PortraitImage)
 	if err != nil {
 		return model.Kyc{}, err
 	}
@@ -52,12 +55,14 @@ func (k KycService) Appeal(c context.Context, m model.Kyc) (model.Kyc, error) {
 		return model.Kyc{}, err
 	}
 
-	idCardUrl, err := k.fileService.GetKycImageUrl(c, m.IdCardImage.FileName)
+	m.IdCardImage.Bucket = config.C().Storage.Buckets.KYC
+	idCardUrl, err := k.fileService.GetImageUrl(c, m.IdCardImage)
 	if err != nil {
 		return model.Kyc{}, err
 	}
 
-	portraitUrl, err := k.fileService.GetKycImageUrl(c, m.PortraitImage.FileName)
+	m.PortraitImage.Bucket = config.C().Storage.Buckets.KYC
+	portraitUrl, err := k.fileService.GetImageUrl(c, m.PortraitImage)
 	if err != nil {
 		return model.Kyc{}, err
 	}
@@ -123,12 +128,14 @@ func (k KycService) GetAppeal(c context.Context, m model.Kyc) (model.Kyc, error)
 		return model.Kyc{}, err
 	}
 
-	idCardUrl, err := k.fileService.GetKycImageUrl(c, appeal.IdCardImage.FileName)
+	appeal.IdCardImage.Bucket = config.C().Storage.Buckets.KYC
+	idCardUrl, err := k.fileService.GetImageUrl(c, appeal.IdCardImage)
 	if err != nil {
 		return model.Kyc{}, err
 	}
 
-	portraitUrl, err := k.fileService.GetKycImageUrl(c, appeal.PortraitImage.FileName)
+	appeal.PortraitImage.Bucket = config.C().Storage.Buckets.KYC
+	portraitUrl, err := k.fileService.GetImageUrl(c, appeal.PortraitImage)
 	if err != nil {
 		return model.Kyc{}, err
 	}
@@ -149,12 +156,14 @@ func (k KycService) GetAllAppeals(c context.Context, m model.Kyc) ([]model.Kyc, 
 	}
 
 	for i, appeal := range appeals {
-		idCardUrl, err := k.fileService.GetKycImageUrl(c, appeal.IdCardImage.FileName)
+		appeal.IdCardImage.Bucket = config.C().Storage.Buckets.KYC
+		idCardUrl, err := k.fileService.GetImageUrl(c, appeal.IdCardImage)
 		if err != nil {
 			return nil, err
 		}
 
-		portraitUrl, err := k.fileService.GetKycImageUrl(c, appeal.PortraitImage.FileName)
+		appeal.PortraitImage.Bucket = config.C().Storage.Buckets.KYC
+		portraitUrl, err := k.fileService.GetImageUrl(c, appeal.PortraitImage)
 		if err != nil {
 			return nil, err
 		}

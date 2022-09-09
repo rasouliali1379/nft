@@ -5,7 +5,7 @@ WORKDIR /build
 COPY . .
 
 RUN go install github.com/swaggo/swag/cmd/swag@latest
-RUN swag init
+RUN swag fmt && swag init
 
 RUN make config
 

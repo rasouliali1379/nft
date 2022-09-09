@@ -4,4 +4,5 @@ type Image struct {
 	Content  []byte
 	FileName string
 	FileUrl  string
+	Bucket   string
 }

@@ -7,9 +7,9 @@ services:
   nft:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
-      - .:/go/src/application
+      - .:/build
     networks:
       - customnetwork
     depends_on:
