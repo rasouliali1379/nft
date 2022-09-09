@@ -4,8 +4,8 @@ WORKDIR /build
 
 COPY . .
 
-RUN go install github.com/swaggo/swag/cmd/swag@v1.6.7
-RUN swag fmt && swag init
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN swag fmt && swag init --parseDependency --parseInternal --parseDepth 1 -g main.go
 
 RUN make config
 
