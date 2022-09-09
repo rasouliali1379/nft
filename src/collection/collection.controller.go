@@ -11,6 +11,7 @@ import (
 	"nft/contract"
 	apperrors "nft/error"
 	"nft/pkg/filper"
+	dto "nft/src/collection/dto"
 	model "nft/src/collection/model"
 	usermodel "nft/src/user/model"
 )
@@ -110,7 +111,9 @@ func (co CollectionController) Get(c *fiber.Ctx) error {
 		return filper.GetInternalError(c, "")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(mapCollectionModelToDto(collectionModel))
+	var collectionDto dto.Collection = mapCollectionModelToDto(collectionModel)
+
+	return c.Status(fiber.StatusCreated).JSON(collectionDto)
 }
 
 // GetAll godoc
