@@ -18,6 +18,7 @@ type UserService struct {
 	jwtService     contract.IJwtService
 	userRepository contract.IUserRepository
 	emailService   contract.IEmailService
+	talanService   contract.ITalanService
 }
 
 type UserServiceParams struct {
@@ -25,6 +26,7 @@ type UserServiceParams struct {
 	JwtService     contract.IJwtService
 	UserRepository contract.IUserRepository
 	EmailService   contract.IEmailService
+	TalanService   contract.ITalanService
 }
 
 func NewUserService(params UserServiceParams) contract.IUserService {
@@ -32,6 +34,7 @@ func NewUserService(params UserServiceParams) contract.IUserService {
 		jwtService:     params.JwtService,
 		userRepository: params.UserRepository,
 		emailService:   params.EmailService,
+		talanService:   params.TalanService,
 	}
 }
 
@@ -104,6 +107,15 @@ func (u UserService) AddUser(c context.Context, userModel model.User) (model.Use
 	if exists {
 		return model.User{}, merror.ErrPhoneNumberExists
 	}
+
+	address, err := u.talanService.GenerateAddress(c)
+	if err != nil {
+		return model.User{}, err
+	}
+
+	userModel.Address = address.PublicAddress
+	userModel.PrivateKey = address.PrivateKey
+	userModel.Mnemonic = address.Mnemonic
 
 	newUser, err := u.userRepository.Add(c, userModel)
 	if err != nil {

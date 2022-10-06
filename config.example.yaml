@@ -38,7 +38,7 @@ storage:
   username: "fGyKWBuw8Hq1EqEMvCyVTDCXunmjlH4X"
   password: "2bQvNZ0Mg0LGckuzsLGILj8SLoLR6ospPQiAC6BDTvM3JVjfTRAp7n4QGDlIzLyn"
   ssl: false
-  urlExpInMin: 60 
+  urlExpInMin: 60
   buckets:
     kyc: "kyc"
     nft: "nft"
@@ -67,7 +67,7 @@ jwt:
 otp:
   secret: "K5IGCWTQOJ3G22DHNJFFCSKKINIVKQTNJF2TG222NJXWINDXOJLA===="
   tokenExpInMin: 5
-  
+
 logstash:
   endpoint: "logstash:5000"
   timeout: 5 # second
@@ -75,3 +75,10 @@ logstash:
 smtp:
   host: "smtp.gmail.com"
   port: "578"
+
+talan:
+  baseUrl: "https://centralized.walletapi.org/talan/v1/"
+  address: "/address"
+  generate: "/generate"
+  transactions: "/txs"
+  balance: "/balance"

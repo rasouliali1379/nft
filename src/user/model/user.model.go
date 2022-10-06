@@ -24,4 +24,5 @@ type User struct {
 	Address        string
 	PublicKey      string
 	PrivateKey     string
+	Mnemonic       string
 }

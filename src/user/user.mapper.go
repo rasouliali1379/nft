@@ -71,6 +71,7 @@ func mapUserEntityToModel(e *entity.User) model.User {
 		Password:   e.Password,
 		PublicKey:  e.PublicKey,
 		PrivateKey: e.PrivateKey,
+		Mnemonic:   e.Mnemonic,
 	}
 }
 
@@ -144,5 +145,7 @@ func mapUserModelToEntity(userModel model.User) entity.User {
 		Province:       userModel.Province,
 		City:           userModel.City,
 		Address:        userModel.Address,
+		Mnemonic:       userModel.Mnemonic,
+		PrivateKey:     userModel.PrivateKey,
 	}
 }

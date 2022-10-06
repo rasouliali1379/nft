@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"os"
 	"reflect"
 	"sync"
 	"time"
@@ -35,6 +34,7 @@ type Config struct {
 	Otp      Otp      `yaml:"otp" json:"otp" required:"true"`
 	Logstash Logstash `yaml:"logstash" required:"true"`
 	Smtp     Smtp     `yaml:"smtp" required:"true"`
+	Talan    Talan    `yaml:"talan" json:"talan" required:"true"`
 }
 
 func Validate(c any) error {
@@ -68,10 +68,9 @@ func C() *Config {
 	return &confs
 }
 
-func InitConfigs(shutdowner fx.Shutdowner) {
-	dir, _ := os.Getwd()
+func InitConfigs(shutdowner fx.Shutdowner, configPath string) {
 	viper.SetConfigName("config")
-	viper.AddConfigPath(dir)
+	viper.AddConfigPath(configPath)
 	viper.AddConfigPath(".")
 	viper.ReadInConfig()
 	loadConfigs()

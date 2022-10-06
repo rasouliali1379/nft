@@ -112,7 +112,7 @@ func (a AuthService) VerifyEmail(c context.Context, token string, code string) (
 	}
 
 	if err := a.emailService.ApproveEmail(c, userId, emailModel.Email); err != nil {
-
+		return jwt.Jwt{}, err
 	}
 
 	jwtToken, err := a.jwtService.Generate(c, userId.String())

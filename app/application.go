@@ -10,6 +10,8 @@ import (
 	"nft/client/storage"
 	"nft/config"
 	"nft/contract"
+	"nft/src/talan"
+	"os"
 	"syscall"
 	"time"
 
@@ -51,8 +53,9 @@ func Start() {
 			card.Module,
 			nft.Module,
 			file.Module,
+			talan.Module,
 
-			fx.Invoke(config.InitConfigs),
+			fx.Invoke(initConfig),
 			fx.Invoke(jtrace.InitGlobalTracer),
 			fx.Invoke(migrate),
 			fx.Invoke(serve),
@@ -78,6 +81,14 @@ func Start() {
 			break
 		}
 	}
+}
+
+func initConfig(down fx.Shutdowner) {
+	path, err := os.Getwd()
+	if err != nil {
+		panic("unable to initialize config")
+	}
+	config.InitConfigs(down, path)
 }
 
 func serve(lc fx.Lifecycle, server contract.IServer) {

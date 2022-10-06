@@ -22,6 +22,7 @@ import (
 	"nft/src/kyc"
 	"nft/src/nft"
 	"nft/src/otp"
+	"nft/src/talan"
 	"nft/src/user"
 	"testing"
 
@@ -54,8 +55,9 @@ var _ = BeforeSuite(func() {
 		card.Module,
 		nft.Module,
 		file.Module,
+		talan.Module,
 
-		fx.Invoke(config.InitConfigs),
+		fx.Invoke(initConfig),
 		fx.Invoke(migrate),
 		fx.Invoke(serve),
 	).Start(context.Background())
@@ -144,4 +146,8 @@ func migrate(lc fx.Lifecycle, db contract.IPersist) {
 			},
 		},
 	)
+}
+
+func initConfig(down fx.Shutdowner) {
+	config.InitConfigs(down, ".")
 }

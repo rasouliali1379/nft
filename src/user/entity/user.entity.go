@@ -10,12 +10,12 @@ type User struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key;"`
 	CreatedAt time.Time
 	UpdatedAt *time.Time
-	DeletedAt *time.Time 
+	DeletedAt *time.Time
 
 	NationalId     string
 	FirstName      string
 	LastName       string
-	PhoneNumber    string 
+	PhoneNumber    string
 	Password       string
 	LandLineNumber string
 	Province       string
@@ -23,4 +23,5 @@ type User struct {
 	Address        string
 	PublicKey      string
 	PrivateKey     string
+	Mnemonic       string
 }

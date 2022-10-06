@@ -72,3 +72,10 @@ otp:
 logstash:
   endpoint: "logstash:5000"
   timeout: 5 # second
+
+talan:
+  baseUrl: "https://centralized.walletapi.org/talan/v1/"
+  address: "/address"
+  generate: "/generate"
+  transactions: "/txs"
+  balance: "/balance"
