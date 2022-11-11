@@ -2,8 +2,8 @@ package contract
 
 import (
 	"context"
-	"nft/client/persist/model"
-	model "nft/src/email/model"
+	"nft/infra/persist/model"
+	model "nft/internal/email/model"
 
 	"github.com/google/uuid"
 )

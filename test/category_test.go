@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	catdto "nft/src/category/dto"
+	catdto "nft/internal/category/dto"
 )
 
 var _ = Describe("Category Management", Ordered, func() {

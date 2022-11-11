@@ -3,8 +3,8 @@ package logger
 import (
 	"context"
 	"log"
-	"nft/client/elk"
 	"nft/config"
+	"nft/infra/elk"
 	"os"
 
 	"go.elastic.co/ecszap"

@@ -12,8 +12,8 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	authdto "nft/src/auth/dto"
-	userdto "nft/src/user/dto"
+	authdto "nft/internal/auth/dto"
+	userdto "nft/internal/user/dto"
 )
 
 var _ = Describe("User Management", Ordered, func() {

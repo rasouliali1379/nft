@@ -2,8 +2,8 @@ package contract
 
 import (
 	"context"
-	"nft/client/persist/model"
-	model "nft/src/user/model"
+	"nft/infra/persist/model"
+	model "nft/internal/user/model"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"

@@ -2,7 +2,7 @@ package contract
 
 import (
 	"context"
-	model "nft/src/otp/model"
+	model "nft/internal/otp/model"
 )
 
 type IOtpRepository interface {

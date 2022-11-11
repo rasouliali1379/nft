@@ -8,8 +8,8 @@ import (
 	. "github.com/onsi/gomega"
 	"net/http"
 	"nft/config"
-	authdto "nft/src/auth/dto"
-	jwt "nft/src/jwt/model"
+	authdto "nft/internal/auth/dto"
+	jwt "nft/internal/jwt/model"
 )
 
 var _ = Describe("Auth", Ordered, func() {

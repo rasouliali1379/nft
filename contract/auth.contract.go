@@ -3,8 +3,8 @@ package contract
 import (
 	"context"
 
-	jwt "nft/src/jwt/model"
-	user "nft/src/user/model"
+	jwt "nft/internal/jwt/model"
+	user "nft/internal/user/model"
 
 	"github.com/gofiber/fiber/v2"
 )

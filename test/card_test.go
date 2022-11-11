@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	carddto "nft/src/card/dto"
+	carddto "nft/internal/card/dto"
 )
 
 var _ = Describe("Card Management", Ordered, func() {

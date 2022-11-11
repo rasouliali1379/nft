@@ -2,7 +2,7 @@ package contract
 
 import (
 	"context"
-	model "nft/client/storage/model"
+	model "nft/infra/storage/model"
 	"time"
 )
 

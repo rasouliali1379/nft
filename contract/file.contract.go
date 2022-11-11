@@ -3,7 +3,7 @@ package contract
 import (
 	"context"
 	"io"
-	file "nft/src/file/model"
+	file "nft/internal/file/model"
 	"os"
 )
 
