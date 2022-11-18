@@ -10,7 +10,6 @@ import (
 )
 
 func New(lc fx.Lifecycle) contract.IPersist {
-
 	var db postgres.Postgres
 	lc.Append(fx.Hook{
 		OnStart: func(c context.Context) error {

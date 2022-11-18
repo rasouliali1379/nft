@@ -6,7 +6,7 @@ import (
 	"go.uber.org/fx"
 	"nft/contract"
 	"nft/infra/jtrace"
-	persist "nft/infra/persist/model"
+	"nft/infra/persist/type"
 	entity "nft/internal/collection/entity"
 	model "nft/internal/collection/model"
 
@@ -67,7 +67,7 @@ func (cr CollectionRepository) Delete(c context.Context, m model.Collection) err
 	return nil
 }
 
-func (cr CollectionRepository) Get(c context.Context, conditions persist.Conds) (model.Collection, error) {
+func (cr CollectionRepository) Get(c context.Context, conditions persist.D) (model.Collection, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CollectionRepository[Get]")
 	defer span.Finish()
 
@@ -79,7 +79,7 @@ func (cr CollectionRepository) Get(c context.Context, conditions persist.Conds) 
 	return mapCollectionEntityToModel(*category.(*entity.Collection)), nil
 }
 
-func (cr CollectionRepository) GetAll(c context.Context, conditions persist.Conds) ([]model.Collection, error) {
+func (cr CollectionRepository) GetAll(c context.Context, conditions persist.D) ([]model.Collection, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CollectionRepository[GetAll]")
 	defer span.Finish()
 

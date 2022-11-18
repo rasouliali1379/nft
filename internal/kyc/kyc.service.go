@@ -8,7 +8,7 @@ import (
 	"nft/contract"
 	apperrors "nft/error"
 	"nft/infra/jtrace"
-	persist "nft/infra/persist/model"
+	"nft/infra/persist/type"
 	model "nft/internal/kyc/model"
 
 	"go.uber.org/fx"
@@ -77,7 +77,7 @@ func (k KycService) Approve(c context.Context, m model.Kyc) error {
 	span, c := jtrace.T().SpanFromContext(c, "KycService[Approve]")
 	defer span.Finish()
 
-	kycModel, err := k.kycRepository.Get(c, persist.Conds{"id": m.ID})
+	kycModel, err := k.kycRepository.Get(c, persist.D{"id": m.ID})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
 			return apperrors.ErrAppealNotFound
@@ -99,7 +99,7 @@ func (k KycService) Reject(c context.Context, m model.Kyc) error {
 	span, c := jtrace.T().SpanFromContext(c, "KycService[Reject]")
 	defer span.Finish()
 
-	kycModel, err := k.kycRepository.Get(c, persist.Conds{"id": m.ID})
+	kycModel, err := k.kycRepository.Get(c, persist.D{"id": m.ID})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
 			return apperrors.ErrAppealNotFound
@@ -120,7 +120,7 @@ func (k KycService) GetAppeal(c context.Context, m model.Kyc) (model.Kyc, error)
 	span, c := jtrace.T().SpanFromContext(c, "KycService[GetAppeal]")
 	defer span.Finish()
 
-	appeal, err := k.kycRepository.Get(c, persist.Conds{"id": m.ID, "user_id": m.UserId})
+	appeal, err := k.kycRepository.Get(c, persist.D{"id": m.ID, "user_id": m.UserId})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
 			return model.Kyc{}, apperrors.ErrAppealNotFound
@@ -150,7 +150,7 @@ func (k KycService) GetAllAppeals(c context.Context, m model.Kyc) ([]model.Kyc, 
 	span, c := jtrace.T().SpanFromContext(c, "KycService[GetAllAppeals]")
 	defer span.Finish()
 
-	appeals, err := k.kycRepository.GetAll(c, persist.Conds{})
+	appeals, err := k.kycRepository.GetAll(c, persist.D{})
 	if err != nil {
 		return nil, err
 	}

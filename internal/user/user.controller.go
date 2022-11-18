@@ -39,7 +39,7 @@ func NewUserController(params UserControllerParams) contract.IUserController {
 // @Tags     user
 // @Accept   json
 // @Produce  json
-// @Success  200  {object}  user.UserListDto
+// @Success  200      {object}  user.UserList
 // @Router   /v1/user [get]
 func (u UserController) GetAllUsers(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "UserController[GetAllUsers]")
@@ -50,7 +50,7 @@ func (u UserController) GetAllUsers(c *fiber.Ctx) error {
 		return filper.GetInternalError(c, "")
 	}
 
-	var userList user.UserListDto = createUserList(users)
+	var userList user.UserList = createUserList(users)
 	return c.JSON(userList)
 }
 
@@ -60,7 +60,7 @@ func (u UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Accept   json
 // @Produce  json
 // @Param    id   path      int  true  "user id"
-// @Success  200      {object}  user.UserDto
+// @Success  200  {object}  user.User
 // @Router   /v1/user/{id} [get]
 func (u UserController) GetUser(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "UserController[GetUser]")
@@ -85,7 +85,7 @@ func (u UserController) GetUser(c *fiber.Ctx) error {
 // @Accept   json
 // @Produce  json
 // @Param    message  body      authdto.SignUpRequest  true  "add user request body"
-// @Success  200      {object}  user.UserDto
+// @Success  200      {object}  user.User
 // @Router   /v1/user [post]
 func (u UserController) AddUser(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "UserController[AddUser]")
@@ -121,7 +121,7 @@ func (u UserController) AddUser(c *fiber.Ctx) error {
 // @Produce  json
 // @Param    id       path      int                    true  "user id that will be updated"
 // @Param    message  body      authdto.SignUpRequest  true  "update user request body"
-// @Success  200  {object}  user.UserDto
+// @Success  200  {object}  user.User
 // @Router   /v1/user/{id} [patch]
 func (u UserController) UpdateUser(c *fiber.Ctx) error {
 	span, ctx := jtrace.T().SpanFromContext(c.Context(), "UserController[UpdateUser]")

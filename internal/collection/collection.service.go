@@ -8,7 +8,7 @@ import (
 	"nft/contract"
 	apperrors "nft/error"
 	"nft/infra/jtrace"
-	persist "nft/infra/persist/model"
+	"nft/infra/persist/type"
 	model "nft/internal/collection/model"
 )
 
@@ -37,7 +37,7 @@ func (cs CollectionService) GetCollection(c context.Context, m model.Collection)
 	span, c := jtrace.T().SpanFromContext(c, "CollectionService[GetCollection]")
 	defer span.Finish()
 
-	collection, err := cs.collectionRepository.Get(c, persist.Conds{"id": m.ID, "user_id": m.User.ID})
+	collection, err := cs.collectionRepository.Get(c, persist.D{"id": m.ID, "user_id": m.User.ID})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
 			return model.Collection{}, apperrors.ErrCollectionNotFound
@@ -65,7 +65,7 @@ func (cs CollectionService) GetAllCollections(c context.Context, query model.Que
 	span, c := jtrace.T().SpanFromContext(c, "CollectionService[GetAllCollections]")
 	defer span.Finish()
 
-	collections, err := cs.collectionRepository.GetAll(c, persist.Conds{"user_id": query.UserId})
+	collections, err := cs.collectionRepository.GetAll(c, persist.D{"user_id": query.UserId})
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (cs CollectionService) AddCollection(c context.Context, m model.Collection)
 
 	if m.Status == model.CollectionStatusDraft {
 		if m.ID != nil {
-			nftModel, err := cs.collectionRepository.Get(c, persist.Conds{"id": m.ID.String()})
+			nftModel, err := cs.collectionRepository.Get(c, persist.D{"id": m.ID.String()})
 			if err != nil {
 				return model.Collection{}, apperrors.ErrCollectionDraftNotFound
 			}
@@ -145,7 +145,7 @@ func (cs CollectionService) GetOwnedCollection(c context.Context, m model.Collec
 	span, c := jtrace.T().SpanFromContext(c, "CollectionService[GetOwnedCollection]")
 	defer span.Finish()
 
-	col, err := cs.collectionRepository.Get(c, persist.Conds{"id": m.ID, "draft": false})
+	col, err := cs.collectionRepository.Get(c, persist.D{"id": m.ID, "draft": false})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
 			return model.Collection{}, apperrors.ErrCollectionNotFound
@@ -153,4 +153,7 @@ func (cs CollectionService) GetOwnedCollection(c context.Context, m model.Collec
 		return model.Collection{}, err
 	}
 
+	//Todo Check all nfts are owned by the user that requested or not
+
+	return col, nil
 }

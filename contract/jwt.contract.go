@@ -2,7 +2,7 @@ package contract
 
 import (
 	"context"
-	"nft/infra/persist/model"
+	"nft/infra/persist/type"
 	model "nft/internal/jwt/model"
 	"time"
 
@@ -18,7 +18,7 @@ type IJwtRepository interface {
 	Validate(c context.Context, token string) (uuid.UUID, error)
 	Add(c context.Context, token string, userId string) error
 	Update(c context.Context, data model.RefreshToken) error
-	Get(c context.Context, conditions persist.Conds) (model.RefreshToken, error)
+	Get(c context.Context, conditions persist.D) (model.RefreshToken, error)
 }
 
 type IJwtService interface {

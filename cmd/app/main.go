@@ -10,7 +10,6 @@ import (
 	"nft/infra/persist"
 	"nft/infra/server"
 	"nft/infra/storage"
-	"nft/internal/auction"
 	"nft/internal/offer"
 	"nft/internal/sale"
 	"nft/internal/talan"
@@ -46,7 +45,6 @@ func main() {
 			fx.Provide(persist.New),
 			fx.Provide(storage.New),
 
-			auction.Module,
 			sale.Module,
 			auth.Module,
 			user.Module,

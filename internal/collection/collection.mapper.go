@@ -109,7 +109,7 @@ func mapAndValidateAddCollectionForm(form *multipart.Form, userId uuid.UUID) (mo
 	return collectionModel, errs
 }
 
-func mapCollectionModelToDto(m model.Collection) dto.Collection {
+func MapCollectionModelToDto(m model.Collection) dto.Collection {
 	var collectionDto dto.Collection
 	collectionDto.ID = m.ID.String()
 
@@ -128,7 +128,7 @@ func createCollectionListDtoFromModel(collections []model.Collection) dto.Collec
 	collectionList := make([]dto.Collection, len(collections))
 
 	for i, collection := range collections {
-		collectionList[i] = mapCollectionModelToDto(collection)
+		collectionList[i] = MapCollectionModelToDto(collection)
 	}
 
 	return dto.CollectionList{Collections: collectionList}

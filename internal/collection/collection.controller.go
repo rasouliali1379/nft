@@ -75,7 +75,7 @@ func (co CollectionController) Add(c *fiber.Ctx) error {
 		return filper.GetInternalError(c, "")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(mapCollectionModelToDto(collectionModel))
+	return c.Status(fiber.StatusCreated).JSON(MapCollectionModelToDto(collectionModel))
 }
 
 // Get godoc
@@ -111,7 +111,7 @@ func (co CollectionController) Get(c *fiber.Ctx) error {
 		return filper.GetInternalError(c, "")
 	}
 
-	var collectionDto dto.Collection = mapCollectionModelToDto(collectionModel)
+	var collectionDto dto.Collection = MapCollectionModelToDto(collectionModel)
 
 	return c.Status(fiber.StatusCreated).JSON(collectionDto)
 }

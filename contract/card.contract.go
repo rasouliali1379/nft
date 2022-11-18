@@ -2,7 +2,7 @@ package contract
 
 import (
 	"context"
-	"nft/infra/persist/model"
+	"nft/infra/persist/type"
 	model "nft/internal/card/model"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,10 +26,10 @@ type ICardService interface {
 }
 
 type ICardRepository interface {
-	Exists(c context.Context, conditions persist.Conds) (bool, error)
+	Exists(c context.Context, conditions persist.D) (bool, error)
 	Add(c context.Context, cardModel model.Card) (model.Card, error)
 	Update(c context.Context, cardModel model.Card) (model.Card, error)
 	Delete(c context.Context, cardId uuid.UUID) error
-	Get(c context.Context, conditions persist.Conds) (model.Card, error)
-	GetAll(c context.Context, conditions persist.Conds) ([]model.Card, error)
+	Get(c context.Context, conditions persist.D) (model.Card, error)
+	GetAll(c context.Context, conditions persist.D) ([]model.Card, error)
 }

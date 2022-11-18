@@ -6,7 +6,7 @@ import (
 	contract "nft/contract"
 	merror "nft/error"
 	"nft/infra/jtrace"
-	"nft/infra/persist/model"
+	"nft/infra/persist/type"
 	entity "nft/internal/card/entity"
 	model "nft/internal/card/model"
 	"time"
@@ -30,7 +30,7 @@ func NewCardRepository(params CardRepositoryParams) contract.ICardRepository {
 	}
 }
 
-func (r CardRepository) Exists(c context.Context, conditions persist.Conds) (bool, error) {
+func (r CardRepository) Exists(c context.Context, conditions persist.D) (bool, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CardRepository[Exists]")
 	defer span.Finish()
 
@@ -84,7 +84,7 @@ func (r CardRepository) Delete(c context.Context, cardId uuid.UUID) error {
 	return nil
 }
 
-func (r CardRepository) Get(c context.Context, conditions persist.Conds) (model.Card, error) {
+func (r CardRepository) Get(c context.Context, conditions persist.D) (model.Card, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CardRepository[Get]")
 	defer span.Finish()
 
@@ -96,7 +96,7 @@ func (r CardRepository) Get(c context.Context, conditions persist.Conds) (model.
 	return mapCardEntityToModel(category.(*entity.Card)), nil
 }
 
-func (r CardRepository) GetAll(c context.Context, conditions persist.Conds) ([]model.Card, error) {
+func (r CardRepository) GetAll(c context.Context, conditions persist.D) ([]model.Card, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CardRepository[GetAll]")
 	defer span.Finish()
 

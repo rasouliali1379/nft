@@ -74,7 +74,7 @@ func (n NftController) Create(c *fiber.Ctx) error {
 		return filper.GetInternalError(c, "")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(mapNftModelToDto(createdNft))
+	return c.Status(fiber.StatusCreated).JSON(MapNftModelToDto(createdNft))
 }
 
 // GetNft godoc
@@ -111,7 +111,7 @@ func (n NftController) GetNft(c *fiber.Ctx) error {
 		return filper.GetInternalError(c, "")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(mapNftModelToDto(nftModel))
+	return c.Status(fiber.StatusOK).JSON(MapNftModelToDto(nftModel))
 }
 
 // GetNftList godoc
@@ -142,7 +142,7 @@ func (n NftController) GetNftList(c *fiber.Ctx) error {
 // @Tags     nft
 // @Accept   json
 // @Produce  json
-// @Param    id   path      int     true  "nft id that will be approved"
+// @Param    id   path      string  true  "nft id that will be approved"
 // @Success  200  {string}  string  "nft approved successfully"
 // @Router   /v1/nft/{id}/approve [post]
 func (n NftController) Approve(c *fiber.Ctx) error {

@@ -6,7 +6,7 @@ import (
 	contract "nft/contract"
 	merror "nft/error"
 	"nft/infra/jtrace"
-	"nft/infra/persist/model"
+	"nft/infra/persist/type"
 	userentity "nft/internal/user/entity"
 	usermodel "nft/internal/user/model"
 	"nft/pkg/crypt"
@@ -31,7 +31,7 @@ func NewUserRepository(params UserRepositoryParams) contract.IUserRepository {
 	}
 }
 
-func (u UserRepository) Exists(c context.Context, conditions persist.Conds) (bool, error) {
+func (u UserRepository) Exists(c context.Context, conditions persist.D) (bool, error) {
 	span, c := jtrace.T().SpanFromContext(c, "UserRepository[Exists]")
 	defer span.Finish()
 
@@ -91,7 +91,7 @@ func (u UserRepository) Delete(c context.Context, userId uuid.UUID) error {
 	return nil
 }
 
-func (u UserRepository) Get(c context.Context, conditions persist.Conds) (usermodel.User, error) {
+func (u UserRepository) Get(c context.Context, conditions persist.D) (usermodel.User, error) {
 	span, c := jtrace.T().SpanFromContext(c, "UserRepository[Get]")
 	defer span.Finish()
 

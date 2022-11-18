@@ -9,7 +9,7 @@ import (
 	"nft/contract"
 	apperrors "nft/error"
 	"nft/infra/jtrace"
-	persist "nft/infra/persist/model"
+	"nft/infra/persist/type"
 	model "nft/internal/nft/model"
 	usermodel "nft/internal/user/model"
 )
@@ -41,7 +41,7 @@ func (n NftService) Create(c context.Context, m model.Nft) (model.Nft, error) {
 
 	if m.Status == model.NftStatusDraft {
 		if m.ID != nil {
-			nftModel, err := n.nftRepository.Get(c, persist.Conds{"id": m.ID.String()})
+			nftModel, err := n.nftRepository.Get(c, persist.D{"id": m.ID.String()})
 			if err != nil {
 				return model.Nft{}, apperrors.ErrNftDraftNotFound
 			}
@@ -77,7 +77,7 @@ func (n NftService) GetOwnedNft(c context.Context, m model.Nft) (model.Nft, erro
 	span, c := jtrace.T().SpanFromContext(c, "NftService[GetOwnedNft]")
 	defer span.Finish()
 
-	nft, err := n.nftRepository.Get(c, persist.Conds{"id": *m.ID})
+	nft, err := n.nftRepository.Get(c, persist.D{"id": *m.ID})
 	if err != nil {
 		return model.Nft{}, err
 	}
@@ -110,7 +110,7 @@ func (n NftService) Approve(c context.Context, m model.Nft) error {
 	span, c := jtrace.T().SpanFromContext(c, "NftService[Approve]")
 	defer span.Finish()
 
-	nftModel, err := n.nftRepository.Get(c, persist.Conds{"id": m.ID})
+	nftModel, err := n.nftRepository.Get(c, persist.D{"id": m.ID})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
 			return apperrors.ErrNftNotFound
@@ -137,7 +137,7 @@ func (n NftService) Reject(c context.Context, m model.Nft) error {
 	span, c := jtrace.T().SpanFromContext(c, "NftService[Reject]")
 	defer span.Finish()
 
-	nftModel, err := n.nftRepository.Get(c, persist.Conds{"id": m.ID})
+	nftModel, err := n.nftRepository.Get(c, persist.D{"id": m.ID})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
 			return apperrors.ErrNftNotFound
@@ -162,7 +162,7 @@ func (n NftService) GetNft(c context.Context, m model.Nft) (model.Nft, error) {
 	span, c := jtrace.T().SpanFromContext(c, "NftService[GetNft]")
 	defer span.Finish()
 
-	nftModel, err := n.nftRepository.Get(c, persist.Conds{"id": m.ID, "user_id": m.User.ID})
+	nftModel, err := n.nftRepository.Get(c, persist.D{"id": m.ID})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
 			return model.Nft{}, apperrors.ErrNftNotFound
@@ -190,7 +190,7 @@ func (n NftService) GetAllNfts(c context.Context, userId uuid.UUID) ([]model.Nft
 	span, c := jtrace.T().SpanFromContext(c, "NftService[GetAllNfts]")
 	defer span.Finish()
 
-	nfts, err := n.nftRepository.GetAll(c, persist.Conds{"user_id": userId})
+	nfts, err := n.nftRepository.GetAll(c, persist.D{"user_id": userId})
 	if err != nil {
 		return nil, err
 	}
@@ -216,7 +216,7 @@ func (n NftService) DeleteDraft(c context.Context, m model.Nft) error {
 	span, c := jtrace.T().SpanFromContext(c, "NftService[DeleteDraft]")
 	defer span.Finish()
 
-	_, err := n.nftRepository.Get(c, persist.Conds{"id": m.ID, "user_id": m.User.ID})
+	_, err := n.nftRepository.Get(c, persist.D{"id": m.ID, "user_id": m.User.ID})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrRecordNotFound) {
 			return apperrors.ErrNftNotFound

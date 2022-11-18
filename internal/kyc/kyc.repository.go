@@ -4,9 +4,9 @@ import (
 	"context"
 	"nft/contract"
 	"nft/infra/jtrace"
+	"nft/infra/persist/type"
 	"time"
 
-	persist "nft/infra/persist/model"
 	entity "nft/internal/kyc/entity"
 	model "nft/internal/kyc/model"
 
@@ -29,7 +29,7 @@ func NewKYCRepository(params KycRepositoryParams) contract.IKycRepository {
 	}
 }
 
-func (k KycRepository) Exists(c context.Context, conditions persist.Conds) error {
+func (k KycRepository) Exists(c context.Context, conditions persist.D) error {
 	span, c := jtrace.T().SpanFromContext(c, "KycRepository[Exists]")
 	defer span.Finish()
 
@@ -79,7 +79,7 @@ func (k KycRepository) Delete(c context.Context, userId uuid.UUID) error {
 	return nil
 }
 
-func (k KycRepository) Get(c context.Context, conditions persist.Conds) (model.Kyc, error) {
+func (k KycRepository) Get(c context.Context, conditions persist.D) (model.Kyc, error) {
 	span, c := jtrace.T().SpanFromContext(c, "KycRepository[Get]")
 	defer span.Finish()
 
@@ -91,14 +91,14 @@ func (k KycRepository) Get(c context.Context, conditions persist.Conds) (model.K
 	return mapKycEntityToModel(category.(*entity.Kyc)), nil
 }
 
-func (k KycRepository) GetAll(c context.Context, conditions persist.Conds) ([]model.Kyc, error) {
+func (k KycRepository) GetAll(c context.Context, conditions persist.D) ([]model.Kyc, error) {
 	span, c := jtrace.T().SpanFromContext(c, "KycRepository[GetAll]")
 	defer span.Finish()
 
-	catList, err := k.db.GetAll(c, &[]entity.Kyc{}, conditions)
+	kycList, err := k.db.GetAll(c, &[]entity.Kyc{}, conditions)
 	if err != nil {
 		return nil, err
 	}
 
-	return createModelKycList(catList.(*[]entity.Kyc)), nil
+	return createModelKycList(kycList.(*[]entity.Kyc)), nil
 }

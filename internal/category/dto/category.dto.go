@@ -12,9 +12,9 @@ type CategoryDto struct {
 	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 
-	Name          string          `json:"name,omitempty"`
-	SubCategories []CategoryDto   `json:"sub_categories,omitempty"`
-	CreatedBy     userdto.UserDto `json:"created_by,omitempty"`
+	Name          string        `json:"name,omitempty"`
+	SubCategories []CategoryDto `json:"sub_categories,omitempty"`
+	CreatedBy     userdto.User  `json:"created_by,omitempty"`
 }
 
 type CategoriesListDto struct {

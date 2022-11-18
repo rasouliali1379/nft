@@ -9,14 +9,15 @@ type Sale struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key;"`
 	CreatedAt time.Time
 	UpdatedAt *time.Time
+	DeletedAt *time.Time
 
-	UserId     uuid.UUID
+	UserId     uuid.UUID `gorm:"type:uuid;"`
 	Expiration time.Time
-	CanceledBy *uuid.UUID
+	CanceledBy *uuid.UUID `gorm:"type:uuid;"`
 	CanceledAt *time.Time
 	SaleType   SaleType
 	AssetType  AssetType
-	AssetId    uuid.UUID
+	AssetId    uuid.UUID `gorm:"type:uuid;"`
 	MinPrice   float64
 }
 

@@ -10,7 +10,7 @@ type Collection struct {
 	Title       string               `json:"title,omitempty"`
 	Description string               `json:"description,omitempty"`
 	Categories  []catdto.CategoryDto `json:"categories,omitempty"`
-	User        userdto.UserDto      `json:"user,omitempty"`
+	User        userdto.User         `json:"user,omitempty"`
 	Status      string               `json:"status,omitempty"`
 	HeaderImage string               `json:"header_image,omitempty"`
 }

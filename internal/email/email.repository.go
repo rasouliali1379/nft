@@ -7,7 +7,7 @@ import (
 	"nft/contract"
 	merror "nft/error"
 	"nft/infra/jtrace"
-	"nft/infra/persist/model"
+	"nft/infra/persist/type"
 	entity "nft/internal/email/entity"
 	model "nft/internal/email/model"
 
@@ -30,7 +30,7 @@ func NewEmailRepository(params EmailRepositoryParams) contract.IEmailRepository 
 	}
 }
 
-func (e EmailRepository) Get(c context.Context, conditions persist.Conds) (model.Email, error) {
+func (e EmailRepository) Get(c context.Context, conditions persist.D) (model.Email, error) {
 	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Get]")
 	defer span.Finish()
 
@@ -42,7 +42,7 @@ func (e EmailRepository) Get(c context.Context, conditions persist.Conds) (model
 	return mapEmailEntityToModel(emailRecord.(*entity.Email)), nil
 }
 
-func (e EmailRepository) Last(c context.Context, conditions persist.Conds) (model.Email, error) {
+func (e EmailRepository) Last(c context.Context, conditions persist.D) (model.Email, error) {
 	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Last]")
 	defer span.Finish()
 
@@ -96,7 +96,7 @@ func (e EmailRepository) Send(c context.Context, receivers []string, message str
 	return nil
 }
 
-func (e EmailRepository) Exists(c context.Context, conditions persist.Conds) (bool, error) {
+func (e EmailRepository) Exists(c context.Context, conditions persist.D) (bool, error) {
 	span, c := jtrace.T().SpanFromContext(c, "EmailRepository[Exists]")
 	defer span.Finish()
 

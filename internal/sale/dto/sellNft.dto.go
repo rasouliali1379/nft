@@ -3,8 +3,9 @@ package sale
 import "github.com/google/uuid"
 
 type SaleRequest struct {
-	NftId    uuid.UUID `json:"nft_id" validate:"required"`
+	AssetId  uuid.UUID `json:"asset_id" validate:"required"`
 	MinPrice float64   `json:"min_price" validate:"required"`
+	SaleType SaleType  `json:"sale_type" validate:"required"`
 }
 
 type SaleResponse struct {

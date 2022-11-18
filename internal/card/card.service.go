@@ -5,7 +5,7 @@ import (
 	"nft/contract"
 	apperrors "nft/error"
 	"nft/infra/jtrace"
-	persist "nft/infra/persist/model"
+	"nft/infra/persist/type"
 	model "nft/internal/card/model"
 
 	"github.com/google/uuid"
@@ -30,14 +30,14 @@ func NewCardService(params CardServiceParams) contract.ICardService {
 func (s CardService) GetAllCards(c context.Context, userId uuid.UUID) ([]model.Card, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CardService[GetAllCards]")
 	defer span.Finish()
-	return s.CardRepository.GetAll(c, persist.Conds{"user_id": userId})
+	return s.CardRepository.GetAll(c, persist.D{"user_id": userId})
 }
 
 func (s CardService) GetCard(c context.Context, id uuid.UUID, userId uuid.UUID) (model.Card, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CardService[GetCard]")
 	defer span.Finish()
 
-	cardModel, err := s.CardRepository.Get(c, persist.Conds{"user_id": userId, "id": id})
+	cardModel, err := s.CardRepository.Get(c, persist.D{"user_id": userId, "id": id})
 	if err != nil {
 		return model.Card{}, err
 	}
@@ -53,7 +53,7 @@ func (s CardService) AddCard(c context.Context, cardModel model.Card) (model.Car
 	span, c := jtrace.T().SpanFromContext(c, "CardService[AddCard]")
 	defer span.Finish()
 
-	cardExists, err := s.CardRepository.Exists(c, persist.Conds{
+	cardExists, err := s.CardRepository.Exists(c, persist.D{
 		"user_id":     cardModel.UserId,
 		"card_number": cardModel.CardNumber,
 	})
@@ -73,7 +73,7 @@ func (s CardService) ApproveCard(c context.Context, id uuid.UUID, userId uuid.UU
 	span, c := jtrace.T().SpanFromContext(c, "CardService[UpdateCard]")
 	defer span.Finish()
 
-	if _, err := s.CardRepository.Exists(c, persist.Conds{"id": id}); err != nil {
+	if _, err := s.CardRepository.Exists(c, persist.D{"id": id}); err != nil {
 		return err
 	}
 
@@ -88,7 +88,7 @@ func (s CardService) DeleteCard(c context.Context, id uuid.UUID, userId uuid.UUI
 	span, c := jtrace.T().SpanFromContext(c, "CardService[DeleteCard]")
 	defer span.Finish()
 
-	if _, err := s.CardRepository.Exists(c, persist.Conds{"id": id, "user_id": userId}); err != nil {
+	if _, err := s.CardRepository.Exists(c, persist.D{"id": id, "user_id": userId}); err != nil {
 		return err
 	}
 

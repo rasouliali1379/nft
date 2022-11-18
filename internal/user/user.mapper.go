@@ -75,8 +75,8 @@ func mapUserEntityToModel(e *entity.User) model.User {
 	}
 }
 
-func mapUserModelToResponse(userModel model.User) dto.UserDto {
-	return dto.UserDto{
+func mapUserModelToResponse(userModel model.User) dto.User {
+	return dto.User{
 		ID:             userModel.ID.String(),
 		NationalId:     userModel.NationalId,
 		FirstName:      userModel.FirstName,
@@ -91,10 +91,10 @@ func mapUserModelToResponse(userModel model.User) dto.UserDto {
 	}
 }
 
-func createUserList(users []model.User) dto.UserListDto {
-	userList := make([]dto.UserDto, len(users))
+func createUserList(users []model.User) dto.UserList {
+	userList := make([]dto.User, len(users))
 	for i, userModel := range users {
-		userList[i] = dto.UserDto{
+		userList[i] = dto.User{
 			ID:             userModel.ID.String(),
 			NationalId:     userModel.NationalId,
 			FirstName:      userModel.FirstName,
@@ -109,7 +109,7 @@ func createUserList(users []model.User) dto.UserListDto {
 		}
 	}
 
-	return dto.UserListDto{
+	return dto.UserList{
 		Users: userList,
 	}
 }

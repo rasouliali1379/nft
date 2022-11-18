@@ -3,7 +3,7 @@ package contract
 import (
 	"context"
 	"github.com/google/uuid"
-	persist "nft/infra/persist/model"
+	"nft/infra/persist/type"
 	"nft/internal/transaction/model"
 )
 
@@ -12,5 +12,5 @@ type ITransactionService interface {
 }
 
 type ITransactionRepository interface {
-	Get(c context.Context, conditions persist.Conds) (model.Transaction, error)
+	Get(c context.Context, conditions persist.D) (model.Transaction, error)
 }

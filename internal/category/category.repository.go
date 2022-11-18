@@ -2,11 +2,11 @@ package category
 
 import (
 	"context"
+	"nft/infra/persist/type"
 	"time"
 
 	"nft/contract"
 	"nft/infra/jtrace"
-	"nft/infra/persist/model"
 	entity "nft/internal/category/entity"
 	model "nft/internal/category/model"
 
@@ -29,7 +29,7 @@ func NewCategoryRepository(params CategoryRepositoryParams) contract.ICategoryRe
 	}
 }
 
-func (cat CategoryRepository) Exists(c context.Context, conditions persist.Conds) error {
+func (cat CategoryRepository) Exists(c context.Context, conditions persist.D) error {
 	span, c := jtrace.T().SpanFromContext(c, "CategoryRepository[Exists]")
 	defer span.Finish()
 
@@ -79,7 +79,7 @@ func (cat CategoryRepository) Delete(c context.Context, userId uuid.UUID) error 
 	return nil
 }
 
-func (cat CategoryRepository) Get(c context.Context, conditions persist.Conds) (model.Category, error) {
+func (cat CategoryRepository) Get(c context.Context, conditions persist.D) (model.Category, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CategoryRepository[Get]")
 	defer span.Finish()
 
@@ -90,7 +90,7 @@ func (cat CategoryRepository) Get(c context.Context, conditions persist.Conds) (
 	return mapCategoryEntityToModel(category.(*entity.Category)), nil
 }
 
-func (cat CategoryRepository) GetAll(c context.Context, conditions persist.Conds) ([]model.Category, error) {
+func (cat CategoryRepository) GetAll(c context.Context, conditions persist.D) ([]model.Category, error) {
 	span, c := jtrace.T().SpanFromContext(c, "CategoryRepository[GetAll]")
 	defer span.Finish()
 

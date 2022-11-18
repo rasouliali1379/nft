@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
 	"go.uber.org/fx"
+	_ "nft/docs"
 	fiberapp "nft/infra/server/fiber"
 )
 
@@ -116,10 +117,8 @@ func New(cc ControllerContainer) contract.IServer {
 	offerRouter.Use(cc.JwtMiddleware.Handle)
 	offerRouter.Post("/", cc.OfferController.MakeOffer)
 	offerRouter.Delete("/:id", cc.OfferController.CancelOffer)
-	offerRouter.Post("/:id/reject", cc.OfferController.RejectOffer)
-	offerRouter.Get("/:id", cc.OfferController.GetAllOffers)
+	offerRouter.Get("/", cc.OfferController.GetAllOffers)
+	offerRouter.Post("/:id/accept", cc.OfferController.AcceptOffer)
 
-	return &fiberapp.Server{
-		App: app,
-	}
+	return &fiberapp.Server{App: app}
 }

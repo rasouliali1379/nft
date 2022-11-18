@@ -118,7 +118,7 @@ func mapAndValidateCreateNftForm(form *multipart.Form, userId uuid.UUID) (model.
 	return nftModel, errs
 }
 
-func mapNftModelToDto(m model.Nft) dto.Nft {
+func MapNftModelToDto(m model.Nft) dto.Nft {
 	var nftDto dto.Nft
 	nftDto.ID = m.ID.String()
 
@@ -222,7 +222,7 @@ func createNftListDtoFromModel(nfts []model.Nft) dto.NftList {
 	nftList := make([]dto.Nft, len(nfts))
 
 	for i, nft := range nfts {
-		nftList[i] = mapNftModelToDto(nft)
+		nftList[i] = MapNftModelToDto(nft)
 	}
 
 	return dto.NftList{Nfts: nftList}

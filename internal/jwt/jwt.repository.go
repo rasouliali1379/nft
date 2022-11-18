@@ -8,7 +8,7 @@ import (
 	"nft/contract"
 	nerror "nft/error"
 	"nft/infra/jtrace"
-	persist "nft/infra/persist/model"
+	"nft/infra/persist/type"
 	jwt "nft/internal/jwt/entity"
 	model "nft/internal/jwt/model"
 	"time"
@@ -106,7 +106,7 @@ func (j JwtRepository) Add(c context.Context, token string, userId string) error
 	return nil
 }
 
-func (j JwtRepository) Get(c context.Context, conditions persist.Conds) (model.RefreshToken, error) {
+func (j JwtRepository) Get(c context.Context, conditions persist.D) (model.RefreshToken, error) {
 	span, c := jtrace.T().SpanFromContext(c, "JwtRepository[Get]")
 	defer span.Finish()
 

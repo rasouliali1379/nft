@@ -9,6 +9,7 @@ type Transaction struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key;"`
 	CreatedAt time.Time
 	UpdatedAt *time.Time
+	DeletedAt *time.Time
 
 	AssetId         uuid.UUID `gorm:"type:uuid;"`
 	SaleId          uuid.UUID `gorm:"type:uuid;"`

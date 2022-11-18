@@ -1,10 +1,10 @@
 package user
 
-type UserListDto struct {
-	Users []UserDto `json:"users"`
+type UserList struct {
+	Users []User `json:"users"`
 }
 
-type UserDto struct {
+type User struct {
 	ID             string `json:"id,omitempty"`
 	FirstName      string `json:"first_name,omitempty"`
 	LastName       string `json:"last_name,omitempty"`

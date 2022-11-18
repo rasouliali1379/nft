@@ -10,7 +10,7 @@ type Nft struct {
 	Title           string               `json:"title,omitempty"`
 	Description     string               `json:"description,omitempty"`
 	Categories      []catdto.CategoryDto `json:"categories,omitempty"`
-	User            userdto.UserDto      `json:"user,omitempty"`
+	User            userdto.User         `json:"user,omitempty"`
 	Status          string               `json:"status,omitempty"`
 	NftImageUrl     string               `json:"nft_image_url,omitempty"`
 	RejectionReason string               `json:"rejection_reason,omitempty"`

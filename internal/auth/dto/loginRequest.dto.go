@@ -1,4 +1,4 @@
-package auth
+package dto
 
 type LoginRequest struct {
 	Email    string `json:"email" validate:"required"`

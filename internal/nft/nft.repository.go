@@ -6,7 +6,7 @@ import (
 	"go.uber.org/fx"
 	"nft/contract"
 	"nft/infra/jtrace"
-	"nft/infra/persist/model"
+	"nft/infra/persist/type"
 	entity "nft/internal/nft/entity"
 	model "nft/internal/nft/model"
 	"time"
@@ -27,7 +27,7 @@ func NewNftRepository(params NftRepositoryParams) contract.INftRepository {
 	}
 }
 
-func (n NftRepository) Exists(c context.Context, conditions persist.Conds) error {
+func (n NftRepository) Exists(c context.Context, conditions persist.D) error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -76,19 +76,19 @@ func (n NftRepository) HardDelete(c context.Context, id uuid.UUID) error {
 	return n.db.Delete(c, &entity.Nft{ID: id})
 }
 
-func (n NftRepository) Get(c context.Context, conditions persist.Conds) (model.Nft, error) {
+func (n NftRepository) Get(c context.Context, conditions persist.D) (model.Nft, error) {
 	span, c := jtrace.T().SpanFromContext(c, "NftRepository[Get]")
 	defer span.Finish()
 
-	category, err := n.db.Get(c, &entity.Nft{}, conditions)
+	nft, err := n.db.Get(c, &entity.Nft{}, conditions)
 	if err != nil {
 		return model.Nft{}, err
 	}
 
-	return mapNftEntityToModel(*category.(*entity.Nft)), nil
+	return mapNftEntityToModel(*nft.(*entity.Nft)), nil
 }
 
-func (n NftRepository) GetAll(c context.Context, conditions persist.Conds) ([]model.Nft, error) {
+func (n NftRepository) GetAll(c context.Context, conditions persist.D) ([]model.Nft, error) {
 	span, c := jtrace.T().SpanFromContext(c, "NftRepository[GetAll]")
 	defer span.Finish()
 

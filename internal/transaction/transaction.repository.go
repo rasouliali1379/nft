@@ -5,7 +5,7 @@ import (
 	"go.uber.org/fx"
 	"nft/contract"
 	"nft/infra/jtrace"
-	persist "nft/infra/persist/model"
+	"nft/infra/persist/type"
 	entity "nft/internal/transaction/entity"
 	"nft/internal/transaction/model"
 )
@@ -25,7 +25,7 @@ func NewTransactionRepository(params TransactionRepositoryParams) contract.ITran
 	}
 }
 
-func (t TransactionRepository) Get(c context.Context, conditions persist.Conds) (model.Transaction, error) {
+func (t TransactionRepository) Get(c context.Context, conditions persist.D) (model.Transaction, error) {
 	span, c := jtrace.T().SpanFromContext(c, "TransactionRepository[Get]")
 	defer span.Finish()
 

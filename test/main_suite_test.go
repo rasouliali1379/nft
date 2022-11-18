@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
+	"log"
 	"nft/config"
 	"nft/contract"
 	"nft/infra/persist"
@@ -21,8 +22,11 @@ import (
 	jwtmodel "nft/internal/jwt/model"
 	"nft/internal/kyc"
 	"nft/internal/nft"
+	"nft/internal/offer"
 	"nft/internal/otp"
+	"nft/internal/sale"
 	"nft/internal/talan"
+	"nft/internal/transaction"
 	"nft/internal/user"
 	"testing"
 
@@ -56,6 +60,9 @@ var _ = BeforeSuite(func() {
 		nft.Module,
 		file.Module,
 		talan.Module,
+		offer.Module,
+		sale.Module,
+		transaction.Module,
 
 		fx.Invoke(initConfig),
 		fx.Invoke(migrate),
@@ -125,6 +132,7 @@ var _ = BeforeSuite(func() {
 		AbortSuite(fmt.Sprintf("failed unmarshal jwt struct: %s", err.Error()))
 	}
 	token = jwtToken.AccessToken
+	log.Println(token)
 })
 
 func serve(lc fx.Lifecycle, server contract.IServer) {
