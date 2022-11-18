@@ -12,8 +12,8 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	authdto "nft/src/auth/dto"
-	userdto "nft/src/user/dto"
+	authdto "nft/internal/auth/dto"
+	userdto "nft/internal/user/dto"
 )
 
 var _ = Describe("User Management", Ordered, func() {
@@ -30,7 +30,7 @@ var _ = Describe("User Management", Ordered, func() {
 		Password:       "mohammad1372",
 	}
 
-	var userList userdto.UserListDto
+	var userList userdto.UserList
 	var baseUrl string
 	client := resty.New()
 
@@ -76,7 +76,7 @@ var _ = Describe("User Management", Ordered, func() {
 				Get(baseUrl + userList.Users[0].ID)
 			Expect(err).NotTo(HaveOccurred())
 
-			var user userdto.UserDto
+			var user userdto.User
 			err = json.Unmarshal(resp.Body(), &user)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -100,7 +100,7 @@ var _ = Describe("User Management", Ordered, func() {
 				Patch(baseUrl + userDetails.ID)
 			Expect(err).NotTo(HaveOccurred())
 
-			var updatedUser userdto.UserDto
+			var updatedUser userdto.User
 			err = json.Unmarshal(resp.Body(), &updatedUser)
 			Expect(err).NotTo(HaveOccurred())
 

@@ -1,6 +1,5 @@
 config.yaml
 config.test.yaml
-micro
 vendor/
 logs/*
 !logs/README.md
@@ -9,8 +8,8 @@ tmp
 api/pb/*
 api/swagger/*
 docker-compose-dev.yml
-.idea
-.vscode
+.idea/
+.vscode/
 docs/*
 temp/
 

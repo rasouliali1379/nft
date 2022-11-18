@@ -2,19 +2,19 @@ package contract
 
 import (
 	"context"
-	"nft/client/persist/model"
-	model "nft/src/email/model"
+	"nft/infra/persist/type"
+	model "nft/internal/email/model"
 
 	"github.com/google/uuid"
 )
 
 type IEmailRepository interface {
-	Get(c context.Context, conditions persist.Conds) (model.Email, error)
-	Last(c context.Context, conditions persist.Conds) (model.Email, error)
+	Get(c context.Context, conditions persist.D) (model.Email, error)
+	Last(c context.Context, conditions persist.D) (model.Email, error)
 	Add(c context.Context, userId uuid.UUID, email string) (model.Email, error)
 	Update(c context.Context, emailModel model.Email) (model.Email, error)
 	Send(c context.Context, receivers []string, message string) error
-	Exists(c context.Context, conditions persist.Conds) (bool, error)
+	Exists(c context.Context, conditions persist.D) (bool, error)
 }
 
 type IEmailService interface {

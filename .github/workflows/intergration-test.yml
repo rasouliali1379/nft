@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  intergraion-tests:
+  integration-tests:
     runs-on: ubuntu-latest
     services:
       postgres:

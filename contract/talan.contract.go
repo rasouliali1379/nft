@@ -2,7 +2,7 @@ package contract
 
 import (
 	"context"
-	model "nft/src/talan/model"
+	model "nft/internal/talan/model"
 )
 
 type ITalanRepository interface {

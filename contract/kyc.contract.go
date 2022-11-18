@@ -2,8 +2,8 @@ package contract
 
 import (
 	"context"
-	persist "nft/client/persist/model"
-	model "nft/src/kyc/model"
+	"nft/infra/persist/type"
+	model "nft/internal/kyc/model"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -26,10 +26,10 @@ type IKycService interface {
 }
 
 type IKycRepository interface {
-	Exists(c context.Context, conditions persist.Conds) error
+	Exists(c context.Context, conditions persist.D) error
 	Add(c context.Context, kyc model.Kyc) (model.Kyc, error)
 	Update(c context.Context, kyc model.Kyc) (model.Kyc, error)
 	Delete(c context.Context, userId uuid.UUID) error
-	Get(c context.Context, conditions persist.Conds) (model.Kyc, error)
-	GetAll(c context.Context, conditions persist.Conds) ([]model.Kyc, error)
+	Get(c context.Context, conditions persist.D) (model.Kyc, error)
+	GetAll(c context.Context, conditions persist.D) ([]model.Kyc, error)
 }

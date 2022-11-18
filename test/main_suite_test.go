@@ -5,25 +5,29 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
-	"nft/client/persist"
-	"nft/client/server"
-	"nft/client/storage"
+	"log"
 	"nft/config"
 	"nft/contract"
-	"nft/src/auth"
-	authdto "nft/src/auth/dto"
-	"nft/src/card"
-	"nft/src/category"
-	"nft/src/collection"
-	"nft/src/email"
-	"nft/src/file"
-	"nft/src/jwt"
-	jwtmodel "nft/src/jwt/model"
-	"nft/src/kyc"
-	"nft/src/nft"
-	"nft/src/otp"
-	"nft/src/talan"
-	"nft/src/user"
+	"nft/infra/persist"
+	"nft/infra/server"
+	"nft/infra/storage"
+	"nft/internal/auth"
+	authdto "nft/internal/auth/dto"
+	"nft/internal/card"
+	"nft/internal/category"
+	"nft/internal/collection"
+	"nft/internal/email"
+	"nft/internal/file"
+	"nft/internal/jwt"
+	jwtmodel "nft/internal/jwt/model"
+	"nft/internal/kyc"
+	"nft/internal/nft"
+	"nft/internal/offer"
+	"nft/internal/otp"
+	"nft/internal/sale"
+	"nft/internal/talan"
+	"nft/internal/transaction"
+	"nft/internal/user"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -56,6 +60,9 @@ var _ = BeforeSuite(func() {
 		nft.Module,
 		file.Module,
 		talan.Module,
+		offer.Module,
+		sale.Module,
+		transaction.Module,
 
 		fx.Invoke(initConfig),
 		fx.Invoke(migrate),
@@ -125,6 +132,7 @@ var _ = BeforeSuite(func() {
 		AbortSuite(fmt.Sprintf("failed unmarshal jwt struct: %s", err.Error()))
 	}
 	token = jwtToken.AccessToken
+	log.Println(token)
 })
 
 func serve(lc fx.Lifecycle, server contract.IServer) {

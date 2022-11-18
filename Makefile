@@ -10,5 +10,5 @@ config:
 	cp -rf ./test/config.example.yaml ./test/config.yaml
 
 swagger:
-	swag init
-	swag fmt
+	swag init --parseDependency --parseInternal -g ./cmd/app/main.go
+	swag fmt -g ./cmd/app/main.go

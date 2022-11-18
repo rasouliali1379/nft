@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"net/http"
 	"nft/config"
-	dto "nft/src/kyc/dto"
+	dto "nft/internal/kyc/dto"
 	"os"
 
 	"github.com/go-resty/resty/v2"

@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	persist "nft/client/persist/model"
-	model "nft/src/collection/model"
+	"nft/infra/persist/type"
+	model "nft/internal/collection/model"
 )
 
 type ICollectionController interface {
@@ -20,13 +20,14 @@ type ICollectionService interface {
 	GetAllCollections(c context.Context, query model.QueryCollection) ([]model.Collection, error)
 	AddCollection(c context.Context, m model.Collection) (model.Collection, error)
 	DeleteCollection(c context.Context, m model.Collection) error
+	GetOwnedCollection(c context.Context, m model.Collection) (model.Collection, error)
 }
 
 type ICollectionRepository interface {
 	Add(c context.Context, category model.Collection) (model.Collection, error)
 	Update(c context.Context, userModel model.Collection) (model.Collection, error)
 	Delete(c context.Context, m model.Collection) error
-	Get(c context.Context, conditions persist.Conds) (model.Collection, error)
-	GetAll(c context.Context, conditions persist.Conds) ([]model.Collection, error)
+	Get(c context.Context, conditions persist.D) (model.Collection, error)
+	GetAll(c context.Context, conditions persist.D) ([]model.Collection, error)
 	HardDelete(c context.Context, id uuid.UUID) error
 }

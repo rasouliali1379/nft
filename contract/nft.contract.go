@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	persist "nft/client/persist/model"
-	model "nft/src/nft/model"
+	"nft/infra/persist/type"
+	model "nft/internal/nft/model"
 )
 
 type INftController interface {
@@ -22,16 +22,17 @@ type INftService interface {
 	Approve(c context.Context, m model.Nft) error
 	Reject(c context.Context, m model.Nft) error
 	GetNft(c context.Context, m model.Nft) (model.Nft, error)
+	GetOwnedNft(c context.Context, m model.Nft) (model.Nft, error)
 	GetAllNfts(c context.Context, userId uuid.UUID) ([]model.Nft, error)
 	DeleteDraft(c context.Context, m model.Nft) error
 }
 
 type INftRepository interface {
-	Exists(c context.Context, conditions persist.Conds) error
+	Exists(c context.Context, conditions persist.D) error
 	Add(c context.Context, kyc model.Nft) (model.Nft, error)
 	Update(c context.Context, kyc model.Nft) (model.Nft, error)
 	Delete(c context.Context, userId uuid.UUID) error
 	HardDelete(c context.Context, id uuid.UUID) error
-	Get(c context.Context, conditions persist.Conds) (model.Nft, error)
-	GetAll(c context.Context, conditions persist.Conds) ([]model.Nft, error)
+	Get(c context.Context, conditions persist.D) (model.Nft, error)
+	GetAll(c context.Context, conditions persist.D) ([]model.Nft, error)
 }
